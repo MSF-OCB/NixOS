@@ -16,7 +16,7 @@
     procps
   ];
 
-  # ssh-keygen -t ecdsa -b 521 -N "" -C "$(whoami)@${HOSTNAME}" -f id_${HOME}/${HOSTNAME}
+  # sudo -u tunnel ssh-keygen -t ecdsa -b 521 -N "" -C "$(whoami)@${HOSTNAME}" -f ${HOME}/id_${HOSTNAME}
 
   users.extraUsers.tunnel = {
     isSystemUser = true;
