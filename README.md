@@ -57,3 +57,29 @@ To find a stable device name for grub:
 ```
 ls -l /dev/disk/by-id/ | grep "wwn.*<device>$"
 ```
+
+Boot into the OS
+
+Check that we are on the correct nix channel
+
+```
+sudo nix-channel --list
+```
+
+This should show the 17.09 channel with name `nixos`, otherwise we need to add it
+
+```
+sudo nix-channel --add https://nixos.org/channels/nixos-17.09 nixos
+```
+
+Run
+
+```
+sudo nixos-rebuild switch --upgrade
+```
+
+Generate the ssh key for the reverse tunnel
+
+```
+sudo -u tunnel ssh-keygen -t ecdsa -b 521 -N "" -C "$(whoami)@${HOSTNAME}" -f ${HOME}/id_${HOSTNAME}
+```
