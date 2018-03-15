@@ -90,7 +90,7 @@ Generate the ssh key for the reverse tunnel
 sudo -u tunnel sh -c 'ssh-keygen -t ecdsa -b 521 -N "" -C "$(whoami)@${HOSTNAME}" -f ${HOME}/id_${HOSTNAME}'
 ```
 
-and put it in the `authorized_keys` file for the tunnel user on fictappmonitoring.msg.org.
+and put it in the `authorized_keys` file for the tunnel user on fictappmonitoring.msf.org.
 
 Finally, we will turn `/etc/nixos` into a git clone of this repository
 
