@@ -17,29 +17,29 @@
     ./7zip.nix
   ];
 
-  users.extraUsers.bahmni = {
-    isSystemUser = true;
-    createHome = true;
-    home = "/home/bahmni";
-    extraGroups = [ "docker" ];
-  };
+#  users.extraUsers.bahmni = {
+#    isSystemUser = true;
+#    createHome = true;
+#    home = "/home/bahmni";
+#    extraGroups = [ "docker" ];
+#  };
 
-  systemd.services.bahmni-docker = {
-    enable = false;
-    description = "Bahmni containers";
-    requires = [ "docker.service" ];
-    after = [ "docker.service" ];
-#    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      User = "bahmni";
-#      WorkingDirectory = "/home/bahmni/bahmni-docker";
-      Restart = "always";
-      RestartSec = 10;
-      TimeoutSec = "infinity";
-      ExecStart = "${pkgs.docker_compose}/bin/docker-compose up";
-      ExecStop = "${pkgs.docker_compose}/bin/docker-compose down";
-    };
-  };
+#  systemd.services.bahmni-docker = {
+#    enable = false;
+#    description = "Bahmni containers";
+#    requires = [ "docker.service" ];
+#    after = [ "docker.service" ];
+##    wantedBy = [ "multi-user.target" ];
+#    serviceConfig = {
+#      User = "bahmni";
+##      WorkingDirectory = "/home/bahmni/bahmni-docker";
+#      Restart = "always";
+#      RestartSec = 10;
+#      TimeoutSec = "infinity";
+#      ExecStart = "${pkgs.docker_compose}/bin/docker-compose up";
+#      ExecStop = "${pkgs.docker_compose}/bin/docker-compose down";
+#    };
+#  };
 
 }
 
