@@ -75,7 +75,7 @@ sudo nix-channel --list
 This should show the 17.09 channel with name `nixos`, otherwise we need to add it
 
 ```
-sudo nix-channel --add https://nixos.org/channels/nixos-17.09 nixos
+sudo nix-channel --add https://nixos.org/channels/nixos-17.09-small nixos
 ```
 
 Run
