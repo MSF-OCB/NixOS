@@ -44,21 +44,27 @@ rmdir NixOS-master # Verify it's empty now
 cp /mnt/etc/nixos/settings.nix.template /mnt/etc/nixos/settings.nix
 ```
 
+To find a stable device name for grub and append it to the settings file for copy/paste:
+
+```
+ls -l /dev/disk/by-id/ | grep "wwn.*<device>$" | tee -a /mnt/etc/nixos/settings.nix
+```
+
+Then you can add the path to the `grub.device` setting.
+
+Set the required settings:
+
 ```
 nano /mnt/etc/nixos/settings.nix
 ```
+
+And then launch the installer:
 
 ```
 nixos-install
 ```
 
-To find a stable device name for grub:
-
-```
-ls -l /dev/disk/by-id/ | grep "wwn.*<device>$"
-```
-
-Boot into the OS
+Reboot, remove the usb drive and boot into the OS
 
 Check that we are on the correct nix channel
 
@@ -81,5 +87,17 @@ sudo nixos-rebuild switch --upgrade
 Generate the ssh key for the reverse tunnel
 
 ```
-sudo -u tunnel ssh-keygen -t ecdsa -b 521 -N "" -C "$(whoami)@${HOSTNAME}" -f ${HOME}/id_${HOSTNAME}
+sudo -u tunnel sh -c 'ssh-keygen -t ecdsa -b 521 -N "" -C "$(whoami)@${HOSTNAME}" -f ${HOME}/id_${HOSTNAME}'
+```
+
+and put it in the `authorized_keys` file for the tunnel user on fictappmonitoring.msg.org.
+
+Finally, we will turn `/etc/nixos` into a git clone of this repository
+
+```
+git init
+git remote add origin https://github.com/MSF-OCB/NixOS
+git fetch
+git checkout --force --track origin/master  # Force to overwrite local files
+git pull --rebase
 ```
