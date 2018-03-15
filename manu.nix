@@ -4,7 +4,7 @@
   users.extraUsers.msg = {
     isNormalUser = true;
     extraGroups = [ "docker" ];
-    openssh.authorizedKeys.keyFiles = [ ./../keys/manu ];
+    openssh.authorizedKeys.keyFiles = [ ./keys/manu ];
   };
 }
 
