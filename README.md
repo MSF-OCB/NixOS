@@ -87,7 +87,7 @@ sudo nixos-rebuild switch --upgrade
 Generate the ssh key for the reverse tunnel
 
 ```
-sudo -u tunnel sh -c 'ssh-keygen -t ecdsa -b 521 -N "" -C "$(whoami)@${HOSTNAME}" -f ${HOME}/id_${HOSTNAME}'
+sudo -u tunnel sh -c 'ssh-keygen -a 100 -t ed25519 -N "" -C "$(whoami)@${HOSTNAME}" -f ${HOME}/id_${HOSTNAME}'
 ```
 
 and put it in the `authorized_keys` file for the tunnel user on fictappmonitoring.msf.org.
