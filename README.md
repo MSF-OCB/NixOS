@@ -70,7 +70,7 @@ nixos-install
 
 Reboot, remove the usb drive and boot into the OS.
 
-## Final steps
+## Final steps after booting the OS
 
 Check that we are on the correct nix channel
 
