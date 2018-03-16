@@ -90,7 +90,7 @@ Generate the ssh key for the reverse tunnel
 sudo -u tunnel sh -c 'ssh-keygen -a 100 -t ed25519 -N "" -C "$(whoami)@${HOSTNAME}" -f ${HOME}/id_${HOSTNAME}'
 ```
 
-and put it in the `authorized_keys` file for the tunnel user on fictappmonitoring.msf.org.
+and put the content of the public key file (`/var/tunnel/id_${HOSTNAME}`) in the `authorized_keys` file for the tunnel user on fictappmonitoring.msf.org (`/home/tunnel/.ssh/authorized_keys`).
 
 Finally, we will turn `/etc/nixos` into a git clone of this repository
 
