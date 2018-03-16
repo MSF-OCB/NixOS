@@ -1,6 +1,8 @@
 # NixOS
 NixOS config for servers in the field
 
+## Setting up filesystems
+
 [(LVM reference.)](https://www.digitalocean.com/community/tutorials/an-introduction-to-lvm-concepts-terminology-and-operations)
 
 Use `fdisk` to create partitions, you can list all devices with `fdisk -l` and then run `fdisk <device>` to configure a particular drive.
@@ -27,6 +29,8 @@ Create filesystems:
 mkfs.ext4 -L nixos_boot /dev/<boot partition>
 mkfs.ext4 -L nixos_root /dev/LVMVolGroup/nixos_root
 ```
+
+## Installing the OS
 
 [(NixOS installation manual)](https://nixos.org/nixos/manual/index.html#sec-installation)
 
@@ -64,7 +68,9 @@ And then launch the installer:
 nixos-install
 ```
 
-Reboot, remove the usb drive and boot into the OS
+Reboot, remove the usb drive and boot into the OS.
+
+## Final steps
 
 Check that we are on the correct nix channel
 
