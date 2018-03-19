@@ -17,6 +17,12 @@
     ./7zip.nix
   ];
 
+  environment.etc.bahmni_enc = {
+    target = "bahmni_enc";
+    source = ./local/bahmni_enc;
+    mode = "symlink";
+  };
+
 #  users.extraUsers.bahmni = {
 #    isSystemUser = true;
 #    createHome = true;
