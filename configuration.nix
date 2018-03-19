@@ -131,21 +131,28 @@
 
   # List services that you want to enable:
 
-  # Enable the OpenSSH daemon.
-  services.openssh = {
-    enable = true;
-    permitRootLogin = "no";
-    forwardX11 = false;
-    passwordAuthentication = false;
-    challengeResponseAuthentication = false;
-    extraConfig = ''
-      TCPKeepAlive yes
-      ClientAliveInterval 20
-      ClientAliveCountMax 3
-      UseDNS no
-      # NixOS builds SSH without Kerberos support for now.
-      #GSSAPIAuthentication no
-    '';
+  services = {
+    openssh = {
+      enable = true;
+      permitRootLogin = "no";
+      forwardX11 = false;
+      passwordAuthentication = false;
+      challengeResponseAuthentication = false;
+      extraConfig = ''
+        TCPKeepAlive yes
+        ClientAliveInterval 20
+        ClientAliveCountMax 3
+        UseDNS no
+        # NixOS builds SSH without Kerberos support for now.
+        #GSSAPIAuthentication no
+      '';
+    };
+
+    journald = {
+      rateLimitBurst = 1000;
+      rateLimitInterval = "30s";
+    };
+
   };
 
   # Open ports in the firewall.
