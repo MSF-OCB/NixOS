@@ -153,6 +153,12 @@
       rateLimitInterval = "30s";
     };
 
+    logind = {
+      extraConfig = ''
+        HandlePowerKey=reboot
+      '';
+    };
+
   };
 
   # Open ports in the firewall.
