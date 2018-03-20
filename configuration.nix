@@ -153,9 +153,11 @@
       rateLimitInterval = "30s";
     };
 
+    # See man logind.conf
     logind = {
       extraConfig = ''
-        HandlePowerKey=reboot
+        HandlePowerKey=poweroff
+        PowerKeyIgnoreInhibited=yes
       '';
     };
 
