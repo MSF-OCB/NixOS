@@ -52,6 +52,7 @@
     unzip
     python
     lm_sensors
+    nmap
   ];
 
   boot = {
