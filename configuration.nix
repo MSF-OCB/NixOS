@@ -151,7 +151,7 @@
 
     journald = {
       rateLimitBurst = 1000;
-      rateLimitInterval = "30s";
+      rateLimitInterval = "5s";
     };
 
     # See man logind.conf
