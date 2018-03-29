@@ -50,7 +50,7 @@
     acl
     mkpasswd
     unzip
-    python
+    python3
     lm_sensors
     nmap
   ];
