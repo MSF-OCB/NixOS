@@ -28,7 +28,6 @@
   };
  
   reverse_tunnel_forward_port = "6xxx";
-  reverse_tunnel_host = "fictappmonitoring.msf.org";
 
 }
 

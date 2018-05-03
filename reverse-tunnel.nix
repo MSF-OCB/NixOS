@@ -8,7 +8,7 @@
 #                                                                      #
 ########################################################################
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   environment.systemPackages = with pkgs; [
@@ -24,46 +24,54 @@
     home = "/var/tunnel";
   };
 
-  systemd.services.autossh-reverse-tunnel = {
-    enable = true;
-    description = "AutoSSH reverse tunnel service to ensure resilient ssh access";
-    after = [ "NetworkManager-wait-online.service"
-              "network.target"
-              "network-online.target"
-              "dbus.service"
-    ];
-    wantedBy = [ "multi-user.target" ];
-    wants = [ "NetworkManager-wait-online.service" "network-online.target" ];
-    environment = {
-      AUTOSSH_GATETIME = "0";
-      AUTOSSH_PORT = "0";
+  systemd.services = let
+    inherit (lib.lists) foldl;
+    reverse_tunnel_config = [ { name = "autossh-reverse-tunnel-google";  host = "fictappmonitoring.msf.org"; }
+                              { name = "autossh-reverse-tunnel-ixelles"; host = "194.78.17.132"; } ];
+    make_service = conf: {
+      "${conf.name}" = {
+        enable = true;
+        description = "AutoSSH reverse tunnel service to ensure resilient ssh access";
+        after = [ "NetworkManager-wait-online.service"
+                  "network.target"
+                  "network-online.target"
+                  "dbus.service"
+        ];
+        wantedBy = [ "multi-user.target" ];
+        wants = [ "NetworkManager-wait-online.service" "network-online.target" ];
+        environment = {
+          AUTOSSH_GATETIME = "0";
+          AUTOSSH_PORT = "0";
+        };
+        serviceConfig = {
+          User = "tunnel";
+          Restart = "always";
+          RestartSec = 10;
+          ExecStart = let
+            settings = import ./settings.nix;
+            hostname = settings.hostname;
+            remote_host = conf.host;
+            remote_forward_port = settings.reverse_tunnel_forward_port;
+          in ''${pkgs.autossh}/bin/autossh \
+                 -q -N \
+                 -o "ExitOnForwardFailure=yes" \
+                 -o "ServerAliveInterval=60" \
+                 -o "ServerAliveCountMax=3" \
+                 -o "ConnectTimeout=30" \
+                 -o "StrictHostKeyChecking=no" \
+                 -o "IdentitiesOnly=yes" \
+                 -o "Compression=yes" \
+                 -o "ControlMaster=no" \
+                 -R ${remote_forward_port}:localhost:22 \
+                 -i /var/tunnel/id_${hostname} \
+                 tunnel@${remote_host}
+             '';
+          ExecStop = "${pkgs.procps}/bin/pkill autossh";
+        };
+      };
     };
-    serviceConfig = {
-      User = "tunnel";
-      Restart = "always";
-      RestartSec = 10;
-      ExecStart = let
-        settings = import ./settings.nix;
-        hostname = settings.hostname;
-        remote_host = settings.reverse_tunnel_host;
-        remote_forward_port = settings.reverse_tunnel_forward_port;
-      in ''${pkgs.autossh}/bin/autossh \
-             -q -N \
-             -o "ExitOnForwardFailure=yes" \
-             -o "ServerAliveInterval=60" \
-             -o "ServerAliveCountMax=3" \
-             -o "ConnectTimeout=30" \
-             -o "StrictHostKeyChecking=no" \
-             -o "IdentitiesOnly=yes" \
-             -o "Compression=yes" \
-             -o "ControlMaster=no" \
-             -R ${remote_forward_port}:localhost:22 \
-             -i /var/tunnel/id_${hostname} \
-             tunnel@${remote_host}
-         '';
-      ExecStop = "${pkgs.procps}/bin/pkill autossh";
-    };
-  };  
+  in
+    foldl (services: conf: services // (make_service conf)) {} reverse_tunnel_config;
 
 }
 
