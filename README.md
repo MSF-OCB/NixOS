@@ -78,10 +78,10 @@ Check that we are on the correct nix channel
 sudo nix-channel --list
 ```
 
-This should show the 17.09 channel with name `nixos`, otherwise we need to add it
+This should show the 18.03-small channel with name `nixos`, otherwise we need to add it
 
 ```
-sudo nix-channel --add https://nixos.org/channels/nixos-17.09-small nixos
+sudo nix-channel --add https://nixos.org/channels/nixos-18.03-small nixos
 ```
 
 Run
