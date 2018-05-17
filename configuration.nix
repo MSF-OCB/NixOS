@@ -140,12 +140,15 @@
       passwordAuthentication = false;
       challengeResponseAuthentication = false;
       extraConfig = ''
+        UsePrivilegeSeparation yes
+        StrictModes yes
         TCPKeepAlive yes
         ClientAliveInterval 20
         ClientAliveCountMax 3
         UseDNS no
         # NixOS builds SSH without Kerberos support for now.
-        #GSSAPIAuthentication no
+        GSSAPIAuthentication no
+        KerberosAuthentication no
       '';
     };
 
