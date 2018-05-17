@@ -3,6 +3,7 @@
   imports = [
     ./hardware-configuration.nix
     ./reverse-tunnel.nix
+    ./msfocb.nix
   ];
 
   hostname = "";
@@ -13,19 +14,6 @@
  
   # Timezone of the location where the server will be deployed
   timezone = "Europe/Brussels";
- 
-  msfocb = {
-    # python2 -c 'import crypt, getpass,os,base64; print crypt.crypt(getpass.getpass(), "$6$"+base64.b64encode(os.urandom(16))+"$")'
-    hashedPassword = "<hash>";
-
-    # Public keys for SSH access, separated by a space or newline
-    authorized_keys = [];
-    authorized_keyfiles = [
-      ./keys/msfocb
-      ./keys/ramses
-      ./keys/manu
-    ];
-  };
  
   reverse_tunnel_forward_port = "6xxx";
 

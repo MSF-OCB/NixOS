@@ -119,10 +119,23 @@
     wheelNeedsPassword = false;
   };
 
-  environment.etc.tmux = {
-    target = "tmux.conf";
-    text = "new-session";
-  };  
+  environment.etc = {
+    tmux = {
+      target = "tmux.conf";
+      text = "new-session";
+    };
+    lustrate = {
+      # Can we have this permanently enabled?
+      # What about /var/lib/docker ?? Other locations that we need to maintain on a working system?
+      enable = false;
+      target = "NIXOS_LUSTRATE";
+      text = ''
+        etc/nixos
+        opt
+        home
+      '';
+    };
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -190,18 +203,6 @@
 
   # Define a user account.
   users.mutableUsers = false;
-
-  users.extraUsers.msfocb = let
-    settings = (import ./settings.nix).msfocb;
-  in {
-    isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" ];
-    hashedPassword = settings.hashedPassword;
-    openssh.authorizedKeys = {
-      keys = settings.authorized_keys;
-      keyFiles = settings.authorized_keyfiles;
-    };
-  };
 
   system.autoUpgrade.enable = true;
 
