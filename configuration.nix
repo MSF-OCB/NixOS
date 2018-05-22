@@ -204,6 +204,11 @@
   # Define a user account.
   users.mutableUsers = false;
 
+  # Lock the root user
+  users.extraUsers.root = {
+    hashedPassword = "!";
+  };
+
   system.autoUpgrade.enable = true;
 
   nix = {
