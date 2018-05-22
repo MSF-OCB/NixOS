@@ -11,6 +11,8 @@ Use `fdisk` to create partitions, you can list all devices with `fdisk -l` and t
 2. LVM partition for the rest of the drive, type 8e (Linux LVM);
 3. Full drive LVM partition for any extra drives.
 
+(Use the ```m``` function to see the commands. Use ```n``` to create a new partition and choose ```+1G``` for the size for ```boot``` and the default option of "rest of the disk" for the root partition. Then use ```t``` to change the type of the root partition and ```w``` to write the changes.)
+
 Create a physical volume for every LVM partition using
 
 ```pvcreate <partition>```
@@ -96,7 +98,7 @@ Generate the ssh key for the reverse tunnel
 sudo -u tunnel sh -c 'ssh-keygen -a 100 -t ed25519 -N "" -C "$(whoami)@${HOSTNAME}" -f ${HOME}/id_${HOSTNAME}'
 ```
 
-and put the content of the public key file (`/var/tunnel/id_${HOSTNAME}`) in the `authorized_keys` file for the tunnel user on fictappmonitoring.msf.org (`/home/tunnel/.ssh/authorized_keys`).
+and put the content of the public key file (`/var/tunnel/id_${HOSTNAME}`) in the `authorized_keys` file for the tunnel user on fictappmonitoring.msf.org (`/home/tunnel/.ssh/authorized_keys`). (Easiest way is to connect via SSH on the local network to copy the key.)
 
 Finally, we will turn `/etc/nixos` into a git clone of this repository
 
