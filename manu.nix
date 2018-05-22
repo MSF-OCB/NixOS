@@ -3,7 +3,7 @@
 {
   users.extraUsers.msg = {
     isNormalUser = true;
-    extraGroups = [ "docker" ];
+    extraGroups = [ "wheel" "networkmanager" "docker" ];
     openssh.authorizedKeys.keyFiles = [ ./keys/manu ];
   };
 }
