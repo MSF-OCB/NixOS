@@ -65,7 +65,7 @@ nano /mnt/etc/nixos/settings.nix
 And then launch the installer:
 
 ```
-nixos-install
+nixos-install --no-root-password -j 4
 ```
 
 Reboot, remove the usb drive and boot into the OS.
