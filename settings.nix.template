@@ -4,6 +4,7 @@
     ./hardware-configuration.nix
     ./reverse-tunnel.nix
     ./root.nix
+    ./msfocb.nix
   ];
 
   hostname = "";
