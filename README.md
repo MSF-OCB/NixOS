@@ -17,7 +17,7 @@ Create a physical volume for every LVM partition using
 
 Create a volume group containing all volumes using
 
-```vgcreate LVMVolGroup <device 1> ... <device n>```
+```vgcreate LVMVolGroup <partition 1> ... <partition n>```
 
 Create a single root partition on the LVM volume using
 
