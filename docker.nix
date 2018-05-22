@@ -26,7 +26,5 @@
   virtualisation.docker.enable = true;
   virtualisation.docker.enableOnBoot = true;
 
-  users.extraUsers.msfocb.extraGroups = [ "docker" ];
-
 }
 
