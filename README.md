@@ -11,7 +11,7 @@ Use `fdisk` to create partitions, you can list all devices with `fdisk -l` and t
 2. LVM partition for the rest of the drive, type 8e (Linux LVM);
 3. Full drive LVM partition for any extra drives.
 
-(Use the ```m``` function to see the commands. Use ```n``` to create a new partition and choose ```+1G``` for the size for ```boot``` and the default option of "rest of the disk" for the root partition. Then use ```t``` to change the type of the root partition and ```w``` to write the changes.)
+(Use the `m` function to see the commands. Use `n` to create a new partition and choose `+1G` for the size for `boot` and the default option of "rest of the disk" for the root partition. Then use `t` to change the type of the root partition and `w` to write the changes.)
 
 Create a physical volume for every LVM partition using
 
