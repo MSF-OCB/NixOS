@@ -1,3 +1,5 @@
+# Converting an existing system to NixOS
+
 We don't need a swap partition since we use zram swap on NixOS, we'll thus delete the swap partition and add the extra space to the root partition.
 
 Usually the swap device is in the LVM partition, use `lvdisplay` to identify it (and not down the root partition too), then run
