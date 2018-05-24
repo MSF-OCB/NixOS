@@ -10,6 +10,19 @@ sudo lvremove <swap device>
 sudo lvextend -l 100%FREE <root device>
 sudo resize2fs <root device>
 ```
+Set labels for the partitions
+```
+sudo e2label <root device> nixos_root
+sudo e2label <boot device> nixos_boot
+```
+We'll also convert the boot partition from ext2 to ext4 (if needed)
+```
+sudo umount /boot/
+sudo tune2fs -O extents,uninit_bg,dir_index,has_journal /dev/disk/by-label/nixos_boot
+sudo fsck.ext4 -vf /dev/disk/by-label/nixos_boot
+```
+
+Change the filesystem type in `/etc/fstab` and remount with `mount -a`.
 
 Then we'll follow the steps from [here](https://nixos.org/nixos/manual/index.html#sec-installing-from-other-distro):
 
@@ -22,7 +35,9 @@ nix-env -iE "_: with import <nixpkgs/nixos> { configuration = {}; }; with config
 sudo `which nixos-generate-config` --root /
 ```
 
-Run the steps from the README to download the NixOS config and put it in `/etc/nixos`.
+Edit `/etc/nixos/hardware-configuration.nix` and make sure that no swap device is mentionned and remove any spurious partitions left over from the previous Linux version (like `/var/lib/lxcfs`).
+
+Next, run the steps from the README to download the NixOS config and put it in `/etc/nixos`. This is also the time to make any modifications to the config before we build it.
 
 ```
 nix-env -p /nix/var/nix/profiles/system -f '<nixpkgs/nixos>' -I nixos-config=/etc/nixos/configuration.nix -iA system
