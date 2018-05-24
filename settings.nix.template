@@ -3,7 +3,7 @@
   imports = [
     ./hardware-configuration.nix
     ./reverse-tunnel.nix
-    ./msfocb.nix
+    ./users/msfocb.nix
   ];
 
   hostname = "";

@@ -1,10 +1,10 @@
 { config, lib, pkgs, ... }:
 
 {
-  users.extraUsers.msg = {
+  users.extraUsers.ramses = {
     isNormalUser = true;
     extraGroups = [ "wheel" "networkmanager" "docker" ];
-    openssh.authorizedKeys.keyFiles = [ ./keys/manu ];
+    openssh.authorizedKeys.keyFiles = [ ../keys/ramses ];
   };
 }
 
