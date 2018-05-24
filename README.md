@@ -135,6 +135,7 @@ Edit `/etc/nixos/hardware-configuration.nix` and make sure that no swap device i
 
 Next, run the steps to download the NixOS config from [this section](#installing-the-os) and put the config in `/etc/nixos`, of course we are not mounting the filesystem under `/mnt/` here but working directly in `/etc/`. This is also the time to make any modifications to the config before we build it.
 
+Then we'll go ahead and built the final NixOS system and setup the necessary files to have the conversion done on the next boot.
 ```
 nix-env -p /nix/var/nix/profiles/system -f '<nixpkgs/nixos>' -I nixos-config=/etc/nixos/configuration.nix -iA system
 sudo chown -R 0.0 /nix/
