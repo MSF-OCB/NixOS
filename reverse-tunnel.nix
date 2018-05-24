@@ -66,7 +66,6 @@
                  -i /var/tunnel/id_${hostname} \
                  tunnel@${remote_host}
              '';
-          ExecStop = "${pkgs.procps}/bin/pkill autossh";
         };
       };
     };
