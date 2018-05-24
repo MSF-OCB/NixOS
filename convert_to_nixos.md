@@ -52,4 +52,5 @@ sudo /nix/var/nix/profiles/system/bin/switch-to-configuration boot
 ```
 
 Reboot and you should end up in a NixOS system! The old contents of the root directory can be found at `/old_root/`.
-Follow the final steps of the general installation guide.
+
+Now follow the final steps of the general installation guide.
