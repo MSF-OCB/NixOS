@@ -1,7 +1,9 @@
 # NixOS
 NixOS config for servers in the field
 
-## Setting up filesystems
+## Installing NixOS from scratch
+
+### Setting up filesystems
 
 [(LVM reference.)](https://www.digitalocean.com/community/tutorials/an-introduction-to-lvm-concepts-terminology-and-operations)
 
@@ -26,7 +28,7 @@ mkfs.ext4 -L nixos_boot /dev/<boot partition>
 mkfs.ext4 -L nixos_root /dev/LVMVolGroup/nixos_root
 ```
 
-## Installing the OS
+### Installing the OS
 
 [(NixOS installation manual)](https://nixos.org/nixos/manual/index.html#sec-installation)
 
@@ -61,7 +63,7 @@ nixos-install --no-root-passwd --max-jobs 4
 ```
 Reboot, remove the usb drive and boot into the OS.
 
-## Final steps after booting the OS
+### Final steps after booting the OS
 
 Check that we are on the correct nix channel
 ```
@@ -91,3 +93,60 @@ git checkout --force --track origin/master  # Force to overwrite local files
 git pull --rebase
 ```
 Check with `git status` that there are no left-over untracked files, these should probably be either deleted or commited.
+
+## Converting an existing Linux system into NixOS
+
+We don't need a swap partition since we use zram swap on NixOS, we'll thus delete the swap partition and add the extra space to the root partition.
+
+Usually the swap device is in the LVM partition, use `lvdisplay` to identify it (and note down the root partition too), then run
+
+```
+sudo swapoff <swap device>
+sudo lvremove <swap device>
+sudo lvextend -l 100%FREE <root device>
+sudo resize2fs <root device>
+```
+Set labels for the partitions
+```
+sudo e2label <root device> nixos_root
+sudo e2label <boot device> nixos_boot
+```
+We'll also convert the boot partition from ext2 to ext4 (if needed)
+```
+sudo umount /boot/
+sudo tune2fs -O extents,uninit_bg,dir_index,has_journal /dev/disk/by-label/nixos_boot
+sudo fsck.ext4 -vf /dev/disk/by-label/nixos_boot
+```
+
+Change the filesystem type in `/etc/fstab` and remount with `mount -a`.
+
+Then we'll follow the steps from [here](https://nixos.org/nixos/manual/index.html#sec-installing-from-other-distro):
+
+```
+bash <(curl https://nixos.org/nix/install)
+. $HOME/.nix-profile/etc/profile.d/nix.sh
+nix-channel --add https://nixos.org/channels/nixos-18.03-small nixpkgs
+nix-channel --update
+nix-env -iE "_: with import <nixpkgs/nixos> { configuration = {}; }; with config.system.build; [ nixos-generate-config nixos-install nixos-enter manual.manpages ]"
+sudo `which nixos-generate-config` --root /
+```
+
+Edit `/etc/nixos/hardware-configuration.nix` and make sure that no swap device is mentionned and remove any spurious partitions left over from the previous Linux version (like `/var/lib/lxcfs`).
+
+Next, run the steps to download the NixOS config from [this section](#installing-the-os) and put the config in `/etc/nixos`, of course we are not mounting the filesystem under `/mnt/` here but working directly in `/etc/`. This is also the time to make any modifications to the config before we build it.
+
+```
+nix-env -p /nix/var/nix/profiles/system -f '<nixpkgs/nixos>' -I nixos-config=/etc/nixos/configuration.nix -iA system
+sudo chown -R 0.0 /nix/
+sudo chmod 1777 /nix/var/nix/profiles/per-user/
+sudo chmod 1777 /nix/var/nix/gcroots/per-user/
+sudo touch /etc/NIXOS
+echo etc/nixos | sudo tee -a /etc/NIXOS_LUSTRATE
+sudo mkdir /boot_old
+sudo mv -v /boot/* /boot_old/
+sudo /nix/var/nix/profiles/system/bin/switch-to-configuration boot
+```
+
+Reboot and you should end up in a NixOS system! The old contents of the root directory can be found at `/old_root/`.
+
+Now follow [the final steps of the general installation guide](#final-steps-after-booting-the-os).
