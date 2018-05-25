@@ -61,7 +61,9 @@ And then launch the installer:
 ```
 nixos-install --no-root-passwd --max-jobs 4
 ```
-Reboot, remove the usb drive and boot into the OS.
+*Note down the current IP address*, this will allow you to connect via ssh in a bit, use `ip addr` to find the current address.
+
+Then, reboot, remove the usb drive and boot into the new OS.
 
 ### Final steps after booting the OS
 
@@ -82,7 +84,8 @@ Generate the ssh key for the reverse tunnel
 ```
 sudo -u tunnel sh -c 'ssh-keygen -a 100 -t ed25519 -N "" -C "$(whoami)@${HOSTNAME}" -f ${HOME}/id_${HOSTNAME}'
 ```
-and put the content of the public key file (`/var/tunnel/id_${HOSTNAME}`) in the `authorized_keys` file for the tunnel user on fictappmonitoring.msf.org (`/home/tunnel/.ssh/authorized_keys`). (Easiest way is to connect via SSH on the local network to copy the key.)
+and put the content of the *public* key file (`/var/tunnel/id_${HOSTNAME}.pub`) in the `authorized_keys` file for the tunnel user on github (this repo, `keys/tunnel`). (Easiest way is to connect via SSH on the local network to copy the key.)
+Then do a `git pull` and a rebuild of the config on the ssh relay servers.
 
 Finally, we will turn `/etc/nixos` into a git clone of this repository
 ```
