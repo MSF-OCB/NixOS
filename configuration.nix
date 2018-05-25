@@ -98,7 +98,7 @@
     tmpOnTmpfs = true;
   };
 
-  fileSystems."/".options = [ "acl" ];
+  fileSystems."/".options = [ "defaults" "acl" "noatime" ];
 
   zramSwap = {
     enable = true;
