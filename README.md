@@ -82,6 +82,10 @@ Run
 ```
 sudo nixos-rebuild switch --upgrade
 ```
+If you just upgraded from an existing Linux system, it's safer to reinstall the bootloader once more to avoid issues
+```
+sudo nixos-rebuild switch --upgrade --install-bootloader
+```
 
 Generate the ssh key for the reverse tunnel
 ```
@@ -156,10 +160,5 @@ sudo /nix/var/nix/profiles/system/bin/switch-to-configuration boot
 *Note down the current IP address*, this will allow you to connect via ssh in a bit, use `ip addr` to find the current address.
 
 Reboot and you should end up in a NixOS system! The old contents of the root directory can be found at `/old_root/`.
-
-We'll reinstall the bootloader from within this final system to avoid an issue with a wrongly configured boot partition
-```
-sudo nixos-rebuild switch --install-bootloader
-```
 
 Now follow [the final steps of the general installation guide](#final-steps-after-booting-the-os).
