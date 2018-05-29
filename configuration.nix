@@ -162,6 +162,8 @@
         KerberosAuthentication no
       '';
     };
+    
+    fstrim.enable = true;
 
     journald = {
       rateLimitBurst = 1000;
