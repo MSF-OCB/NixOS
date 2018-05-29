@@ -153,6 +153,7 @@ sudo mkdir /boot_old
 sudo mv -v /boot/* /boot_old/
 sudo /nix/var/nix/profiles/system/bin/switch-to-configuration boot
 ```
+*Note down the current IP address*, this will allow you to connect via ssh in a bit, use `ip addr` to find the current address.
 
 Reboot and you should end up in a NixOS system! The old contents of the root directory can be found at `/old_root/`.
 
