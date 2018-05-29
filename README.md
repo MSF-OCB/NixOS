@@ -157,4 +157,9 @@ sudo /nix/var/nix/profiles/system/bin/switch-to-configuration boot
 
 Reboot and you should end up in a NixOS system! The old contents of the root directory can be found at `/old_root/`.
 
+We'll reinstall the bootloader from within this final system to avoid an issue with a wrongly configured boot partition
+```
+sudo nixos-rebuild switch --reinstall-bootloader
+```
+
 Now follow [the final steps of the general installation guide](#final-steps-after-booting-the-os).
