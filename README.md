@@ -1,5 +1,8 @@
 # NixOS
-NixOS config for servers in the field
+NixOS config for servers in the field.
+
+1. [Installing NixOS from scratch](#installing-nixos-from-scratch)
+2. [Converting an existing Linux system into NixOS](#converting-an-existing-linux-system-into-nixos)
 
 ## Installing NixOS from scratch
 
