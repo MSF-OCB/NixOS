@@ -159,7 +159,7 @@ Reboot and you should end up in a NixOS system! The old contents of the root dir
 
 We'll reinstall the bootloader from within this final system to avoid an issue with a wrongly configured boot partition
 ```
-sudo nixos-rebuild switch --reinstall-bootloader
+sudo nixos-rebuild switch --install-bootloader
 ```
 
 Now follow [the final steps of the general installation guide](#final-steps-after-booting-the-os).
