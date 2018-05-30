@@ -104,6 +104,8 @@ git pull --rebase
 ```
 Check with `git status` that there are no left-over untracked files, these should probably be either deleted or commited.
 
+You're all done!
+
 ## Converting an existing Linux system into NixOS
 
 We don't need a swap partition since we use zram swap on NixOS, we'll thus delete the swap partition and add the extra space to the root partition.
