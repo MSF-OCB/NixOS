@@ -7,6 +7,7 @@
       ../keys/ramses
       ../keys/thierry
       ../keys/manu
+      ../keys/dirk
     ];
   };
 }
