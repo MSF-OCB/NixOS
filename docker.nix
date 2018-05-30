@@ -14,7 +14,6 @@
 
   environment.systemPackages = with pkgs; [
     git
-    docker
     docker_compose
   ]; 
 
