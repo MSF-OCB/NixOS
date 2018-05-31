@@ -43,6 +43,7 @@
     coreutils
     file
     htop
+    iotop
     lsof
     psmisc
     rsync
