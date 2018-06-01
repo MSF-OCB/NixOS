@@ -161,6 +161,15 @@ sudo /nix/var/nix/profiles/system/bin/switch-to-configuration boot
 ```
 *Note down the current IP address*, this will allow you to connect via ssh in a bit, use `ip addr` to find the current address.
 
+*!!Very important!!*
+If you are converting a system to which you do not have direct ssh access and which can only be accessed via a tunnel, you need to make sure that the tunnel service will work after the reboot!
+
+To do so, make sure that the private key to log on to the ssh relay is already present at `/var/tunnel/id_${HOSTNAME}` at this point and then add this directory to the `NIXOS_LUSTRATE` file
+```
+echo var/tunnel | sudo tee -a /etc/NIXOS_LUSTRATE
+```
+*!!Verify this very carefully, otherwise you will lock yourself out of the system!!*
+
 Reboot and you should end up in a NixOS system! The old contents of the root directory can be found at `/old_root/`.
 
 Now follow [the final steps of the general installation guide](#final-steps-after-booting-the-os).
