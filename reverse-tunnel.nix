@@ -58,6 +58,7 @@
                  -o "ServerAliveInterval=60" \
                  -o "ServerAliveCountMax=3" \
                  -o "ConnectTimeout=30" \
+                 -o "UpdateHostKeys=yes" \
                  -o "StrictHostKeyChecking=no" \
                  -o "IdentitiesOnly=yes" \
                  -o "Compression=yes" \
