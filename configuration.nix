@@ -53,6 +53,9 @@
     python3
     lm_sensors
     nmap
+    traceroute
+    bind
+    nox
   ];
 
   boot = {
