@@ -39,7 +39,6 @@
     wget
     curl
     (import ./vim-config.nix)
-    tmux
     coreutils
     file
     htop
@@ -121,10 +120,6 @@
   };
 
   environment.etc = {
-    tmux = {
-      target = "tmux.conf";
-      text = "new-session";
-    };
     lustrate = {
       # Can we have this permanently enabled?
       # What about /var/lib/docker ?? Other locations that we need to maintain on a working system?
@@ -140,7 +135,16 @@
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
-  programs.bash.enableCompletion = true;
+  programs = {
+    bash.enableCompletion = true;
+    
+    ssh.startAgent = false;
+    
+    tmux = {
+      enable = true;
+      newSession = true;
+    };
+  };
   # programs.mtr.enable = true;
   # programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
 
