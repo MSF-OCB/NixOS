@@ -55,6 +55,7 @@
     nmap
     traceroute
     bind
+    nix-info
     nox
   ];
 
