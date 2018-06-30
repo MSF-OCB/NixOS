@@ -65,6 +65,7 @@
                  -o "ControlMaster=no" \
                  -R ${remote_forward_port}:localhost:22 \
                  -i /var/tunnel/id_${hostname} \
+                 -i /var/tunnel/id_tunnel \
                  tunnel@${remote_host}
              '';
         };
