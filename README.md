@@ -89,9 +89,9 @@ sudo nixos-rebuild switch --upgrade --install-bootloader
 
 Generate the ssh key for the reverse tunnel
 ```
-sudo -u tunnel sh -c 'ssh-keygen -a 100 -t ed25519 -N "" -C "$(whoami)@${HOSTNAME}" -f ${HOME}/id_${HOSTNAME}'
+sudo -u tunnel sh -c 'ssh-keygen -a 100 -t ed25519 -N "" -C "$(whoami)@${HOSTNAME}" -f ${HOME}/id_tunnel'
 ```
-and put the content of the *public* key file (`/var/tunnel/id_${HOSTNAME}.pub`) in the `authorized_keys` file for the tunnel user on github (this repo, `keys/tunnel`). (Easiest way is to connect via SSH on the local network to copy the key.)
+and put the content of the *public* key file (`/var/tunnel/id_tunnel.pub`) in the `authorized_keys` file for the tunnel user on github (this repo, `keys/tunnel`). (Easiest way is to connect via SSH on the local network to copy the key.)
 Then do a `git pull` and a rebuild of the config on the ssh relay servers.
 
 Finally, we will turn `/etc/nixos` into a git clone of this repository
