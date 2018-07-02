@@ -78,7 +78,7 @@ Then, reboot, remove the usb drive and boot into the new OS.
 
 You should now be able to connect to the newly installed system with ssh, using the local IP address which you noted down before the reboot.
 
-Check that we are on the correct nix channel
+First check that we are on the correct nix channel
 ```
 sudo nix-channel --list
 ```
@@ -86,16 +86,18 @@ This should show the 18.03 channel with name `nixos`, otherwise we need to add i
 ```
 sudo nix-channel --add https://nixos.org/channels/nixos-18.03 nixos
 ```
-Run
+
+Then we will do a full system update
 ```
 sudo nixos-rebuild switch --upgrade
 ```
+
 If you just upgraded from an existing Linux system, it's safer to reinstall the bootloader once more to avoid issues
 ```
 sudo nixos-rebuild switch --upgrade --install-bootloader
 ```
 
-Put the content of the *public* key file for the reverse tunnel (`/etc/nixos/local/id_tunnel.pub`) in the `authorized_keys` file for the tunnel user on github (this repo, `keys/tunnel`). (Easiest way is to connect via SSH on the local network to copy the key.)
+Next, if not already done, we'll put the content of the *public* key file for the reverse tunnel (`/etc/nixos/local/id_tunnel.pub`) in the `authorized_keys` file for the tunnel user on github (this repo, `keys/tunnel`). (Easiest way is to connect via SSH on the local network to copy the key.)
 Then do a `git pull` and a rebuild of the config on the ssh relay servers.
 
 Finally, we will turn `/etc/nixos` into a git clone of this repository
