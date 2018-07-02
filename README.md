@@ -4,7 +4,7 @@ NixOS config for servers in the field.
 1. [Installing NixOS from scratch](#installing-nixos-from-scratch)
 2. [Converting an existing Linux system into NixOS](#converting-an-existing-linux-system-into-nixos)
 
-## Installing NixOS from scratch
+## Method 1: Installing NixOS from scratch
 
 ### Setting up filesystems
 
@@ -110,7 +110,7 @@ You're all done!
 
 ---
 
-## Converting an existing Linux system into NixOS
+## Method 2: Converting an existing Linux system into NixOS
 
 We don't need a swap partition since we use zram swap on NixOS, we'll thus delete the swap partition and add the extra space to the root partition.
 
