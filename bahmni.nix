@@ -20,7 +20,9 @@
   environment.etc.bahmni_enc = {
     target = "bahmni_enc";
     source = ./local/bahmni_enc;
-    mode = "symlink";
+    mode = "0400";
+    user = "root";
+    group = "root";
   };
 
 #  users.extraUsers.bahmni = {
