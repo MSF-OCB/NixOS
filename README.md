@@ -76,6 +76,8 @@ Then, reboot, remove the usb drive and boot into the new OS.
 
 ### Final steps after booting the OS
 
+You should now be able to connect to the newly installed system with ssh, using the local IP address which you noted down before the reboot.
+
 Check that we are on the correct nix channel
 ```
 sudo nix-channel --list
