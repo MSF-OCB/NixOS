@@ -60,7 +60,13 @@ Set the required settings:
 nano /mnt/etc/nixos/settings.nix
 ```
 
-And then launch the installer:
+And if you enabled the reverse tunnel service, generate a key pair for the tunnel:
+```
+sudo ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${HOSTNAME}" -f /etc/nixos/local/id_tunnel
+```
+if the reverse tunnel service is enabled in settings.nix but the private key is not present, the build will fail and complain that the file cannot be found.
+
+Then launch the installer:
 ```
 nixos-install --no-root-passwd --max-jobs 4
 ```
@@ -87,11 +93,7 @@ If you just upgraded from an existing Linux system, it's safer to reinstall the 
 sudo nixos-rebuild switch --upgrade --install-bootloader
 ```
 
-Generate the ssh key for the reverse tunnel
-```
-sudo -u tunnel sh -c 'ssh-keygen -a 100 -t ed25519 -N "" -C "$(whoami)@${HOSTNAME}" -f ${HOME}/id_tunnel'
-```
-and put the content of the *public* key file (`/var/tunnel/id_tunnel.pub`) in the `authorized_keys` file for the tunnel user on github (this repo, `keys/tunnel`). (Easiest way is to connect via SSH on the local network to copy the key.)
+Put the content of the *public* key file for the reverse tunnel (`/etc/nixos/local/id_tunnel.pub`) in the `authorized_keys` file for the tunnel user on github (this repo, `keys/tunnel`). (Easiest way is to connect via SSH on the local network to copy the key.)
 Then do a `git pull` and a rebuild of the config on the ssh relay servers.
 
 Finally, we will turn `/etc/nixos` into a git clone of this repository
@@ -145,7 +147,7 @@ sudo `which nixos-generate-config` --root /
 
 Edit `/etc/nixos/hardware-configuration.nix` and make sure that no swap device is mentionned and remove any spurious partitions left over from the previous Linux version (like `/var/lib/lxcfs`).
 
-Next, run the steps to download the NixOS config from [this section](#installing-the-os) and put the config in `/etc/nixos`, of course we are not mounting the filesystem under `/mnt/` here but working directly in `/etc/`. This is also the time to make any modifications to the config before we build it.
+Next, run the steps to download the NixOS config from [this section](#installing-the-os) (but do not run the installer as instructed there!!) and put the config in `/etc/nixos`. Note that we are not mounting the filesystem under `/mnt/` here but working directly in `/etc/`. This is also the time to make any modifications to the config before we build it.
 
 Then we'll go ahead and built the final NixOS system and setup the necessary files to have the conversion done on the next boot.
 ```
@@ -164,10 +166,7 @@ sudo /nix/var/nix/profiles/system/bin/switch-to-configuration boot
 *!!Very important!!*
 If you are converting a system to which you do not have direct ssh access and which can only be accessed via a tunnel, you need to make sure that the tunnel service will work after the reboot!
 
-To do so, make sure that the private key to log on to the ssh relay is already present at `/var/tunnel/id_${HOSTNAME}` at this point and then add this directory to the `NIXOS_LUSTRATE` file
-```
-echo var/tunnel | sudo tee -a /etc/NIXOS_LUSTRATE
-```
+To do so, make sure that the private key to log on to the ssh relay is already present at `/etc/nixos/local/id_tunnel` at this point and that the corresponding public key is enabled on the relay servers.
 *!!Verify this very carefully, otherwise you will lock yourself out of the system!!*
 
 Reboot and you should end up in a NixOS system! The old contents of the root directory can be found at `/old_root/`.
