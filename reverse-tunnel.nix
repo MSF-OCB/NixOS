@@ -24,6 +24,13 @@
     home = "/var/tunnel";
   };
 
+  environment.etc.id_tunnel = {
+    source = ./local/id_tunnel;
+    mode = "0400";
+    user = "tunnel";
+    group = "tunnel";
+  };
+
   systemd.services = let
     inherit (lib.lists) foldl;
     reverse_tunnel_config = [ { name = "autossh-reverse-tunnel-google";  host = "fictappmonitoring.msf.org"; }
@@ -48,10 +55,8 @@
           Restart = "always";
           RestartSec = 10;
           ExecStart = let
-            settings = import ./settings.nix;
-            hostname = settings.hostname;
             remote_host = conf.host;
-            remote_forward_port = settings.reverse_tunnel_forward_port;
+            remote_forward_port = (import ./settings.nix).reverse_tunnel_forward_port;
           in ''${pkgs.autossh}/bin/autossh \
                  -q -N \
                  -o "ExitOnForwardFailure=yes" \
@@ -64,8 +69,7 @@
                  -o "Compression=yes" \
                  -o "ControlMaster=no" \
                  -R ${remote_forward_port}:localhost:22 \
-                 -i /var/tunnel/id_${hostname} \
-                 -i /var/tunnel/id_tunnel \
+                 -i /etc/id_tunnel \
                  tunnel@${remote_host}
              '';
         };
