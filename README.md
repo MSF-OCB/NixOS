@@ -209,7 +209,7 @@ Next we will bind mount `/var/lib/docker` into the encrypted volume on `/opt/doc
 ```
 sudo systemctl stop docker.socket
 sudo systemctl stop docker.service
-sudo rm /var/lib/docker/
+sudo rm -r /var/lib/docker/
 ```
 Otherwise or after this, we can create the mount
 ```
