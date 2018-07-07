@@ -27,6 +27,9 @@ Create a volume group containing all volumes using
 Create a single 40GB root partition on the LVM volume using
 ```lvcreate -L 40GB -n nixos_root LVMVolGroup```
 
+If you do not plan to create a data partition and want the root filesystem to use the whole disk instead, then use
+```lvcreate -l 100%FREE -n nixos_root LVMVolGroup```
+
 Create filesystems:
 ```
 mkfs.ext4 -L nixos_boot /dev/<boot partition>
@@ -112,7 +115,7 @@ git pull --rebase
 ```
 Check with `git status` that there are no left-over untracked files, these should probably be either deleted or commited.
 
-You're all done!
+You're all done! Refer to [Creating an encrypted data partition](#creating-an-encrypted-data-partition) if you want to set up an encrypted data partition.
 
 ---
 
