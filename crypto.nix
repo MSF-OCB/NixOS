@@ -11,10 +11,6 @@
 
 {
 
-  environment.systemPackages = with pkgs; [
-    cryptsetup
-  ];
-  
 #  fileSystems = {
 #    "/opt" = {
 #      label = "nixos_data";
