@@ -20,15 +20,23 @@ Use `fdisk` to create partitions, you can list all devices with `fdisk -l` and t
 (Use the `m` function to see the commands. Use `n` to create a new partition and choose `+1G` for the size for `boot` and the default option of "rest of the disk" for the root partition. Then use `t` to change the type of the root partition and `w` to write the changes.)
 
 Create a physical volume for every LVM partition using
-```pvcreate <partition>```
+```
+pvcreate <partition>
+```
 Create a volume group containing all volumes using
-```vgcreate LVMVolGroup <partition 1> ... <partition n>```
+```
+vgcreate LVMVolGroup <partition 1> ... <partition n>
+```
 
 Create a single 40GB root partition on the LVM volume using
-```lvcreate -L 40GB -n nixos_root LVMVolGroup```
+```
+lvcreate -L 40GB -n nixos_root LVMVolGroup
+```
 
 If you do not plan to create a data partition and want the root filesystem to use the whole disk instead, then use
-```lvcreate -l 100%FREE -n nixos_root LVMVolGroup```
+```
+lvcreate -l 100%FREE -n nixos_root LVMVolGroup
+```
 
 Create filesystems:
 ```
