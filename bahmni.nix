@@ -18,6 +18,7 @@
   ];
 
   environment.etc.bahmni_enc = {
+    enable = false;
     target = "bahmni_enc";
     source = ./local/bahmni_enc;
     mode = "0400";
