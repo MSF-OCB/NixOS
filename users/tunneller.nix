@@ -8,6 +8,8 @@
       ../keys/thierry
       ../keys/manu
       ../keys/dirk
+      ../keys/mohammad
+      ../keys/kathy
     ];
   };
 }
