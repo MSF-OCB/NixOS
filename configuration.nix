@@ -73,7 +73,7 @@
     };
     # boot.loader.efi.efiSysMountPoint = "/boot/efi";
 
-    kernelPackages = pkgs.linuxPackages_latest;
+    #kernelPackages = pkgs.linuxPackages_latest;
 
     kernelParams = [
       # Overwrite free'd memory
