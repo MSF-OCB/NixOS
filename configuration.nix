@@ -33,32 +33,55 @@
   # Set your time zone.
   time.timeZone = (import ./settings.nix).timezone;
 
-  # List packages installed in system profile. To search by name, run:
-  # $ nix-env -qaP | grep wget
-  environment.systemPackages = with pkgs; [
-    cryptsetup
-    wget
-    curl
-    (import ./vim-config.nix)
-    coreutils
-    file
-    htop
-    iotop
-    lsof
-    psmisc
-    rsync
-    git
-    acl
-    mkpasswd
-    unzip
-    python3
-    lm_sensors
-    nmap
-    traceroute
-    bind
-    nix-info
-    nox
-  ];
+  environment = {
+    systemPackages = with pkgs; [
+      cryptsetup
+      wget
+      curl
+      (import ./vim-config.nix)
+      coreutils
+      file
+      htop
+      iotop
+      lsof
+      psmisc
+      rsync
+      git
+      acl
+      mkpasswd
+      unzip
+      python3
+      lm_sensors
+      nmap
+      traceroute
+      bind
+      nix-info
+      nox
+    ];
+    # See https://nixos.org/nix/manual/#ssec-values for documentation on escaping ${
+    #shellInit = ''
+    #  if [ "''${TERM}" != "screen" ] || [ -z "''${TMUX}" ]; then
+    #    alias nixos-rebuild='"f(){ echo "Please run nixos-rebuild only within a tmux session to avoid getting disconnected during the process."; }; f"'
+    #  fi
+    #'';
+    shellAliases = {
+      # Have bash resolve aliases with sudo (https://askubuntu.com/questions/22037/aliases-not-available-when-using-sudo)
+      sudo = "sudo ";
+    };
+    etc = {
+      lustrate = {
+        # Can we have this permanently enabled?
+        # What about /var/lib/docker ?? Other locations that we need to maintain on a working system?
+        enable = false;
+        target = "NIXOS_LUSTRATE";
+        text = ''
+          etc/nixos
+          opt
+          home
+        '';
+      };
+    };
+  };
 
   boot = {
     loader.grub = {
@@ -122,20 +145,6 @@
   security.sudo = {
     enable = true;
     wheelNeedsPassword = false;
-  };
-
-  environment.etc = {
-    lustrate = {
-      # Can we have this permanently enabled?
-      # What about /var/lib/docker ?? Other locations that we need to maintain on a working system?
-      enable = false;
-      target = "NIXOS_LUSTRATE";
-      text = ''
-        etc/nixos
-        opt
-        home
-      '';
-    };
   };
 
   # Some programs need SUID wrappers, can be configured further or are
