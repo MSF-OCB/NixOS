@@ -11,33 +11,6 @@
 
 {
 
-#  fileSystems = {
-#    "/opt" = {
-#      label = "nixos_data";
-#      fsType = "ext4";
-#      encrypted = {
-#        enable = false;
-#        blkDev = "/dev/LVMVolGroup/nixos_data";
-#        keyFile = "/mnt-root/keyfile";
-#        label = "nixos_data_decrypted";
-#      };
-#    };
-#
-#    "/var/lib/docker" = {
-#      device = "/opt/docker";
-#      options = [ "bind" ];
-#    };
-#  };
-
-#  environment.etc = {
-#    "crypttab" = {
-#      enable = true;
-#      text = ''
-#        nixos_data_decrypted /dev/LVMVolGroup/nixos_data /keyfile luks
-#      '';
-#    };
-#  };
-
   systemd = {
     services.open_nixos_data = {
       enable = true;
