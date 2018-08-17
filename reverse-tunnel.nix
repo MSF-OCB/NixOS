@@ -33,7 +33,7 @@
 
   systemd.services = let
     inherit (lib.lists) foldl;
-    reverse_tunnel_config = [ { name = "autossh-reverse-tunnel-google";  host = "fictappmonitoring.msf.org"; }
+    reverse_tunnel_config = [ { name = "autossh-reverse-tunnel-google";  host = "msfrelay1.msfict.info"; }
                               { name = "autossh-reverse-tunnel-ixelles"; host = "194.78.17.132"; } ];
     make_service = conf: {
       "${conf.name}" = {
