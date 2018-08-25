@@ -234,34 +234,24 @@
     hashedPassword = "!";
   };
 
-  system.autoUpgrade.enable = true;
+  system.autoUpgrade = {
+    enable = true;
+    dates = "03:00";
+  };
 
-  systemd = {
-    services = {
-      restartOnKernelChange = {
-        enable = true;
-        description = "Reboot the system if the running kernel is different than the kernel of the NixOS current-system.";
-        after = [ "nixos-upgrade.service" ];
-        wants = [ "nixos-upgrade.service" ];
-        serviceConfig = {
-          User = "root";
-          Type = "oneshot";
-          ExecStart = ''${pkgs.bash}/bin/bash -c "if [ $(dirname $(readlink /run/current-system/kernel) | sed -n -e 's/^.*linux-//p') != $(uname -r) ];\
-            then systemctl --no-block reboot;\
-            fi"
-          '';
-        };
-      };
-    };
-    timers = {
-      restartOnKernelChange = {
-        enable = true;
-        description = "Execute the restartOnKernelChange service at a fixed time.";
-        wantedBy = [ "timers.target" ];
-        timerConfig = {
-          OnCalendar = "03:00";
-          Persistent = false;
-        };
+  systemd.services = {
+    restartOnKernelChange = {
+      enable = true;
+      description = "Reboot the system if the running kernel is different than the kernel of the NixOS current-system.";
+      after = [ "nixos-upgrade.service" ];
+      wantedBy = [ "nixos-upgrade.service" ];
+      serviceConfig = {
+        User = "root";
+        Type = "oneshot";
+        ExecStart = ''${pkgs.bash}/bin/bash -c "if [ $(dirname $(readlink /run/current-system/kernel) | sed -n -e 's/^.*linux-//p') != $(uname -r) ];\
+          then systemctl --no-block reboot;\
+          fi"
+        '';
       };
     };
   };
