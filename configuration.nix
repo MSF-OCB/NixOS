@@ -229,8 +229,12 @@
       serviceConfig = {
         User = "root";
         Type = "oneshot";
-        ExecStart = ''${pkgs.bash}/bin/bash -c "if [ $(dirname $(readlink /run/current-system/kernel) | sed -n -e 's/^.*linux-//p') != $(uname -r) ];\
-          then systemctl --no-block reboot;\
+        ExecStart = ''${pkgs.bash}/bin/bash -c\
+          "if [ $(dirname $(readlink /run/current-system/kernel) | sed -n -e 's/^.*linux-//p') != $(uname -r) ]; then\
+            echo Rebooting...;\
+            systemctl --no-block reboot;\
+          else\
+            echo No reboot required.;\
           fi"
         '';
       };
