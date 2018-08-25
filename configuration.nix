@@ -180,6 +180,13 @@
     
     fstrim.enable = true;
 
+    timesyncd = {
+      enable = true;
+      servers = [ "0.nixos.pool.ntp.org" "1.nixos.pool.ntp.org" "2.nixos.pool.ntp.org" "3.nixos.pool.ntp.org" "time.windows.com" "time.google.com" ];
+    };
+    # Bug in 18.03, timesyncd uses the wrong server list. Fixed in master (https://github.com/NixOS/nixpkgs/pull/40919).
+    ntp.servers = [ "0.nixos.pool.ntp.org" "1.nixos.pool.ntp.org" "2.nixos.pool.ntp.org" "3.nixos.pool.ntp.org" "time.windows.com" "time.google.com" ];
+
     journald = {
       rateLimitBurst = 1000;
       rateLimitInterval = "5s";
