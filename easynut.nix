@@ -23,22 +23,5 @@
     extraGroups = [ "docker" ];
   };
 
-  systemd.services.easynut-docker = {
-    enable = true;
-    description = "Easynut containers";
-    requires = [ "docker.service" ];
-    after = [ "docker.service" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      User = "easynut";
-      WorkingDirectory = "/home/easynut/easynut-docker";
-      Restart = "always";
-      RestartSec = 10;
-      TimeoutSec = "infinity";
-      ExecStart = "${pkgs.docker_compose}/bin/docker-compose up";
-      ExecStop = "${pkgs.docker_compose}/bin/docker-compose down";
-    };
-  };
-
 }
 
