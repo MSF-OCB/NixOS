@@ -179,6 +179,8 @@
     };
     
     fstrim.enable = true;
+    
+    ntp.enable = true;
 
     journald = {
       rateLimitBurst = 1000;
