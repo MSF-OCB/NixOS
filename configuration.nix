@@ -70,7 +70,7 @@
     };
     etc = {
       lustrate = {
-        # Can we have this permanently enabled?
+        # Can we have this permanently enabled? --> Seems not. Keeping it here for reference.
         # What about /var/lib/docker ?? Other locations that we need to maintain on a working system?
         enable = false;
         target = "NIXOS_LUSTRATE";
@@ -147,8 +147,6 @@
     wheelNeedsPassword = false;
   };
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
   programs = {
     bash.enableCompletion = true;
     
@@ -159,8 +157,6 @@
       newSession = true;
     };
   };
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
 
   # List services that you want to enable:
 
@@ -210,21 +206,6 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
-
-  # Enable CUPS to print documents.
-  # services.printing.enable = true;
-
-  # Enable the X11 windowing system.
-  # services.xserver.enable = true;
-  # services.xserver.layout = "us";
-  # services.xserver.xkbOptions = "eurosign:e";
-
-  # Enable touchpad support.
-  # services.xserver.libinput.enable = true;
-
-  # Enable the KDE Desktop Environment.
-  # services.xserver.displayManager.sddm.enable = true;
-  # services.xserver.desktopManager.plasma5.enable = true;
 
   # Define a user account.
   users.mutableUsers = false;
