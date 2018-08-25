@@ -17,15 +17,6 @@
     ./7zip.nix
   ];
 
-  environment.etc.bahmni_enc = {
-    enable = false;
-    target = "bahmni_enc";
-    source = ./local/bahmni_enc;
-    mode = "0400";
-    user = "root";
-    group = "root";
-  };
-
 #  users.extraUsers.bahmni = {
 #    isSystemUser = true;
 #    createHome = true;
