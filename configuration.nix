@@ -221,7 +221,7 @@
   };
 
   systemd.services = {
-    restartOnKernelChange = {
+    reboot-after-kernel-change = {
       enable = true;
       description = "Reboot the system if the running kernel is different than the kernel of the NixOS current-system.";
       after = [ "nixos-upgrade.service" ];
