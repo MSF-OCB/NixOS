@@ -50,7 +50,7 @@
             -o "ExitOnForwardFailure=yes" \
             -o "ServerAliveInterval=60" \
             -o "ServerAliveCountMax=3" \
-            -o "ConnectTimeout=30" \
+            -o "ConnectTimeout=180" \
             -o "UpdateHostKeys=yes" \
             -o "StrictHostKeyChecking=no" \
             -o "IdentitiesOnly=yes" \
