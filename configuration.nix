@@ -155,6 +155,8 @@
     tmux = {
       enable = true;
       newSession = true;
+      clock24 = true;
+      historyLimit = 10000;
     };
   };
 
