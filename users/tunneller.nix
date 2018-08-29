@@ -3,6 +3,7 @@
 {
   users.extraUsers.tunneller = {
     isNormalUser = true;
+    shell = pkgs.nologin;
     openssh.authorizedKeys.keyFiles = [
       ../keys/ramses
       ../keys/thierry

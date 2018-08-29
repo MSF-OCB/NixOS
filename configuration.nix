@@ -171,6 +171,7 @@
       challengeResponseAuthentication = false;
       extraConfig = ''
         StrictModes yes
+        AllowAgentForwarding no
         TCPKeepAlive yes
         ClientAliveInterval 20
         ClientAliveCountMax 3
