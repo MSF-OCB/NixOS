@@ -5,12 +5,14 @@
     isNormalUser = true;
     shell = pkgs.nologin;
     openssh.authorizedKeys.keyFiles = [
+      ../keys/didier
+      ../keys/dirk
+      ../keys/kathy
+      ../keys/manu
+      ../keys/mohammad
       ../keys/ramses
       ../keys/thierry
-      ../keys/manu
-      ../keys/dirk
-      ../keys/mohammad
-      ../keys/kathy
+      ../keys/yusuph
     ];
   };
 }
