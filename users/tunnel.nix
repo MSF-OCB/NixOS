@@ -3,7 +3,8 @@
 {
   # The tunnel user being used on relays.
   users.extraUsers.tunnel = {
-    isNormalUser = true;
+    isNormalUser = false;
+    isSystemUser = true;
     shell = pkgs.nologin;
     openssh.authorizedKeys.keyFiles = [ ../keys/tunnel ];
   };
