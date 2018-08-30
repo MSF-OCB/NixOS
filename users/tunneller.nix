@@ -2,7 +2,7 @@
 
 {
   users.extraUsers.tunneller = {
-    isNormalUser = true;
+    isNormalUser = false;
     shell = pkgs.nologin;
     openssh.authorizedKeys.keyFiles = [
       ../keys/didier
