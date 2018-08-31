@@ -75,7 +75,7 @@ nano /mnt/etc/nixos/settings.nix
 
 And if you enabled the reverse tunnel service, generate a key pair for the tunnel:
 ```
-sudo ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${HOSTNAME}" -f /etc/nixos/local/id_tunnel
+ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${HOSTNAME}" -f /mnt/etc/nixos/local/id_tunnel
 ```
 if the reverse tunnel service is enabled in settings.nix but the private key is not present, the build will fail and complain that the file cannot be found.
 
@@ -208,6 +208,7 @@ Next, we open the volume and create a filesystem on it
 ```
 sudo cryptsetup open /dev/LVMVolGroup/nixos_data nixos_data_decrypted
 sudo mkfs.ext4 -L nixos_data /dev/mapper/nixos_data_decrypted
+sudo tune2fs -m 0 /dev/disk/by-label/nixos_data
 ```
 
 We will mount the encrypted filesystem on `/opt`
