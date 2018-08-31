@@ -12,7 +12,7 @@
 
 {
 
-  # sudo -u tunnel ssh-keygen -a 100 -t ed25519 -N "" -C "$(whoami)@${HOSTNAME}" -f ${HOME}/id_${HOSTNAME}
+  # sudo ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${HOSTNAME}" -f /etc/nixos/local/id_tunnel
 
   users.extraUsers.tunnel = {
     isSystemUser = true;
