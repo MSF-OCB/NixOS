@@ -232,7 +232,7 @@
 
   system.autoUpgrade = {
     enable = true;
-    dates = "Sat 03:00";
+    dates = "Mon 03:00";
   };
 
   systemd.services = {
@@ -263,7 +263,7 @@
     autoOptimiseStore = true;
     gc = {
       automatic = true;
-      dates = "Sun 03:00";
+      dates = "Tue 03:00";
       options = "--delete-older-than 30d";
     };
   };
