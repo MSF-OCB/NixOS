@@ -2,7 +2,7 @@
 NixOS config for servers in the field.
 
 1. [Installing NixOS from scratch](#installing-nixos-from-scratch)
-2. [Converting an existing Linux system into NixOS](#converting-an-existing-linux-system-into-nixos)
+2. [Converting an existing Linux system into NixOS](#method-2-converting-an-existing-linux-system-into-nixos)
 3. [Creating an encrypted data partition](#creating-an-encrypted-data-partition)
 
 ## Method 1: Installing NixOS from scratch
