@@ -1,7 +1,7 @@
 # NixOS
 NixOS config for servers in the field.
 
-1. [Installing NixOS from scratch](#installing-nixos-from-scratch)
+1. [Installing NixOS from scratch](#method-1-installing-nixos-from-scratch)
 2. [Converting an existing Linux system into NixOS](#method-2-converting-an-existing-linux-system-into-nixos)
 3. [Creating an encrypted data partition](#creating-an-encrypted-data-partition)
 
