@@ -28,12 +28,12 @@ Create a volume group containing all volumes using
 vgcreate LVMVolGroup <partition 1> ... <partition n>
 ```
 
-**If you plan to create a data partition**, then create a single 40GB root partition on the LVM volume using
+**If you plan to create an encrypted data partition**, then create a single 40GB root partition on the LVM volume using
 ```
 lvcreate -L 40GB -n nixos_root LVMVolGroup
 ```
 
-**If you do not plan to create a data partition** and want the root filesystem to use the whole disk instead, then use
+**If you do not plan to create an encrypted data partition** and want the root filesystem to use the whole disk instead, then use
 ```
 lvcreate -l 100%FREE -n nixos_root LVMVolGroup
 ```
