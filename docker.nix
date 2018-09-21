@@ -25,5 +25,8 @@
   virtualisation.docker.enable = true;
   virtualisation.docker.enableOnBoot = true;
 
+  systemd.services.docker.wants = [ "network-online.target" ];
+  systemd.services.docker.after = [ "network-online.target" ];
+
 }
 
