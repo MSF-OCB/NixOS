@@ -136,7 +136,7 @@ Usually the swap device is in the LVM partition, use `lvdisplay` to identify it 
 ```
 sudo swapoff <swap device>
 sudo lvremove <swap device>
-sudo lvextend -l 100%FREE <root device>
+sudo lvextend -l +100%FREE <root device>
 sudo resize2fs <root device>
 ```
 Set labels for the partitions
