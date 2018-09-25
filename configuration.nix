@@ -192,7 +192,7 @@
 
     htpdate = {
       enable = true;
-      servers = [ "www.linux.org" "www.google.com" "www.cloudflare.com" ];
+      servers = [ "www.kernel.org" "www.google.com" "www.cloudflare.com" ];
     };
 
     journald = {
