@@ -3,7 +3,7 @@
 {
   users.extraUsers.didier = {
     isNormalUser = true;
-    extraGroups = [ "docker" ];
+    extraGroups = [ ];
     openssh.authorizedKeys.keyFiles = [ ../keys/didier ];
   };
 }
