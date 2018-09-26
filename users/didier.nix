@@ -2,8 +2,9 @@
 
 {
   users.extraUsers.didier = {
-    isNormalUser = true;
+    isNormalUser = false;
     extraGroups = [ ];
+    shell = pkgs.nologin;
     openssh.authorizedKeys.keyFiles = [ ../keys/didier ];
   };
 }
