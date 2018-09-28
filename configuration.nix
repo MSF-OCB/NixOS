@@ -30,7 +30,6 @@
   #   defaultLocale = "en_US.UTF-8";
   # };
 
-  # Set your time zone.
   time.timeZone = (import ./settings.nix).timezone;
 
   environment = {
@@ -160,8 +159,6 @@
     };
   };
 
-  # List services that you want to enable:
-
   services = {
     openssh = {
       enable = true;
@@ -222,9 +219,7 @@
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
-  # Define a user account.
   users.mutableUsers = false;
-
   # Lock the root user
   users.extraUsers.root = {
     hashedPassword = "!";
