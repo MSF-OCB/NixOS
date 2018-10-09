@@ -15,6 +15,7 @@
       ../keys/ramses
       ../keys/thierry
       ../keys/yusuph
+      ../keys/khaled
     ];
   };
 }
