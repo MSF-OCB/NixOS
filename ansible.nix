@@ -16,12 +16,12 @@
   # https://github.com/NixOS/nixpkgs/blob/master/pkgs/tools/admin/ansible/2.4.nix
   nixpkgs.config.packageOverrides = super: {
     ansible = super.ansible.overrideAttrs (old: rec {
-      version = "2.5.9";
+      version = "2.6.2";
       name = "${old.pname}-${version}";
  
       src = super.fetchurl {
         url = "http://releases.ansible.com/ansible/${name}.tar.gz";
-        sha256 = "df986910196093fd0688815e988e205606f7cdec3d1da26d42a5caea8170f2e9";
+        sha256 = "747e4cca09c10833ffe3a7c53af310d2d387bd4f499ec6e1bde60662606aaff8";
       };
 
       prePatch = ''
