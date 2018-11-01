@@ -2,8 +2,9 @@
 
 {
   users.extraUsers.dirk = {
-    isNormalUser = true;
+    isNormalUser = false;
     extraGroups = [ ];
+    shell = pkgs.nologin;
     openssh.authorizedKeys.keyFiles = [ ../keys/dirk ];
   };
 }
