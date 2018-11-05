@@ -244,7 +244,7 @@
         # Current system is the most recently activated system, but it's kernel only gets loaded after a reboot.
         # Booted system is the system that we booted in, and whose kernel is thus currently loaded.
         ExecStart = ''${pkgs.bash}/bin/bash -c\
-          "if [ $(dirname $(readlink /run/current-system/kernel) != $(dirname $(readlink /run/booted-system/kernel) ] &&\
+          "if [ $(dirname $(readlink /run/current-system/kernel)) != $(dirname $(readlink /run/booted-system/kernel)) ] &&\
               [ $(date +%%s) -lt $(date --date=\"$(date --date=\'today\' +%%Y-%%m-%%d) + 5 hours\" +%%s) ]; then\
             echo Rebooting...;\
             systemctl --no-block reboot;\
