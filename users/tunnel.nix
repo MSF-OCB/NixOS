@@ -9,6 +9,6 @@
     home = "/home/tunnel";
     createHome = true;
     shell = pkgs.nologin;
-    openssh.authorizedKeys.keyFiles = [ ../keys/tunnel ];
+    openssh.authorizedKeys.keyFiles = [ ];
   };
 }
