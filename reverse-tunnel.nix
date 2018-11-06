@@ -14,11 +14,9 @@
 
   # sudo ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${HOSTNAME}" -f /etc/nixos/local/id_tunnel
 
-  users.extraUsers.tunnel = {
-    isSystemUser = true;
-    createHome = true;
-    home = "/var/tunnel";
-  };
+  imports = [
+    ./users/tunnel.nix
+  ];
 
   environment.etc.id_tunnel = {
     source = ./local/id_tunnel;
