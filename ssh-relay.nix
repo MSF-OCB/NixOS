@@ -17,6 +17,8 @@
     ./users/tunneller.nix
   ];
 
+  users.extraUsers.tunnel.openssh.authorizedKeys.keyFiles = [ ../keys/tunnel ];
+
   services.openssh = {
     ports = [ 22 80 443 ];
   };
