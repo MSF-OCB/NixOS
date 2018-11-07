@@ -26,7 +26,7 @@
         Type = "oneshot";
         RemainAfterExit = true;
         ExecStart = ''
-          ${pkgs.cryptsetup}/bin/cryptsetup open /dev/LVMVolGroup/nixos_data nixos_data_decrypted --key-file /keyfile
+          ${pkgs.cryptsetup}/bin/cryptsetup open ${(import ./settings.nix).crypto.encrypted_device} nixos_data_decrypted --key-file /keyfile
         '';
         ExecStop = ''
           ${pkgs.cryptsetup}/bin/cryptsetup close nixos_data_decrypted

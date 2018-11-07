@@ -17,5 +17,7 @@
  
   reverse_tunnel_forward_port = "6xxx";
 
+  crypto.encrypted_device = "";
+
 }
 
