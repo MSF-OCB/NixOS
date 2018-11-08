@@ -212,6 +212,8 @@ Create the encrypted LUKS volume on top of this, use a *strong* passphrase, pref
 sudo cryptsetup -v --cipher aes-xts-plain64 --key-size 512 --hash sha512 --use-random luksFormat --type luks2 <device>
 ```
 
+If you get a message that there is not enough entropy in the system to generate the key, you can open a second shell on the same machine and run `ls -R /` to generate entropy.
+
 Next, we open the volume and create a filesystem on it
 ```
 sudo cryptsetup open <device> nixos_data_decrypted
