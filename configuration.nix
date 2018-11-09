@@ -195,6 +195,9 @@
     journald = {
       rateLimitBurst = 1000;
       rateLimitInterval = "5s";
+      extraConfig = ''
+        Storage=persistent
+      '';
     };
 
     # See man logind.conf
