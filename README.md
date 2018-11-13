@@ -156,7 +156,7 @@ Change the filesystem type in `/etc/fstab` and remount with `mount -a`.
 Then we'll follow the steps from [here](https://nixos.org/nixos/manual/index.html#sec-installing-from-other-distro):
 
 ```
-bash <(curl https://nixos.org/nix/install)
+bash <(curl -C - https://nixos.org/nix/install)
 . $HOME/.nix-profile/etc/profile.d/nix.sh
 nix-channel --add https://nixos.org/channels/nixos-18.03 nixpkgs
 nix-channel --update
