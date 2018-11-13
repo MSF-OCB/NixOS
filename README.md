@@ -158,7 +158,7 @@ Then we'll follow the steps from [here](https://nixos.org/nixos/manual/index.htm
 ```
 bash <(curl -C - https://nixos.org/nix/install)
 . $HOME/.nix-profile/etc/profile.d/nix.sh
-nix-channel --add https://nixos.org/channels/nixos-18.03 nixpkgs
+nix-channel --add https://nixos.org/channels/nixos-18.09 nixpkgs
 nix-channel --update
 nix-env -iE "_: with import <nixpkgs/nixos> { configuration = {}; }; with config.system.build; [ nixos-generate-config nixos-install nixos-enter manual.manpages ]"
 sudo `which nixos-generate-config` --root /
