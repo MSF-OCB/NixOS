@@ -41,7 +41,7 @@
         what = "/dev/disk/by-label/nixos_data";
         where = "/opt";
         type = "ext4";
-        options = "acl,noatime,nosuid,nodev,noexec";
+        options = "acl,noatime,nosuid,nodev";
         after = [ "open_nixos_data.service" ];
         wants = [ "open_nixos_data.service" ];
         wantedBy = [ "multi-user.target" ];
