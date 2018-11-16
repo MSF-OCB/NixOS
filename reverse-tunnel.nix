@@ -26,8 +26,9 @@
   };
 
   systemd.services = let
-    reverse_tunnel_config = [ { name = "google";  host = "msfrelay1.msfict.info"; }
-                              { name = "ixelles"; host = "ehealthsshrelayhq1.msf.be"; } ];
+    reverse_tunnel_config = [ { name = "google";     host = "msfrelay1.msfict.info";     port_prefix = ""; }
+                              { name = "ixelles";    host = "ehealthsshrelayhq1.msf.be"; port_prefix = ""; }
+                              { name = "ixelles-ip"; host = "194.78.17.132";             port_prefix = "1"; } ];
     remote_forward_port = (import ./settings.nix).reverse_tunnel_forward_port;
     make_service = conf: {
       "autossh-reverse-tunnel-${conf.name}" = {
@@ -54,7 +55,7 @@
             -o "IdentitiesOnly=yes" \
             -o "Compression=yes" \
             -o "ControlMaster=no" \
-            -R ${remote_forward_port}:localhost:22 \
+            -R ${port_prefix}${remote_forward_port}:localhost:22 \
             -i /etc/id_tunnel \
             tunnel@${conf.host}
           '';
