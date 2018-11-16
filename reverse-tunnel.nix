@@ -55,7 +55,7 @@
             -o "IdentitiesOnly=yes" \
             -o "Compression=yes" \
             -o "ControlMaster=no" \
-            -R ${port_prefix}${remote_forward_port}:localhost:22 \
+            -R ${conf.port_prefix}${remote_forward_port}:localhost:22 \
             -i /etc/id_tunnel \
             tunnel@${conf.host}
           '';
