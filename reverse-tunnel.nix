@@ -26,8 +26,8 @@
   };
 
   systemd.services = let
-    reverse_tunnel_config = [ { name = "google";     host = "msfrelay1.msfict.info";     port_prefix = ""; }
-                              { name = "ixelles";    host = "ehealthsshrelayhq1.msf.be"; port_prefix = ""; }
+    reverse_tunnel_config = [ { name = "google";     host = "msfrelay1.msfict.info";     port_prefix = "";  }
+                              { name = "ixelles";    host = "ehealthsshrelayhq1.msf.be"; port_prefix = "";  }
                               { name = "ixelles-ip"; host = "194.78.17.132";             port_prefix = "1"; } ];
     remote_forward_port = (import ./settings.nix).reverse_tunnel_forward_port;
     make_service = conf: {
@@ -63,7 +63,9 @@
       };
     };
   in
-    lib.foldr (conf: services: services // (make_service conf)) {} reverse_tunnel_config;
+    if (lib.stringLength remote_forward_port) > 4
+    then throw "reverse tunnel forward port should be < 9999, found: ${remote_forward_port}"
+    else lib.foldr (conf: services: services // (make_service conf)) {} reverse_tunnel_config;
 
 }
 
