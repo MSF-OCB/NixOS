@@ -250,3 +250,9 @@ sudo cryptsetup luksAddKey <device> /keyfile
 ```
 
 Now enable `crypto.nix` in `settings.nix` and set the setting `crypto.encryptedDevice` to either `/dev/LVMVolGroup/nixos_data` or `/safe.img`, depending on what method you used, to have automounting at boot time and reboot to test.
+
+To quickly disable a key file, run
+```
+sudo cryptsetup luksRemoveKey <device> /keyfile
+```
+
