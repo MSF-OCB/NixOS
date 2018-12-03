@@ -17,12 +17,5 @@
     ./7zip.nix
   ];
 
-#  users.extraUsers.bahmni = {
-#    isSystemUser = true;
-#    createHome = true;
-#    home = "/home/bahmni";
-#    extraGroups = [ "docker" ];
-#  };
-
 }
 
