@@ -4,6 +4,7 @@ NixOS config for servers in the field.
 1. [Installing NixOS from scratch](#method-1-installing-nixos-from-scratch)
 2. [Converting an existing Linux system into NixOS](#method-2-converting-an-existing-linux-system-into-nixos)
 3. [Creating an encrypted data partition](#creating-an-encrypted-data-partition)
+4. [Secure erasure of SSD drive](#secure-erasure-of-ssd-drive)
 
 ## Method 1: Installing NixOS from scratch
 
@@ -251,8 +252,43 @@ sudo cryptsetup luksAddKey <device> /keyfile
 
 Now enable `crypto.nix` in `settings.nix` and set the setting `crypto.encryptedDevice` to either `/dev/LVMVolGroup/nixos_data` or `/safe.img`, depending on what method you used, to have automounting at boot time and reboot to test.
 
-To quickly disable a key file, run
+To quickly disable a key file, run (**do not run this as part of the installation**)
 ```
 sudo cryptsetup luksRemoveKey <device> /keyfile
 ```
 
+## Secure erasure of SSD drive
+After having disabled the key for the encrypted partition, it is recommended to perform a **secure erase** of the whole drive. Afterwards the device can be refurbished by installing a new OS from scratch.
+
+We start by installing some required tools:
+```
+sudo nix-env -iA nixos.hdparm nixos.pmutils
+```
+
+Next, we check whether our drive is in the "frozen" state by running
+```
+sudo hdparm -I /dev/sdX
+```
+Check for the output at the end, if there is no `not` in front of `frozen` and the output looks something like this:
+```
+Security:
+        Master password revision code = 65534
+                supported
+        not     enabled
+        not     locked
+                frozen
+        not     expired: security count
+                supported: enhanced erase
+```
+then we have to unfreeze the drive. The most reliable method seems to be to suspend the device, and then ask someone with physical access to unsuspend the device again. Suspending can be done with
+```
+sudo pm-suspend
+```
+
+After this, the drive should be unfrozen and we can continue with the two commands to erase the drive:
+```
+sudo hdparm --user-master u --security-set-pass password /dev/sdX
+sudo hdparm --user-master u --security-erase-enhanced password /dev/sdX
+```
+
+After doing this, the system will still be running but the disk has been erased. After a reboot, the BIOS will report that no OS has been found and you can install a new OS from a flash drive.
