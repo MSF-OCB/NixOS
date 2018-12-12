@@ -279,12 +279,12 @@
       # Booted system is the system that we booted in, and whose kernel is thus currently loaded.
       script = ''
         if [ $(dirname $(readlink /run/current-system/kernel)) = $(dirname $(readlink /run/booted-system/kernel)) ]; then
-          echo No reboot required.;
+          echo No reboot required.
         elif [ $(date +%s) -gt $(date --date="$(date --date='today' +%Y-%m-%d) + 5 hours" +%s) ]; then
-          echo Time window for reboot has passed.;
+          echo Time window for reboot has passed.
         else
-          echo Rebooting...;
-          systemctl --no-block reboot;
+          echo Rebooting...
+          systemctl --no-block reboot
         fi
       '';
     };
