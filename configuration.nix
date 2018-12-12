@@ -242,21 +242,21 @@
       serviceConfig = {
         User = "root";
         Type = "oneshot";
-        # Check whether the kernel version has been changed and whether we didn't pass 05h00,
-        # otherwise we postpone the reboot until the next execution of this service.
-        # Current system is the most recently activated system, but its kernel only gets loaded after a reboot.
-        # Booted system is the system that we booted in, and whose kernel is thus currently loaded.
-        ExecStart = ''${pkgs.bash}/bin/bash -c\
-          "if [ $(dirname $(readlink /run/current-system/kernel)) = $(dirname $(readlink /run/booted-system/kernel)) ]; then\
-            echo No reboot required.;\
-          elif [ $(date +%%s) -gt $(date --date=\"$(date --date=\'today\' +%%Y-%%m-%%d) + 5 hours\" +%%s) ]; then\
-            echo Time window for reboot has passed.;\
-          else\
-            echo Rebooting...;\
-            systemctl --no-block reboot;\
-          fi"
-        '';
       };
+      # Check whether the kernel version has been changed and whether we didn't pass 05h00,
+      # otherwise we postpone the reboot until the next execution of this service.
+      # Current system is the most recently activated system, but its kernel only gets loaded after a reboot.
+      # Booted system is the system that we booted in, and whose kernel is thus currently loaded.
+      script = ''
+        if [ $(dirname $(readlink /run/current-system/kernel)) = $(dirname $(readlink /run/booted-system/kernel)) ]; then
+          echo No reboot required.;
+        elif [ $(date +%s) -gt $(date --date="$(date --date='today' +%Y-%m-%d) + 5 hours" +%s) ]; then
+          echo Time window for reboot has passed.;
+        else
+          echo Rebooting...;
+          systemctl --no-block reboot;
+        fi
+      '';
     };
   };
 
