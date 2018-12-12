@@ -35,6 +35,7 @@
   environment = {
     systemPackages = with pkgs; [
       cryptsetup
+      keyutils
       wget
       curl
       (import ./vim-config.nix)
