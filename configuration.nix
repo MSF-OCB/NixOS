@@ -234,6 +234,34 @@
   };
 
   systemd.services = {
+
+    # Service which runs during the day, to catch the situation where servers
+    # are turned off every evening.
+    # This service updates and sets the new config as the boot default but
+    # does not activate it yet.
+    # Mainly copied from  nixpkgs/nixos/modules/installer/tools/auto-upgrade.nix.
+    nixos-upgrade-boot = let cfg = config.system.autoUpgrade; in {
+      enable = true;
+      description = "NixOS Upgrade Boot";
+      restartIfChanged = false;
+      unitConfig.X-StopOnRemoval = false;
+      serviceConfig = {
+        User = "root";
+        Type = "oneshot";
+      };
+
+      environment = config.nix.envVars //
+        { inherit (config.environment.sessionVariables) NIX_PATH;
+          HOME = "/root";
+        } // config.networking.proxy.envVars;
+
+      path = [ pkgs.gnutar pkgs.xz.bin config.nix.package.out ];
+      script = ''
+        ${config.system.build.nixos-rebuild}/bin/nixos-rebuild boot ${toString cfg.flags}
+      '';
+      startAt = "Tue 12:00";
+    };
+
     reboot-after-kernel-change = {
       enable = true;
       description = "Reboot the system if the running kernel is different than the kernel of the NixOS current-system.";
