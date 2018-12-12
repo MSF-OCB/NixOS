@@ -44,7 +44,9 @@
           User = "tunnel";
           Restart = "always";
           RestartSec = 10;
-          ExecStart = ''${pkgs.autossh}/bin/autossh \
+        };
+        script = ''
+          ${pkgs.autossh}/bin/autossh \
             -q -N \
             -o "ExitOnForwardFailure=yes" \
             -o "ServerAliveInterval=60" \
@@ -58,8 +60,7 @@
             -R ${conf.port_prefix}${remote_forward_port}:localhost:22 \
             -i /etc/id_tunnel \
             tunnel@${conf.host}
-          '';
-        };
+        '';
       };
     };
   in
