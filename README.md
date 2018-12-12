@@ -228,16 +228,21 @@ sudo mkdir /opt
 sudo mount /dev/disk/by-label/nixos_data /opt
 ```
 
-Next we will bind mount `/var/lib/docker` into the encrypted volume on `/opt/docker`. Make sure docker is not running, if it is run these commands first:
+Next we will bind mount `/var/lib/docker` into the encrypted volume on `/opt/docker`. If docker is already installed, run these commands first:
 ```
 sudo systemctl stop docker.socket
 sudo systemctl stop docker.service
-sudo rm -r /var/lib/docker/
+sudo mkdir /opt/docker
 ```
+Open a root shell with `sudo -s` and run
+```
+mv /var/lib/docker/* /opt/docker/
+```
+And `Ctrl-d` out of the root shell.
+
 Otherwise or after this, we can create the mount
 ```
-sudo mkdir /opt/docker
-sudo mkdir /var/lib/docker
+sudo mkdir /var/lib/docker # In case the dir does not exist yet
 sudo mount --bind /opt/docker/ /var/lib/docker
 ```
 
