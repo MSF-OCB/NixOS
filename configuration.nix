@@ -267,6 +267,8 @@
       description = "Reboot the system if the running kernel is different than the kernel of the NixOS current-system.";
       after = [ "nixos-upgrade.service" ];
       wantedBy = [ "nixos-upgrade.service" ];
+      restartIfChanged = false;
+      unitConfig.X-StopOnRemoval = false;
       serviceConfig = {
         User = "root";
         Type = "oneshot";
