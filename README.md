@@ -297,3 +297,9 @@ sudo hdparm --user-master u --security-erase-enhanced password /dev/sdX
 ```
 
 After doing this, the system will still be running but the disk has been erased. After a reboot, the BIOS will report that no OS has been found and you can install a new OS from a flash drive.
+
+If you are no longer able to do a reboot or shutdown (because not all that's required is loaded in memory), you can force a shutdown with
+```
+echo 1 > /proc/sys/kernel/sysrq 
+echo o > /proc/sysrq-trigger
+```
