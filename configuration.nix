@@ -50,7 +50,6 @@
       acl
       mkpasswd
       unzip
-      python3
       lm_sensors
       nmap
       traceroute
