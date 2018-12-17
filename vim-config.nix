@@ -10,58 +10,64 @@
 
 with import <nixpkgs> {};
 
-vim_configurable.customize {
+(vimUtils.makeCustomizable vim).customize {
 
   name = "vim";
 
-  vimrcConfig.customRC = ''
-    set nocompatible
-    set modeline
-    set backspace=2
-    set showmode
-    set autoindent
-    filetype on
-    filetype plugin on
-    filetype indent on
-    if has("autocmd")
-      au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
-        \| exe "normal! g`\"" | endif
-    endif
+  vimrcConfig = {
 
-    set encoding=utf-8
-    set termencoding=utf-8
+    customRC = ''
+      set nocompatible
+      set modeline
+      set backspace=2
+      set showmode
+      set autoindent
+      filetype on
+      filetype plugin on
+      filetype indent on
+      if has("autocmd")
+        au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
+          \| exe "normal! g`\"" | endif
+      endif
 
-    if has('syntax')
-      syntax on
-    endif
+      set encoding=utf-8
+      set termencoding=utf-8
 
-    colorscheme desert
+      if has('syntax')
+        syntax on
+      endif
 
-    set ruler
-    set number
+      colorscheme desert
 
-    if version >= 700
-      set cursorline
-    endif
+      set ruler
+      set number
 
-    set laststatus=2
-    set statusline=%-3.3n\ %f%(\ %r%)%(\ %#WarningMsg#%m%0*%)%=(%l/%L,\ %c)\ %P\ [%{&encoding}:%{&fileformat}]%(\ %w%)\ %y\
+      if version >= 700
+        set cursorline
+      endif
 
-    set shortmess+=axr
+      set laststatus=2
+      set statusline=%-3.3n\ %f%(\ %r%)%(\ %#WarningMsg#%m%0*%)%=(%l/%L,\ %c)\ %P\ [%{&encoding}:%{&fileformat}]%(\ %w%)\ %y\
 
-    set showmatch
+      set shortmess+=axr
 
-    set tabstop=4
-    set shiftwidth=4
-    set softtabstop=4
-    set expandtab
-    set wrapmargin=0
+      set showmatch
 
-    set nohlsearch
-    set ignorecase
-    set smartcase
-    set incsearch
-  '';
+      set tabstop=4
+      set shiftwidth=4
+      set softtabstop=4
+      set expandtab
+      set wrapmargin=0
+
+      set nohlsearch
+      set ignorecase
+      set smartcase
+      set incsearch
+    '';
+
+    packages.m.start = with pkgs.vimPlugins; [ vim-nix ];
+
+  };
 
 }
 
