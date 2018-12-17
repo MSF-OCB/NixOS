@@ -54,6 +54,7 @@
       nmap
       traceroute
       bind
+      python3
       nix-info
       nox
     ];
