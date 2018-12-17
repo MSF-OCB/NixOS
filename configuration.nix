@@ -19,10 +19,10 @@
 
   networking = {
     hostName = (import ./settings.nix).hostname;
-    networkmanager.enable = (import ./settings.nix).networkmanager.enable;
+    networkmanager.enable = false;
     wireless.enable = false;  # Enables wireless support via wpa_supplicant.
   };
-  
+
   # Select internationalisation properties.
   # i18n = {
   #   consoleFont = "Lat2-Terminus16";

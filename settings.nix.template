@@ -10,8 +10,6 @@
 
   grub.device = "/dev/disk/by-<id|path>/<label>";
 
-  networkmanager.enable = true;
- 
   # Timezone of the location where the server will be deployed
   timezone = "Europe/Brussels";
  
