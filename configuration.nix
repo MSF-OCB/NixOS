@@ -17,11 +17,7 @@
 {
   imports = (import ./settings.nix).imports;
 
-  networking = {
-    hostName = (import ./settings.nix).hostname;
-    networkmanager.enable = false;
-    wireless.enable = false;  # Enables wireless support via wpa_supplicant.
-  };
+  networking.hostName = (import ./settings.nix).hostname;
 
   # Select internationalisation properties.
   # i18n = {
