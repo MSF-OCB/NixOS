@@ -3,7 +3,7 @@ NixOS config for servers in the field.
 
 1. [Installing NixOS from scratch](#method-1-installing-nixos-from-scratch)
 2. [Converting an existing Linux system into NixOS](#method-2-converting-an-existing-linux-system-into-nixos)
-3. [Creating an encrypted data partition](#creating-an-encrypted-data-partition)
+3. [Creating the encrypted data partition](#creating-the-encrypted-data-partition)
 4. [Secure erasure of SSD drive](#secure-erasure-of-ssd-drive)
 
 ## Method 1: Installing NixOS from scratch
@@ -29,15 +29,12 @@ Create a volume group containing all volumes using
 vgcreate LVMVolGroup <partition 1> ... <partition n>
 ```
 
-**If you plan to create an encrypted data partition**, then create a single 40GB root partition on the LVM volume using
+Create a single 40GB root partition on the LVM volume using
 ```
 lvcreate -L 40GB -n nixos_root LVMVolGroup
 ```
 
-**If you do not plan to create an encrypted data partition** and want the root filesystem to use the whole disk instead, then use
-```
-lvcreate -l 100%FREE -n nixos_root LVMVolGroup
-```
+The rest of the disk will be used later to create an encrypted partition which will hold the actual bussiness data.
 
 Create filesystems:
 ```
@@ -193,7 +190,7 @@ Reboot and you should end up in a NixOS system! The old contents of the root dir
 
 Now follow [the final steps of the general installation guide](#final-steps-after-booting-the-os).
 
-## Creating an encrypted data partition
+## Creating the encrypted data partition
 
 To encrypt the data on the server, we have two options. Either, and this is the preferred method, we anticipated this from the start and we left sufficient room to create a data partition. Alternatively, we can create a file to hold the encrypted partition.
 
