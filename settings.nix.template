@@ -11,6 +11,7 @@
   grub.device = "/dev/disk/by-<id|path>/<label>";
 
   # Timezone of the location where the server will be deployed
+  # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
   timezone = "Europe/Brussels";
  
   reverse_tunnel_forward_port = "6xxx";
