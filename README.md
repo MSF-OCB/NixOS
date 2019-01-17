@@ -47,13 +47,17 @@ mkfs.ext4 -L nixos_root /dev/LVMVolGroup/nixos_root
 [(NixOS installation manual)](https://nixos.org/nixos/manual/index.html#sec-installation)
 
 ```
+#if you are doing a Lustrate process ignore this block
 mount /dev/disk/by-label/nixos_root /mnt
 mkdir /mnt/boot
 mount /dev/disk/by-label/nixos_boot /mnt/boot
 nixos-generate-config --root /mnt
+
+#if you are doing a Lustrate process start here
 curl -L https://github.com/MSF-OCB/NixOS/archive/master.zip --output /tmp/config.zip
 cd /tmp
 unzip config.zip
+#if you are doing a Lustrate process, use /etc/nixos instead of /mnt/etc/nixos below
 mv NixOS-master/* /mnt/etc/nixos
 mv NixOS-master/.gitignore /mnt/etc/nixos
 rmdir NixOS-master # Verify it's empty now
@@ -62,12 +66,18 @@ cp /mnt/etc/nixos/settings.nix.template /mnt/etc/nixos/settings.nix
 
 To find a stable device name for grub and append it to the settings file for copy/paste:
 ```
+#common device prefixes are wwn or ata  - 
+#if you are doing a Lustrate process, remove /mnt from the target directory
 ls -l /dev/disk/by-id/ | grep "wwn.*<device>$" | tee -a /mnt/etc/nixos/settings.nix
+# if the command above doesn't return anything just 
+ls -l /dev/disk/by-id/
+# and find the top id device (likely corresponding to /sda)
 ```
 Then you can add the path to the `grub.device` setting.
 
 Set the required settings:
 ```
+# see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for TimeZone
 nano /mnt/etc/nixos/settings.nix
 ```
 
@@ -75,7 +85,12 @@ And if you enabled the reverse tunnel service, generate a key pair for the tunne
 ```
 ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${HOSTNAME}" -f /mnt/etc/nixos/local/id_tunnel
 ```
-if the reverse tunnel service is enabled in settings.nix but the private key is not present, the build will fail and complain that the file cannot be found.
+If the reverse tunnel service is enabled in settings.nix but the private key is not present, the build will fail and complain that the file cannot be found. 
+For remote nuc, it is mandatory and  strongly recommended to install the key on (at least one of) the relays now, and check that the tunnel connection is working before rebooting:
+```
+# the tunnel user is a no-shell user - so dont expect an interactive session after this command - just check for auth errors
+ssh -i /etc/nixos/local/id_tunnel tunnel@msfrelay1.msfict.info #or use ehealthsshrelayhq1.msf.be or 194.78.17.132 as defined in reverse-tunnel.nix
+```
 
 Then launch the installer:
 ```
