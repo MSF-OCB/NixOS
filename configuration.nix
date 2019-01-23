@@ -79,7 +79,36 @@
     };
   };
 
+
   boot = {
+
+    loader = let
+      boot_mode = (import ./settings.nix).boot.mode;
+      grub_common = {
+        enable = true;
+        version = 2;
+        memtest86.enable = true;
+      };
+    in
+      if boot_mode == "legacy"
+      then {
+        grub = grub_common // {
+          efiSupport = false;
+          device = (import ./settings.nix).boot.device;
+        };
+      }
+      else if boot_mode == "uefi"
+      then {
+        grub = grub_common // {
+          efiSupport = true;
+          efiInstallAsRemovable = true;
+          device = "nodev";
+        };
+        efi.efiSysMountPoint = "/boot/efi";
+      }
+      else
+        throw "The boot_mode should be set to either \"legacy\" or \"uefi\"";
+
     #kernelPackages = pkgs.linuxPackages_latest;
 
     kernelParams = [
