@@ -10,7 +10,7 @@
 
   boot = {
     # Set to either "legacy" or "uefi" depending on how you install the system
-    mode = "legacy";
+    mode = "";
     # Set to "nodev" for an uefi system.
     device = "/dev/disk/by-<id|path>/<label>";
   };
