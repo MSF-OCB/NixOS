@@ -80,18 +80,6 @@
   };
 
   boot = {
-    loader.grub = {
-      enable = true;
-      # Use the GRUB 2 boot loader.
-      version = 2;
-      # efiSupport = true;
-      # efiInstallAsRemovable = true;
-      # boot.loader.grub.device = "/dev/sda"; # or "nodev" for efi only
-      device = (import ./settings.nix).grub.device;
-      memtest86.enable = true;
-    };
-    # boot.loader.efi.efiSysMountPoint = "/boot/efi";
-
     #kernelPackages = pkgs.linuxPackages_latest;
 
     kernelParams = [
