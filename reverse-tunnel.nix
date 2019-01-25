@@ -26,9 +26,7 @@
   };
 
   systemd.services = let
-    reverse_tunnel_config = [ { name = "google";     host = "msfrelay1.msfict.info";     port_prefix = "";  }
-                              { name = "ixelles";    host = "ehealthsshrelayhq1.msf.be"; port_prefix = "";  }
-                              { name = "ixelles-ip"; host = "194.78.17.132";             port_prefix = "1"; } ];
+    reverse_tunnel_config = (import ./global_settings.nix).reverse_tunnel_config;
     remote_forward_port = (import ./settings.nix).reverse_tunnel_forward_port;
     make_service = conf: {
       "autossh-reverse-tunnel-${conf.name}" = {

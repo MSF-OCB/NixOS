@@ -15,8 +15,19 @@
 { config, lib, pkgs, ... }:
 
 {
-  imports = (import ./settings.nix).imports;
-
+  imports = let
+    settings = (import ./settings.nix);
+    global_settings = (import ./global_settings.nix);
+    default_users = global_settings.default_users;
+    extra_imports = settings.imports;
+    reverse_tunnel_import = if settings.reverse_tunnel_enabled
+                            then [ ./reverse-tunnel.nix ] else [];
+  in
+    [ ./hardware-configuration.nix ] ++
+    reverse_tunnel_import ++
+    default_users ++
+    extra_imports;
+  
   networking.hostName = (import ./settings.nix).hostname;
 
   # Select internationalisation properties.
