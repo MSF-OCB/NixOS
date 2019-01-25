@@ -9,7 +9,7 @@
 ########################################################################
 
 {
-  hostname = "benuc016";
+  hostname = "ehealthsshrelayhq1";
   imports = [
     ../local/static-network.nix
     ../vmware.nix
