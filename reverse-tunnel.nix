@@ -27,7 +27,7 @@
 
   systemd.services = let
     reverse_tunnel_config = (import ./global_settings.nix).reverse_tunnel_config;
-    remote_forward_port = (import ./settings.nix).reverse_tunnel_forward_port;
+    remote_forward_port = (import ./settings.nix).reverse_tunnel.forward_port;
     make_service = conf: {
       "autossh-reverse-tunnel-${conf.name}" = {
         enable = true;

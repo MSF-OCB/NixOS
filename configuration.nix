@@ -20,10 +20,13 @@
     global_settings = (import ./global_settings.nix);
     default_users = global_settings.default_users;
     extra_imports = settings.imports;
-    reverse_tunnel_import = if settings.reverse_tunnel_enabled
+    reverse_tunnel_import = if settings.reverse_tunnel.enabled
                             then [ ./reverse-tunnel.nix ] else [];
+    crypto_import = if settings.crypto.enabled
+                    then [ ./crypto.nix ] else [];
   in
     [ ./hardware-configuration.nix ] ++
+    crypto_import ++
     reverse_tunnel_import ++
     default_users ++
     extra_imports;
