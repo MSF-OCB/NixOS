@@ -28,7 +28,7 @@
   };
   crypto = {
     enabled = true;
-    encrypted_device = "";
+    encrypted_device = "/dev/LVMVolGroup/nixos_data";
   };
 
 }
