@@ -18,7 +18,7 @@
     # Set to either "legacy" or "uefi" depending on how you install the system
     mode = "uefi";
     # Set to "nodev" for an uefi system.
-    device = "";
+    device = "nodev";
   };
 
   # Timezone of the location where the server will be deployed
