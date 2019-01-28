@@ -155,7 +155,7 @@
 
   fileSystems = {
     "/".options    = [ "defaults" "noatime" "acl" ];
-    "boot".options = [ "defaults" "noatime" "nosuid" "nodev" "noexec" ];
+    "/boot".options = [ "defaults" "noatime" "nosuid" "nodev" "noexec" ];
   };
 
   zramSwap = {
