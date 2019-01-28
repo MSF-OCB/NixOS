@@ -50,6 +50,7 @@
       curl
       (import ./vim-config.nix)
       coreutils
+      gptfdisk
       file
       htop
       iotop
