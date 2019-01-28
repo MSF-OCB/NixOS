@@ -153,7 +153,10 @@
     tmpOnTmpfs = true;
   };
 
-  fileSystems."/".options = [ "defaults" "acl" "noatime" ];
+  fileSystems = {
+    "/".options    = [ "defaults" "noatime" "acl" ];
+    "boot".options = [ "defaults" "noatime" "nosuid" "nodev" "noexec" ];
+  };
 
   zramSwap = {
     enable = true;
