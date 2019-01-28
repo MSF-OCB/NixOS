@@ -11,6 +11,7 @@
 {
   hostname = "benuc010";
   imports = [
+    ../bahmni.nix
   ];
 
   boot = {
