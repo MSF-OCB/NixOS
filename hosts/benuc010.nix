@@ -27,7 +27,7 @@
     forward_port = "6010";
   };
   crypto = {
-    enabled = false;
+    enabled = true;
     encrypted_device = "/dev/LVMVolGroup/nixos_data";
   };
 
