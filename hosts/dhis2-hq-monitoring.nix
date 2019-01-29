@@ -11,10 +11,8 @@
 {
   hostname = "dhis2-hq-monitoring";
   imports = [
-    ../hardware-configuration.nix
     ../vmware.nix
     ../local/static-network.nix
-    ../reverse-tunnel.nix
     ../bahmni.nix
     ../docker-registry.nix
     ../docker.nix
@@ -40,4 +38,3 @@
   };
 
 }
-
