@@ -11,10 +11,8 @@
 {
   hostname = "dhis2-dev";
   imports = [
-    ../hardware-configuration.nix
     ../vmware.nix
     ../local/static-network.nix
-    ../reverse-tunnel.nix
     ../bahmni.nix
     ../docker-registry.nix
     ../docker.nix
