@@ -157,7 +157,8 @@
       "vm.mmap_rnd_bits" = 32;
     };
 
-    tmpOnTmpfs = true;
+    # Causes ordering cycle with zramswap, disable until solution found
+    tmpOnTmpfs = false;
   };
 
   fileSystems = {
