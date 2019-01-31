@@ -31,7 +31,14 @@
     default_users ++
     extra_imports;
   
-  networking.hostName = (import ./settings.nix).hostname;
+  networking = {
+    hostName = (import ./settings.nix).hostname;
+    
+    dhcpcd = {
+      persistent = true;
+      denyInterfaces = [ "eth*" "wlan*" ];
+    };
+  };
 
   # Select internationalisation properties.
   # i18n = {
