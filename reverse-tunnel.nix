@@ -10,61 +10,105 @@
 
 { config, pkgs, lib, ... }:
 
+let
+  cfg = config.settings.reverse_tunnel;
+in
+
+with lib;
+
 {
 
-  # sudo ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${HOSTNAME}" -f /etc/nixos/local/id_tunnel
+  options = {
+    settings.reverse_tunnel = {
+      enable = mkOption {
+        default = false;
+        type = types.bool;
+        description = ''
+          Whether to enable the reverse tunnel services.
+        '';
+      };
 
-  imports = [
-    ./users/tunnel.nix
-  ];
+      remote_forward_port = mkOption {
+        default = 0;
+        type = types.ints.between 0 9999;
+        description = ''
+          The port on the relay servers.
+        '';
+      };
 
-  environment.etc.id_tunnel = {
-    source = ./local/id_tunnel;
-    mode = "0400";
-    user = "tunnel";
-    group = "tunnel";
-  };
-
-  systemd.services = let
-    reverse_tunnel_config = (import ./global_settings.nix).reverse_tunnel_config;
-    remote_forward_port = (import ./settings.nix).reverse_tunnel.forward_port;
-    make_service = conf: {
-      "autossh-reverse-tunnel-${conf.name}" = {
-        enable = true;
-        description = "AutoSSH reverse tunnel service to ensure resilient ssh access";
-        after = [ "network.target" ];
-        wantedBy = [ "multi-user.target" ];
-        environment = {
-          AUTOSSH_GATETIME = "0";
-          AUTOSSH_PORT = "0";
-        };
-        serviceConfig = {
-          User = "tunnel";
-          Restart = "always";
-          RestartSec = 10;
-        };
-        script = ''
-          ${pkgs.autossh}/bin/autossh \
-            -q -N \
-            -o "ExitOnForwardFailure=yes" \
-            -o "ServerAliveInterval=60" \
-            -o "ServerAliveCountMax=3" \
-            -o "ConnectTimeout=360" \
-            -o "UpdateHostKeys=yes" \
-            -o "StrictHostKeyChecking=no" \
-            -o "IdentitiesOnly=yes" \
-            -o "Compression=yes" \
-            -o "ControlMaster=no" \
-            -R ${conf.port_prefix}${remote_forward_port}:localhost:22 \
-            -i /etc/id_tunnel \
-            tunnel@${conf.host}
+      relay.enable = mkOption {
+        default = false;
+        type = types.bool;
+        description = ''
+          Whether this server acts as an ssh relay.
         '';
       };
     };
-  in
-    if (lib.stringLength remote_forward_port) > 4
-    then throw "reverse tunnel forward port should be < 9999, found: ${remote_forward_port}"
-    else lib.foldr (conf: services: services // (make_service conf)) {} reverse_tunnel_config;
+  };
 
+  config = mkIf (cfg.enable or cfg.relay.enable) {
+
+    users.extraUsers.tunnel = {
+      isNormalUser = false;
+      isSystemUser = true;
+      # We need the home dir for ssh to store the known_hosts file.
+      home = "/home/tunnel";
+      createHome = true;
+      shell = pkgs.nologin;
+      openssh.authorizedKeys.keyFiles = mkIf cfg.relay.enable [ ./keys/tunnel ];
+    };
+
+    users.extraUsers.tunneller = mkIf cfg.relay.enable {
+      isNormalUser = false;
+      isSystemUser = true;
+      shell = pkgs.nologin;
+      openssh.authorizedKeys.keyFiles = (import ./global_settings.nix).tunneller_keyfiles;
+    };
+
+    environment.etc.id_tunnel = mkIf cfg.enable {
+      source = ./local/id_tunnel;
+      mode = "0400";
+      user = "tunnel";
+      group = "tunnel";
+    };
+
+    systemd.services = mkIf cfg.enable (let
+      reverse_tunnel_config = (import ./global_settings.nix).reverse_tunnel_config;
+      make_service = conf: {
+        "autossh-reverse-tunnel-${conf.name}" = {
+          enable = true;
+          description = "AutoSSH reverse tunnel service to ensure resilient ssh access";
+          after = [ "network.target" ];
+          wantedBy = [ "multi-user.target" ];
+          environment = {
+            AUTOSSH_GATETIME = "0";
+            AUTOSSH_PORT = "0";
+          };
+          serviceConfig = {
+            User = "tunnel";
+            Restart = "always";
+            RestartSec = 10;
+          };
+          script = ''
+            ${pkgs.autossh}/bin/autossh \
+              -q -N \
+              -o "ExitOnForwardFailure=yes" \
+              -o "ServerAliveInterval=60" \
+              -o "ServerAliveCountMax=3" \
+              -o "ConnectTimeout=360" \
+              -o "UpdateHostKeys=yes" \
+              -o "StrictHostKeyChecking=no" \
+              -o "IdentitiesOnly=yes" \
+              -o "Compression=yes" \
+              -o "ControlMaster=no" \
+              -R ${conf.port_prefix}${toString cfg.remote_forward_port}:localhost:22 \
+              -i /etc/id_tunnel \
+              tunnel@${conf.host}
+          '';
+        };
+      };
+    in
+      foldr (conf: services: services // (make_service conf)) {} reverse_tunnel_config);
+  };
 }
 
