@@ -16,8 +16,7 @@
 
 {
   imports = let
-    global_settings = (import ./global_settings.nix);
-    default_users = global_settings.default_users;
+    default_users = (import ./global_settings.nix).default_users;
   in
     [ ./hardware-configuration.nix
       ./settings.nix
