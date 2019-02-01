@@ -9,27 +9,22 @@
 ########################################################################
 
 {
-  hostname = "benuc012";
+  networking.hostName = "benuc012";
+  time.timeZone = "Europe/Brussels";
+
+  settings = {
+    boot.mode = "uefi";
+    reverse_tunnel = {
+      enable = true;
+      remote_forward_port = 6012;
+    };
+    crypto = {
+      enabled = true;
+      device = "/dev/LVMVolGroup/nixos_data";
+    };
+  };
   imports = [
   ];
-
-  boot = {
-    # Set to either "legacy" or "uefi" depending on how you install the system
-    mode = "uefi";
-    # Set to "nodev" for an uefi system.
-    device = "nodev";
-  };
-
-  # Timezone of the location where the server will be deployed
-  timezone = "Europe/Brussels";
-  reverse_tunnel = {
-    enabled = true;
-    forward_port = "6012";
-  };
-  crypto = {
-    enabled = true;
-    encrypted_device = "/dev/LVMVolGroup/nixos_data";
-  };
 
 }
 

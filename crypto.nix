@@ -9,11 +9,36 @@
 
 { config, lib, pkgs, ... }:
 
-{
+let
+  cfg = config.settings.crypto;
+in
 
-  systemd = {
+with lib;
+
+{
+  options = {
+    settings.crypto = {
+      enable = mkOption {
+        default = false;
+        type = types.bool;
+        description = ''
+          Whether to try and mount the encrypted data partition.
+        '';
+      };
+
+      device = mkOption {
+        default = "";
+        type = with types; uniq string;
+        description = ''
+          The device to mount.
+        '';
+      };
+    };
+  };
+
+  config.systemd = mkIf cfg.enable {
     services.open_nixos_data = {
-      enable = true;
+      enable = cfg.enable;
       description = "Open nixos_data volume";
       after = [ "lvm2-monitor.service" ];
       wantedBy = [ "multi-user.target" ];
@@ -26,7 +51,7 @@
         Type = "oneshot";
         RemainAfterExit = true;
         ExecStart = ''
-          ${pkgs.cryptsetup}/bin/cryptsetup open ${(import ./settings.nix).crypto.encrypted_device} nixos_data_decrypted --key-file /keyfile
+          ${pkgs.cryptsetup}/bin/cryptsetup open ${cfg.device} nixos_data_decrypted --key-file /keyfile
         '';
         ExecStop = ''
           ${pkgs.cryptsetup}/bin/cryptsetup close nixos_data_decrypted
@@ -64,3 +89,4 @@
   };
 
 }
+

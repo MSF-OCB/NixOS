@@ -16,31 +16,15 @@
 
 {
   imports = let
-    settings = (import ./settings.nix);
     global_settings = (import ./global_settings.nix);
     default_users = global_settings.default_users;
-    extra_imports = settings.imports;
-    reverse_tunnel_import = if settings.reverse_tunnel.enabled
-                            then [ ./reverse-tunnel.nix ] else [];
-    crypto_import = if settings.crypto.enabled
-                    then [ ./crypto.nix ] else [];
   in
-    [ ./hardware-configuration.nix ] ++
-    crypto_import ++
-    reverse_tunnel_import ++
-    default_users ++
-    extra_imports;
-  
-  networking.hostName = (import ./settings.nix).hostname;
-
-  # Select internationalisation properties.
-  # i18n = {
-  #   consoleFont = "Lat2-Terminus16";
-  #   consoleKeyMap = "us";
-  #   defaultLocale = "en_US.UTF-8";
-  # };
-
-  time.timeZone = (import ./settings.nix).timezone;
+    [ ./hardware-configuration.nix
+      ./settings.nix
+      ./boot.nix
+      ./crypto.nix
+      ./reverse-tunnel.nix ] ++
+    default_users;
 
   environment = {
     systemPackages = with pkgs; [
@@ -95,33 +79,6 @@
   };
 
   boot = {
-
-    loader = let
-      boot_mode = (import ./settings.nix).boot.mode;
-      grub_common = {
-        enable = true;
-        version = 2;
-        memtest86.enable = true;
-      };
-    in
-      if boot_mode == "legacy"
-      then {
-        grub = grub_common // {
-          efiSupport = false;
-          device = (import ./settings.nix).boot.device;
-        };
-      }
-      else if boot_mode == "uefi"
-      then {
-        grub = grub_common // {
-          efiSupport = true;
-          efiInstallAsRemovable = true;
-          device = "nodev";
-        };
-        efi.efiSysMountPoint = "/boot/efi";
-      }
-      else
-        throw "The boot_mode should be set to either \"legacy\" or \"uefi\"";
 
     #kernelPackages = pkgs.linuxPackages_latest;
 

@@ -6,6 +6,18 @@
                     ./users/mohammad.nix
                     ./users/thierry.nix ];
 
+  tunneller_keyfiles = [
+    ./keys/didier
+    ./keys/dirk
+    ./keys/joana
+    ./keys/kathy
+    ./keys/manu
+    ./keys/mohammad
+    ./keys/ramses
+    ./keys/thierry
+    ./keys/yusuph
+  ];
+
   reverse_tunnel_config = [ { name = "google";     host = "msfrelay1.msfict.info";     port_prefix = "";  }
                             { name = "ixelles";    host = "ehealthsshrelayhq1.msf.be"; port_prefix = "";  }
                             { name = "ixelles-ip"; host = "194.78.17.132";             port_prefix = "1"; } ];
