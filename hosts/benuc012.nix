@@ -9,6 +9,7 @@
 ########################################################################
 
 {
+
   networking.hostName = "benuc012";
   time.timeZone = "Europe/Brussels";
 

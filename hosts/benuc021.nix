@@ -9,28 +9,28 @@
 ########################################################################
 
 {
-  hostname = "benuc021";
+
+  networking.hostName = "benuc021";
+  time.timeZone = "Asia/Karachi";
+
+  settings = {
+    boot = {
+      mode = "legacy";
+      device = "/dev/disk/by-id/wwn-0x502b2a201d1c1b1a";
+    };
+    reverse_tunnel = {
+      enable = true;
+      remote_forward_port = 6021;
+    };
+    crypto = {
+      enable = true;
+      device = "/safe.img";
+    };
+  };
+
   imports = [
     ../bahmni.nix
   ];
-
-  boot = {
-    # Set to either "legacy" or "uefi" depending on how you install the system
-    mode = "legacy";
-    # Set to "nodev" for an uefi system.
-    device = "/dev/disk/by-id/wwn-0x502b2a201d1c1b1a";
-  };
-
-  # Timezone of the location where the server will be deployed
-  timezone = "Asia/Karachi";
-  reverse_tunnel = {
-    enabled = true;
-    forward_port = "6021";
-  };
-  crypto = {
-    enabled = true;
-    encrypted_device = "/safe.img";
-  };
 
 }
 
