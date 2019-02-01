@@ -9,28 +9,28 @@
 ########################################################################
 
 {
-  hostname = "maadi-emr-a";
+
+  networking.hostName = "maadi-emr-a";
+  time.timeZone = "Africa/Cairo";
+
+  settings = {
+    boot = {
+      mode = "legacy";
+      device = "/dev/disk/by-id/wwn-0x5000c50093627fae";
+    };
+    reverse_tunnel = {
+      enable = true;
+      remote_forward_port = 7040;
+    };
+    crypto = {
+      enable = true;
+      device = "/safe.img";
+    };
+  };
+
   imports = [
     ../bahmni.nix
   ];
-
-  boot = {
-    # Set to either "legacy" or "uefi" depending on how you install the system
-    mode = "legacy";
-    # Set to "nodev" for an uefi system.
-    device = "/dev/disk/by-id/wwn-0x5000c50093627fae";
-  };
-
-  # Timezone of the location where the server will be deployed
-  timezone = "Africa/Cairo";
-  reverse_tunnel = {
-    enabled = true;
-    forward_port = "7040";
-  };
-  crypto = {
-    enabled = true;
-    encrypted_device = "/safe.img";
-  };
 
 }
 

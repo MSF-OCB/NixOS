@@ -9,29 +9,25 @@
 ########################################################################
 
 {
-  hostname = "benuc009";
+  networking.hostName = "benuc009";
+  time.timeZone = "Africa/Nairobi";
+
+  settings = {
+    boot.mode = "uefi";
+    reverse_tunnel = {
+      enable = true;
+      remote_forward_port = 6009;
+    };
+    crypto = {
+      enable = true;
+      device = "/safe.img";
+    };
+  };
+
   imports = [
     ../docker.nix
     ../users/yusuph.nix
   ];
-
-  boot = {
-    # Set to either "legacy" or "uefi" depending on how you install the system
-    mode = "uefi";
-    # Set to "nodev" for an uefi system.
-    device = "nodev";
-  };
-
-  # Timezone of the location where the server will be deployed
-  timezone = "Africa/Nairobi";
-  reverse_tunnel = {
-    enabled = true;
-    forward_port = "6009";
-  };
-  crypto = {
-    enabled = true;
-    encrypted_device = "/safe.img";
-  };
 
 }
 

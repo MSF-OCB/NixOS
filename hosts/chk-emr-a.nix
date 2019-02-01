@@ -9,28 +9,28 @@
 ########################################################################
 
 {
-  hostname = "chk-emr-a";
+
+  networking.hostName = "chk-emr-a";
+  time.timeZone = "Africa/Kinshasa";
+
+  settings = {
+    boot = {
+      mode = "legacy";
+      device = "/dev/disk/by-id/wwn-0x5000c500935b35ec";
+    };
+    reverse_tunnel = {
+      enable = true;
+      remote_forward_port = 7000;
+    };
+    crypto = {
+      enable = true;
+      device = "/dev/LVMVolGroup/nixos_data";
+    };
+  };
+
   imports = [
     ../bahmni.nix
   ];
-
-  boot = {
-    # Set to either "legacy" or "uefi" depending on how you install the system
-    mode = "legacy";
-    # Set to "nodev" for an uefi system.
-    device = "/dev/disk/by-id/wwn-0x5000c500935b35ec";
-  };
-
-  # Timezone of the location where the server will be deployed
-  timezone = "Africa/Kinshasa";
-  reverse_tunnel = {
-    enabled = true;
-    forward_port = "7000";
-  };
-  crypto = {
-    enabled = true;
-    encrypted_device = "/dev/LVMVolGroup/nixos_data";
-  };
 
 }
 

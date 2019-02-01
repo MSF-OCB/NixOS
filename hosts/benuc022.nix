@@ -9,28 +9,28 @@
 ########################################################################
 
 {
-  hostname = "benuc022";
+
+  networking.hostName = "benuc022";
+  time.timeZone = "Africa/Cairo";
+
+  settings = {
+    boot = {
+      mode = "legacy";
+      device = "/dev/disk/by-id/ata-DGM28-A28D81BCBQC-27_20180223AA1724144410";
+    };
+    reverse_tunnel = {
+      enable = true;
+      remote_forward_port = 6022;
+    };
+    crypto = {
+      enable = true;
+      device = "/dev/LVMVolGroup/nixos_data";
+    };
+  };
+
   imports = [
     ../bahmni.nix
   ];
-
-  boot = {
-    # Set to either "legacy" or "uefi" depending on how you install the system
-    mode = "legacy";
-    # Set to "nodev" for an uefi system.
-    device = "/dev/disk/by-id/ata-DGM28-A28D81BCBQC-27_20180223AA1724144410";
-  };
-
-  # Timezone of the location where the server will be deployed
-  timezone = "Africa/Cairo";
-  reverse_tunnel = {
-    enabled = true;
-    forward_port = "6022";
-  };
-  crypto = {
-    enabled = true;
-    encrypted_device = "/dev/LVMVolGroup/nixos_data";
-  };
 
 }
 

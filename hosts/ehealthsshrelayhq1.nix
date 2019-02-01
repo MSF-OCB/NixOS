@@ -9,30 +9,22 @@
 ########################################################################
 
 {
-  hostname = "ehealthsshrelayhq1";
+
+  networking.hostName = "ehealthsshrelayhq1";
+  time.timeZone = "Europe/Brussels";
+
+  settings = {
+    boot = {
+      mode = "legacy";
+      device = "/dev/disk/by-path/pci-0000:00:10.0-scsi-0:0:0:0";
+    };
+    reverse_tunnel.relay.enable = true;
+  };
+
   imports = [
     ../local/static-network.nix
     ../vmware.nix
-    ../ssh-relay.nix
   ];
-
-  boot = {
-    # Set to either "legacy" or "uefi" depending on how you install the system
-    mode = "legacy";
-    # Set to "nodev" for an uefi system.
-    device = "/dev/disk/by-path/pci-0000:00:10.0-scsi-0:0:0:0";
-  };
-
-  # Timezone of the location where the server will be deployed
-  timezone = "Europe/Brussels";
-  reverse_tunnel = {
-    enabled = false;
-    forward_port = "";
-  };
-  crypto = {
-    enabled = false;
-    encrypted_device = "";
-  };
 
 }
 
