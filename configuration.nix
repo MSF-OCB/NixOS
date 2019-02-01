@@ -25,6 +25,11 @@
       ./crypto.nix
       ./reverse-tunnel.nix ] ++
     default_users;
+  
+  networking.dhcpcd = {
+    persistent = true;
+    denyInterfaces = [ "eth*" "wlan*" ];
+  };
 
   environment = {
     systemPackages = with pkgs; [
@@ -107,7 +112,9 @@
       "vm.mmap_rnd_bits" = 32;
     };
 
-    tmpOnTmpfs = true;
+    # Causes ordering cycle with zramswap, disable until the fix is released
+    # https://github.com/NixOS/nixpkgs/pull/52991
+    tmpOnTmpfs = false;
   };
 
   fileSystems = {
