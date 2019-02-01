@@ -9,7 +9,21 @@
 ########################################################################
 
 {
-  hostname = "nixos-dev-xl";
+
+  networking.hostName = "nixos-dev-xl";
+  time.timeZone = "Europe/Brussels";
+
+  settings = {
+    boot = {
+      mode = "legacy";
+      device = "/dev/disk/by-path/pci-0000:03:00.0-scsi-0:0:0:0";
+    };
+    reverse_tunnel = {
+      enable = true;
+      remote_forward_port = 7030;
+    };
+  };
+
   imports = [
     ../vmware.nix
     ../local/static-network.nix
@@ -17,24 +31,6 @@
     ../docker-registry.nix
     ../ansible.nix
   ];
-
-  boot = {
-    # Set to either "legacy" or "uefi" depending on how you install the system
-    mode = "legacy";
-    # Set to "nodev" for an uefi system.
-    device = "/dev/disk/by-path/pci-0000:03:00.0-scsi-0:0:0:0";
-  };
-
-  # Timezone of the location where the server will be deployed
-  timezone = "Europe/Brussels";
-  reverse_tunnel = {
-    enabled = true;
-    forward_port = "7030";
-  };
-  crypto = {
-    enabled = false;
-    encrypted_device = "";
-  };
 
 }
 
