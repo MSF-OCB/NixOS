@@ -19,10 +19,11 @@
       remote_forward_port = 6012;
     };
     crypto = {
-      enabled = true;
+      enable = true;
       device = "/dev/LVMVolGroup/nixos_data";
     };
   };
+
   imports = [
   ];
 
