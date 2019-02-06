@@ -23,6 +23,7 @@
       ./boot.nix
       ./crypto.nix
       ./reverse-tunnel.nix
+      ./fail2ban.nix
       ./prometheus-node-exporter.nix ] ++
     default_users;
   
