@@ -19,7 +19,7 @@
       remote_forward_port = 6006;
     };
     crypto = {
-      enable = false;
+      enable = true;
       device = "/safe.img";
     };
   };
