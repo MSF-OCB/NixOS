@@ -23,7 +23,8 @@
       ./settings.nix
       ./boot.nix
       ./crypto.nix
-      ./reverse-tunnel.nix ] ++
+      ./reverse-tunnel.nix
+      ./prometheus-node-exporter.nix ] ++
     default_users;
   
   networking.dhcpcd = {
