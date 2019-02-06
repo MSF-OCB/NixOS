@@ -46,7 +46,7 @@ with lib;
     };
   };
 
-  config = mkIf (cfg.enable or cfg.relay.enable) {
+  config = mkIf (cfg.enable || cfg.relay.enable) {
 
     users.extraUsers.tunnel = {
       isNormalUser = false;
