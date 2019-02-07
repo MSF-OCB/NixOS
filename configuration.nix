@@ -166,7 +166,7 @@
         StrictModes yes
         AllowAgentForwarding no
         TCPKeepAlive yes
-        ClientAliveInterval 120
+        ClientAliveInterval 60
         ClientAliveCountMax 3
         UseDNS no
         GSSAPIAuthentication no
