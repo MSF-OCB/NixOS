@@ -17,6 +17,7 @@
     boot = {
       mode = "legacy";
       device = "/dev/disk/by-path/pci-0000:03:00.0-scsi-0:0:0:0";
+      separate_partition = false;
     };
     reverse_tunnel = {
       enable = true;

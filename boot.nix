@@ -23,11 +23,19 @@ with lib;
           The device to install GRUB to in legacy mode.
         '';
       };
+
+      separate_partition = mkOption {
+        default = true;
+        type = types.bool;
+        description = ''
+          Whether /boot is a separate partition.
+        '';
+      };
     };
   };
 
-  config.boot = {
-    loader = let
+  config = {
+    boot.loader = let
       mode = cfg.mode;
       grub_common = {
         enable = true;
@@ -53,6 +61,11 @@ with lib;
       }
       else
         throw "The settings.boot.mode parameter should be set to either \"legacy\" or \"uefi\"";
+
+    fileSystems = mkIf cfg.separate_partition {
+      "/boot".options = [ "defaults" "noatime" "nosuid" "nodev" "noexec" ];
+    };
+
   };
 }
 
