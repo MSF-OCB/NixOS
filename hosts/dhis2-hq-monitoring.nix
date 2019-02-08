@@ -27,7 +27,6 @@
   imports = [
     ../vmware.nix
     ../local/static-network.nix
-    ../docker-registry.nix
     ../docker.nix
     ../ansible.nix
     ../users/prometheus.nix
