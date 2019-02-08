@@ -30,6 +30,7 @@
     ../docker-registry.nix
     ../docker.nix
     ../ansible.nix
+    ../users/prometheus.nix
   ];
 
 }
