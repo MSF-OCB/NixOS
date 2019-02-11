@@ -12,6 +12,13 @@
 
 {
 
+  users.extraUsers.prometheus = {
+    isNormalUser = false;
+    isSystemUser = true;
+    shell = pkgs.nologin;
+    openssh.authorizedKeys.keyFiles = [ ../keys/prometheus ];
+  };
+
   services.prometheus.exporters.node = {
     enable = true;
     enabledCollectors = [

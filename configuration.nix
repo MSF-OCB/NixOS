@@ -24,7 +24,7 @@
       ./crypto.nix
       ./reverse-tunnel.nix
       ./fail2ban.nix
-      ./prometheus-node-exporter.nix ] ++
+      ./prometheus.nix ] ++
     default_users;
   
   networking.dhcpcd = {
