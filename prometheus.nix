@@ -16,7 +16,7 @@
     isNormalUser = false;
     isSystemUser = true;
     shell = pkgs.nologin;
-    openssh.authorizedKeys.keyFiles = [ ../keys/prometheus ];
+    openssh.authorizedKeys.keyFiles = [ ./keys/prometheus ];
   };
 
   services.prometheus.exporters.node = {
