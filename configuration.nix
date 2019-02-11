@@ -102,6 +102,9 @@
     kernel.sysctl = {
       # Prevent replacing the running kernel image w/o reboot
       "kernel.kexec_load_disabled" = true;
+      
+      # Reboot after 10 min following a kernel panic
+      "kernel.panic" = "10";
 
       # Disable bpf() JIT (to eliminate spray attacks)
       #"net.core.bpf_jit_enable" = mkDefault false;
