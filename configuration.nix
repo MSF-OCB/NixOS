@@ -144,11 +144,18 @@
     wheelNeedsPassword = false;
   };
 
+  # No fonts needed on a headless system
+  fonts.fontconfig.enable = false;
+
   programs = {
     bash.enableCompletion = true;
-    
-    ssh.startAgent = false;
-    
+
+    ssh = {
+      startAgent = false;
+      # We do not have GUIs
+      setXAuthLocation = false;
+    };
+
     tmux = {
       enable = true;
       newSession = true;
