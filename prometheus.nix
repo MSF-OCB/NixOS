@@ -25,7 +25,8 @@
       "logind"
       "systemd"
     ];
-    openFirewall = true;
+    # We do not need to open the firewall publicly
+    openFirewall = false;
   };
 
 }
