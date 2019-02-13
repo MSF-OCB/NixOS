@@ -101,7 +101,8 @@ with lib;
               -o "IdentitiesOnly=yes" \
               -o "Compression=yes" \
               -o "ControlMaster=no" \
-              -R ${conf.port_prefix}${toString cfg.remote_forward_port}:localhost:22 \
+              -R ${toString (conf.port_prefix * 10000 + cfg.remote_forward_port)}:localhost:22 \
+              -R ${toString ((3 + conf.port_prefix) * 10000 + cfg.remote_forward_port)}:localhost:9100 \
               -i /etc/id_tunnel \
               tunnel@${conf.host}
           '';
