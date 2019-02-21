@@ -9,8 +9,21 @@
 
 { config, lib, pkgs, ... }:
 
+with lib;
+
 let
   cfg = config.settings.crypto;
+  addBindMount = c: {
+    enable = c.enable;
+    what = "/opt/${c.name}";
+    where = toString c.source;
+    options = "bind";
+    before = c.required_by;
+    requisite = c.required_by;
+    after = [ "opt.mount" ];
+    wants = [ "opt.mount" ];
+    wantedBy = [ "multi-user.target" ];
+  };
 in
 
 with lib;
@@ -33,58 +46,84 @@ with lib;
           The device to mount.
         '';
       };
+
+      bind_mounts = mkOption {
+        default = {};
+        type = with types; listOf (submodule {
+          options = {
+
+            enable = mkOption {
+              default = true;
+              type = types.bool;
+            };
+
+            name = mkOption {
+              type = with types; uniq string;
+            };
+
+            source = mkOption {
+              type = types.path;
+            };
+
+            required_by = mkOption {
+              type = with types; listOf string;
+            };
+
+          };
+        });
+      };
     };
   };
 
-  config.systemd = mkIf cfg.enable {
-    services.open_nixos_data = {
-      enable = cfg.enable;
-      description = "Open nixos_data volume";
-      after = [ "lvm2-monitor.service" ];
-      wantedBy = [ "multi-user.target" ];
-      wants = [ "lvm2-monitor.service" ];
-      unitConfig = {
-        ConditionPathExists = "!/dev/mapper/nixos_data_decrypted";
-      };
-      serviceConfig = {
-        User = "root";
-        Type = "oneshot";
-        RemainAfterExit = true;
-        ExecStart = ''
-          ${pkgs.cryptsetup}/bin/cryptsetup open ${cfg.device} nixos_data_decrypted --key-file /keyfile
-        '';
-        ExecStop = ''
-          ${pkgs.cryptsetup}/bin/cryptsetup close nixos_data_decrypted
-        '';
-      };
-    };
+  config = {
 
-    mounts = [
-
+    settings.crypto.bind_mounts = [
       {
-        enable = true;
-        what = "/dev/disk/by-label/nixos_data";
-        where = "/opt";
-        type = "ext4";
-        options = "acl,noatime,nosuid,nodev";
-        after = [ "open_nixos_data.service" ];
-        wants = [ "open_nixos_data.service" ];
-        wantedBy = [ "multi-user.target" ];
+        name = "docker";
+        source = /var/lib/docker;
+        required_by = [ "docker.service" ];
       }
-
-      {
-        enable = true;
-        what = "/opt/docker";
-        where = "/var/lib/docker";
-        options = "bind";
-        before = [ "docker.service" ];
-        requisite = [ "docker.service" ];
-        after = [ "opt.mount" ];
-        wants = [ "opt.mount" ];
-        wantedBy = [ "multi-user.target" ];
-      }
-
     ];
+
+    systemd = mkIf cfg.enable {
+      services.open_nixos_data = {
+        enable = cfg.enable;
+        description = "Open nixos_data volume";
+        after = [ "lvm2-monitor.service" ];
+        wantedBy = [ "multi-user.target" ];
+        wants = [ "lvm2-monitor.service" ];
+        unitConfig = {
+          ConditionPathExists = "!/dev/mapper/nixos_data_decrypted";
+        };
+        serviceConfig = {
+          User = "root";
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStart = ''
+            ${pkgs.cryptsetup}/bin/cryptsetup open ${cfg.device} nixos_data_decrypted --key-file /keyfile
+          '';
+          ExecStop = ''
+            ${pkgs.cryptsetup}/bin/cryptsetup close nixos_data_decrypted
+          '';
+        };
+      };
+
+      mounts = [
+
+        {
+          enable = true;
+          what = "/dev/disk/by-label/nixos_data";
+          where = "/opt";
+          type = "ext4";
+          options = "acl,noatime,nosuid,nodev";
+          after = [ "open_nixos_data.service" ];
+          wants = [ "open_nixos_data.service" ];
+          wantedBy = [ "multi-user.target" ];
+        }
+
+      ] ++ foldr (mount: mounts: mounts ++ [ (addBindMount mount) ]) [] cfg.bind_mounts;
+
+    };
 
   };
 
