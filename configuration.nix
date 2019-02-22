@@ -162,6 +162,9 @@
       newSession = true;
       clock24 = true;
       historyLimit = 10000;
+      extraTmuxConf = ''
+        set -g mouse on
+      '';
     };
   };
 
