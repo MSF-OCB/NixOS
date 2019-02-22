@@ -137,9 +137,12 @@
   #  cipher = <run cryptsetup benchmark>
   #};
 
-  security.sudo = {
-    enable = true;
-    wheelNeedsPassword = false;
+  security = {
+    sudo = {
+      enable = true;
+      wheelNeedsPassword = false;
+    };
+    pam.services.su.forwardXAuth = lib.mkForce false;
   };
 
   # No fonts needed on a headless system
