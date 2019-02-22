@@ -28,6 +28,7 @@
     ../docker.nix
     ../users/yusuph.nix
     ../users/damien.nix
+    ../users/didier.nix
   ];
 
 }
