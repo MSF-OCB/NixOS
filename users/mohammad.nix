@@ -3,7 +3,7 @@
 {
   users.extraUsers.mohammad = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" "docker" ];
+    extraGroups = [ "wheel" "docker" ];
     openssh.authorizedKeys.keyFiles = [ ../keys/mohammad ];
   };
 }

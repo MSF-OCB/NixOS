@@ -3,7 +3,7 @@
 {
   users.extraUsers.thierry = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" "docker" ];
+    extraGroups = [ "wheel" "docker" ];
     openssh.authorizedKeys.keyFiles = [ ../keys/thierry ];
   };
 }
