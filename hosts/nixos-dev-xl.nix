@@ -26,13 +26,6 @@
     crypto = {
       enable = true;
       device = "/dev/LVMVolGroup/nixos_data";
-      bind_mounts = [
-        {
-          name = "docker-registry";
-          source = /var/lib/docker-registry;
-          required_by = [ "docker-registry.service" ];
-        }
-      ];
     };
   };
 
@@ -42,6 +35,7 @@
     ../bahmni.nix
     ../docker-registry.nix
     ../ansible.nix
+    ../nixops.nix
   ];
 
 }
