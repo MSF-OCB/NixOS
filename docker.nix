@@ -22,11 +22,16 @@
     "net.core.somaxconn" = 65535;
   };
 
-  virtualisation.docker.enable = true;
-  virtualisation.docker.enableOnBoot = true;
+  virtualisation.docker = {
+    enable = true;
+    enableOnBoot = true;
+    extraOptions = "--data-root=/opt/docker";
+  };
 
-  systemd.services.docker.wants = [ "network-online.target" ];
-  systemd.services.docker.after = [ "network-online.target" ];
+  systemd.services.docker = {
+    wants = [ "network-online.target" ];
+    after = [ "network-online.target" ];
+  };
 
 }
 
