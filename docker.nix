@@ -25,7 +25,8 @@
   virtualisation.docker = {
     enable = true;
     enableOnBoot = true;
-    extraOptions = "--data-root=/opt/docker";
+    # Do not break currently running non-encrypted set-ups.
+    extraOptions = lib.mkIf config.settings.crypto.enable "--data-root=/opt/docker";
   };
 
   systemd.services.docker = {
