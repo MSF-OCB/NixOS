@@ -48,7 +48,7 @@ with lib;
       };
 
       bind_mounts = mkOption {
-        default = {};
+        default = [ ];
         type = with types; listOf (submodule {
           options = {
 
@@ -77,14 +77,6 @@ with lib;
 
   config = {
 
-    settings.crypto.bind_mounts = [
-      {
-        name = "docker";
-        source = /var/lib/docker;
-        required_by = [ "docker.service" ];
-      }
-    ];
-
     systemd = mkIf cfg.enable {
       services.open_nixos_data = {
         enable = cfg.enable;
@@ -108,17 +100,25 @@ with lib;
         };
       };
 
-      mounts = [
+      mounts = let
+        # When /opt is a separate partition, it needs to be mounted before
+        # starting docker and docker-registry.
+        # For documentation about "optional" see: https://github.com/NixOS/nixpkgs/blob/master/lib/lists.nix
+        dependent_services = (optional config.virtualisation.docker.enable "docker.service") ++
+                             (optional config.services.dockerRegistry.enable "docker-registry.service");
+      in [
 
         {
           enable = true;
-          what = "/dev/disk/by-label/nixos_data";
-          where = "/opt";
-          type = "ext4";
-          options = "acl,noatime,nosuid,nodev";
-          after = [ "open_nixos_data.service" ];
-          wants = [ "open_nixos_data.service" ];
-          wantedBy = [ "multi-user.target" ];
+          what   = "/dev/disk/by-label/nixos_data";
+          where  = "/opt";
+          type   = "ext4";
+          options   = "acl,noatime,nosuid,nodev";
+          after     = [ "open_nixos_data.service" ];
+          wants     = [ "open_nixos_data.service" ];
+          wantedBy  = [ "multi-user.target" ];
+          before    = dependent_services;
+          requisite = dependent_services;
         }
 
       ] ++ foldr (mount: mounts: mounts ++ [ (addBindMount mount) ]) [] cfg.bind_mounts;
