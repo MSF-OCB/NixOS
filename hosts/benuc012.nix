@@ -26,6 +26,7 @@
   };
 
   imports = [
+    ../bahmni.nix
   ];
 
 }
