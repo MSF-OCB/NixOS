@@ -12,25 +12,6 @@
 
 {
 
-  # Python is not at /usr/bin/python in NixOS
-  # https://github.com/NixOS/nixpkgs/blob/master/pkgs/tools/admin/ansible/2.4.nix
-  nixpkgs.config.packageOverrides = super: {
-    ansible = super.ansible.overrideAttrs (old: rec {
-      version = "2.7.6";
-      name = "${old.pname}-${version}";
- 
-      src = super.fetchurl {
-        url = "http://releases.ansible.com/ansible/${name}.tar.gz";
-        sha256 = "6d855ead966c1a24a7d583ddcea8dd9e1f6edab3207390b647149351e113eb38";
-      };
-
-      prePatch = ''
-        sed -i "s,/usr/,$out," lib/ansible/constants.py && \
-        find lib/ansible/ -type f -exec sed -i "s,/usr/bin/python,/usr/bin/env python,g" {} \;
-      '';
-    });
-  };
-
   environment.systemPackages = with pkgs; [
     ansible
     rsync
