@@ -45,11 +45,11 @@ with lib;
           '';
         };
 
-        tunneller.allowedUsers = mkOption {
+        tunneller.keyFiles = mkOption {
           default = [ ];
-          type = with types; listOf string;
+          type = with types; listOf path;
           description = ''
-            The list of users who are allowed to access the tunneller user to create tunnels.
+            The list of key files which are allowed to access the tunneller user to create tunnels.
           '';
         };
         
@@ -73,9 +73,7 @@ with lib;
       isNormalUser = false;
       isSystemUser = true;
       shell = pkgs.nologin;
-      openssh.authorizedKeys.keyFiles =
-        concatMap (u: config.users.extraUsers.${u}.openssh.authorizedKeys.keyFiles)
-                  cfg.relay.tunneller.allowedUsers;
+      openssh.authorizedKeys.keyFiles = cfg.relay.tunneller.keyFiles;
     };
 
     environment.etc.id_tunnel = mkIf cfg.enable {
