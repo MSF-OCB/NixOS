@@ -30,6 +30,7 @@
     ../docker.nix
     ../ansible.nix
     ../users/yusuph.nix
+    ../users/didier.nix
   ];
 
 }
