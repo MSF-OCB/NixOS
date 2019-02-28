@@ -60,18 +60,20 @@ in {
 
   };
 
-  config = {
+  config = let
+    toKeyPath = name: ./keys + ("/" + name);
+  in {
 
     users.users = mapAttrs (name: value: {
       name = name;
       isNormalUser = value.hasShell;
       extraGroups = value.extraGroups;
       shell = mkIf (!value.hasShell) pkgs.nologin;
-      openssh.authorizedKeys.keyFiles = [ (./keys + ("/" + name)) ];
+      openssh.authorizedKeys.keyFiles = [ (toKeyPath name) ];
     }) (filterAttrs (name: value: value.enable) config.settings.users);
 
-    settings.reverse_tunnel.relay.tunneller.allowedUsers =
-      mapAttrsToList (name: value: name)
+    settings.reverse_tunnel.relay.tunneller.keyFiles =
+      mapAttrsToList (name: value: toKeyPath name)
         (filterAttrs (name: value: value.canTunnel) config.settings.users);
 
   };
