@@ -18,6 +18,8 @@
     ./keys/ramses
     ./keys/thierry
     ./keys/yusuph
+    ./keys/godfried
+    ./keys/damien
   ];
 
   reverse_tunnel_config = [
