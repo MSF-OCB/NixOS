@@ -19,6 +19,7 @@
   imports = [
     ./hardware-configuration.nix
     ./settings.nix
+    ./global_settings.nix
     ./users.nix
     ./ocb_users.nix
     ./boot.nix

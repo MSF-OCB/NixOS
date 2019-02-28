@@ -36,6 +36,27 @@ with lib;
         '';
       };
 
+      relay_servers = mkOption {
+        type = with types; listOf (submodule {
+          options = {
+
+            name = mkOption {
+              type = types.str;
+            };
+
+            host = mkOption {
+              type = types.str;
+            };
+
+            port_prefix = mkOption {
+              type    = types.ints.between 0 6;
+              default = 0;
+            };
+
+          };
+        });
+      };
+
       relay = {
         enable = mkOption {
           default = false;
@@ -84,7 +105,6 @@ with lib;
     };
 
     systemd.services = mkIf cfg.enable (let
-      reverse_tunnel_config = (import ./global_settings.nix).reverse_tunnel_config;
       make_service = conf: {
         "autossh-reverse-tunnel-${conf.name}" = {
           enable = true;
@@ -120,7 +140,7 @@ with lib;
         };
       };
     in
-      foldr (conf: services: services // (make_service conf)) {} reverse_tunnel_config);
+      foldr (conf: services: services // (make_service conf)) {} cfg.relay_servers);
   };
 }
 
