@@ -20,6 +20,7 @@
     ./hardware-configuration.nix
     ./settings.nix
     ./global_settings.nix
+    ./maintenance.nix
     ./users.nix
     ./ocb_users.nix
     ./boot.nix
@@ -130,15 +131,6 @@
     memoryPercent = 40;
   };
 
-  ## WARNING: Don't try to hibernate when you have at least one swap partition with this option enabled!
-  ## We have no way to set the partition into which hibernation image is saved, so if your image ends up on an encrypted one you would lose it!
-  ## WARNING #2: Do not use /dev/disk/by-uuid/… or /dev/disk/by-label/… as your swap device when using randomEncryption
-  ## as the UUIDs and labels will get erased on every boot when the partition is encrypted. Best to use /dev/disk/by-partuuid/…
-  #swapDevices.*.randomEncryption = {
-  #  enable = true;
-  #  cipher = <run cryptsetup benchmark>
-  #};
-
   security = {
     sudo = {
       enable = true;
@@ -216,7 +208,6 @@
         PowerKeyIgnoreInhibited=yes
       '';
     };
-
   };
 
   hardware = {
@@ -225,87 +216,10 @@
     cpu.amd.updateMicrocode = true;
   };
 
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
-
   users.mutableUsers = false;
   # Lock the root user
   users.extraUsers.root = {
     hashedPassword = "!";
-  };
-
-  system.autoUpgrade = {
-    enable = true;
-    dates = "Mon 03:00";
-  };
-
-  systemd.services = {
-
-    # Service which runs during the day, to catch the situation where servers
-    # are turned off every evening.
-    # This service updates and sets the new config as the boot default but
-    # does not activate it yet.
-    # Mainly copied from  nixpkgs/nixos/modules/installer/tools/auto-upgrade.nix.
-    nixos-upgrade-boot = let cfg = config.system.autoUpgrade; in {
-      enable = true;
-      description = "NixOS Upgrade Boot";
-      restartIfChanged = false;
-      unitConfig.X-StopOnRemoval = false;
-      serviceConfig = {
-        User = "root";
-        Type = "oneshot";
-      };
-
-      environment = config.nix.envVars //
-        { inherit (config.environment.sessionVariables) NIX_PATH;
-          HOME = "/root";
-        } // config.networking.proxy.envVars;
-
-      path = [ pkgs.gnutar pkgs.xz.bin config.nix.package.out ];
-      script = ''
-        ${config.system.build.nixos-rebuild}/bin/nixos-rebuild boot ${toString cfg.flags}
-      '';
-      startAt = "Tue 12:00";
-    };
-
-    reboot-after-kernel-change = {
-      enable = true;
-      description = "Reboot the system if the running kernel is different than the kernel of the NixOS current-system.";
-      after = [ "nixos-upgrade.service" ];
-      wantedBy = [ "nixos-upgrade.service" ];
-      restartIfChanged = false;
-      unitConfig.X-StopOnRemoval = false;
-      serviceConfig = {
-        User = "root";
-        Type = "oneshot";
-      };
-      # Check whether the kernel version has been changed and whether we didn't pass 05h00,
-      # otherwise we postpone the reboot until the next execution of this service.
-      # Current system is the most recently activated system, but its kernel only gets loaded after a reboot.
-      # Booted system is the system that we booted in, and whose kernel is thus currently loaded.
-      script = ''
-        if [ $(dirname $(readlink /run/current-system/kernel)) = $(dirname $(readlink /run/booted-system/kernel)) ]; then
-          echo No reboot required.
-        elif [ $(date +%s) -gt $(date --date="$(date --date='today' +%Y-%m-%d) + 5 hours" +%s) ]; then
-          echo Time window for reboot has passed.
-        else
-          echo Rebooting...
-          systemctl --no-block reboot
-        fi
-      '';
-    };
-  };
-
-  nix = {
-    autoOptimiseStore = true;
-    gc = {
-      automatic = true;
-      dates = "Tue 03:00";
-      options = "--delete-older-than 30d";
-    };
   };
 
   # This value determines the NixOS release with which your system is to be
