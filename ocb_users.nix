@@ -39,7 +39,7 @@
     joana    = tunnelOnly;
     kathy    = tunnelOnly;
     # IHS Informatics consultant for Bahmni
-    wasim    = tunnelOnly;
+    # wasim    = tunnelOnly;
     yusuph   = tunnelOnly // {
       extraGroups = [ "docker" ];
       hasShell = true;
