@@ -15,13 +15,13 @@
   settings.users = let
 
     admin = {
-      enable = true;
-      extraGroups = [ "wheel" "docker" ];
-      hasShell = true;
+      enable    = true;
+      hasShell  = true;
       canTunnel = true;
+      extraGroups = [ "wheel" "docker" ];
     };
     tunnelOnly = {
-      hasShell = false;
+      hasShell  = false;
       canTunnel = true;
     };
 
@@ -41,8 +41,8 @@
     # IHS Informatics consultant for Bahmni
     # wasim    = tunnelOnly;
     yusuph   = tunnelOnly // {
-      extraGroups = [ "docker" ];
       hasShell = true;
+      extraGroups = [ "docker" ];
     };
 
   };
@@ -51,7 +51,7 @@
   # To be used for console access in case of emergencies.
   users.extraUsers.msfocb = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ];
+    extraGroups  = [ "wheel" ];
     hashedPassword = (import ./global_settings.nix).admin_user_hashedPassword;
     openssh.authorizedKeys.keyFiles = [];
   };
