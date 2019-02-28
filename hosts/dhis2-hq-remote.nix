@@ -28,7 +28,6 @@
     ../vmware.nix
     ../local/static-network.nix
     ../docker.nix
-    ../ansible.nix
   ];
 
 }

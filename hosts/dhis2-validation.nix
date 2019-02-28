@@ -22,15 +22,16 @@
       enable = true;
       remote_forward_port = 7055;
     };
+    users = {
+      yusuph.enable = true;
+      didier.enable = true;
+    };
   };
 
   imports = [
     ../vmware.nix
     ../local/static-network.nix
     ../docker.nix
-    ../ansible.nix
-    ../users/yusuph.nix
-    ../users/didier.nix
   ];
 
 }
