@@ -11,7 +11,7 @@
 { ... }:
 
 {
-  users.extraUsers.ramses = {
+  settings.users.ramses = {
     extraGroups = [ "wheel" "docker" ];
     hasShell = true;
     canTunnel = true;

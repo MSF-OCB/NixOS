@@ -11,7 +11,7 @@
 { ... }:
 
 {
-  users.extraUsers.msg = {
+  settings.users.msg = {
     extraGroups = [ "wheel" "docker" ];
     hasShell = true;
     canTunnel = true;
