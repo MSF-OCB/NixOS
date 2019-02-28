@@ -20,6 +20,7 @@
   in
     [ ./hardware-configuration.nix
       ./settings.nix
+      ./users.nix
       ./boot.nix
       ./crypto.nix
       ./reverse-tunnel.nix
