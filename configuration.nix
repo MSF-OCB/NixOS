@@ -16,21 +16,6 @@
 
 {
 
-  # Default users
-  settings.users = {
-    ramses.enable = true;
-    msg.enable = true;
-    thierry.enable = true;
-    mohammad.enable = true;
-  };
-  
-  users.extraUsers.msfocb = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" ];
-    hashedPassword = (import ./global_settings.nix).admin_user_hashedPassword;
-    openssh.authorizedKeys.keyFiles = [];
-  };
-
   imports = [
     ./hardware-configuration.nix
     ./settings.nix
@@ -42,7 +27,7 @@
     ./fail2ban.nix
     ./prometheus.nix
   ];
-  
+
   networking.dhcpcd = {
     persistent = true;
     denyInterfaces = [ "eth*" "wlan*" ];

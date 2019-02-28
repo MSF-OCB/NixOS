@@ -11,81 +11,49 @@
 { ... }:
 
 {
-  settings.users = {
 
-    ramses = {
+  settings.users = let
+
+    admin = {
+      enable = true;
       extraGroups = [ "wheel" "docker" ];
       hasShell = true;
       canTunnel = true;
     };
-
-    msg = {
-      extraGroups = [ "wheel" "docker" ];
-      hasShell = true;
-      canTunnel = true;
-    };
-
-    thierry = {
-      extraGroups = [ "wheel" "docker" ];
-      hasShell = true;
-      canTunnel = true;
-    };
-
-    mohammad = {
-      extraGroups = [ "wheel" "docker" ];
-      hasShell = true;
-      canTunnel = true;
-    };
-
-    damien = {
-      extraGroups = [ ];
+    tunnelOnly = {
       hasShell = false;
       canTunnel = true;
     };
 
-    didier = {
-      extraGroups = [ ];
-      hasShell = false;
-      canTunnel = true;
-    };
+  in {
 
-    dirk = {
-      extraGroups = [ ];
-      hasShell = false;
-      canTunnel = true;
-    };
+    ramses   = admin;
+    msg      = admin;
+    thierry  = admin;
+    mohammad = admin;
 
-    godfried = {
-      extraGroups = [ ];
-      hasShell = false;
-      canTunnel = true;
-    };
-
-    joana = {
-      extraGroups = [ ];
-      hasShell = false;
-      canTunnel = true;
-    };
-
-    kathy = {
-      extraGroups = [ ];
-      hasShell = false;
-      canTunnel = true;
-    };
-
+    damien   = tunnelOnly;
+    didier   = tunnelOnly;
+    dirk     = tunnelOnly;
+    godfried = tunnelOnly;
+    joana    = tunnelOnly;
+    kathy    = tunnelOnly;
     # IHS Informatics consultant for Bahmni
-    wasim = {
-      extraGroups = [ ];
-      hasShell = false;
-      canTunnel = true;
-    };
-
-    yusuph = {
+    wasim    = tunnelOnly;
+    yusuph   = tunnelOnly // {
       extraGroups = [ "docker" ];
       hasShell = true;
-      canTunnel = true;
     };
 
+  };
+
+  # Only user with a password, but not usable via SSH.
+  # To be used for console access in case of emergencies.
+  users.extraUsers.msfocb = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" ];
+    hashedPassword = (import ./global_settings.nix).admin_user_hashedPassword;
+    openssh.authorizedKeys.keyFiles = [];
   };
 
 }
