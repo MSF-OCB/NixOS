@@ -31,6 +31,11 @@
   imports = [
     ../docker.nix
     ../users/yusuph.nix
+    ../users/damien.nix
+    ../users/didier.nix
+    ../users/joana.nix
+    ../users/kathy.nix
+    ../users/godfried.nix
   ];
 
 }
