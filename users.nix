@@ -22,6 +22,11 @@ let
         type = types.str;
       };
 
+      enable = mkOption {
+        type = types.bool;
+        default = false;
+      };
+
       extraGroups = mkOption {
         type = types.listOf types.str;
         default = [];
@@ -63,7 +68,7 @@ in {
       extraGroups = value.extraGroups;
       shell = mkIf (!value.hasShell) pkgs.nologin;
       openssh.authorizedKeys.keyFiles = [ (./keys + ("/" + name)) ];
-    }) config.settings.users;
+    }) (filterAttrs (name: value: value.enable) config.settings.users);
 
     settings.reverse_tunnel.relay.tunneller.allowedUsers =
       mapAttrsToList (name: value: name)

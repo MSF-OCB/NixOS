@@ -1,13 +1,5 @@
 {
   
-  default_users = [
-    ./users/msfocb.nix
-    ./users/ramses.nix
-    ./users/manu.nix
-    ./users/mohammad.nix
-    ./users/thierry.nix
-  ];
-
   reverse_tunnel_config = [
     { name = "google";     host = "msfrelay1.msfict.info";     port_prefix = 0; }
     { name = "ixelles";    host = "ehealthsshrelayhq1.msf.be"; port_prefix = 0; }

@@ -15,18 +15,33 @@
 { config, lib, pkgs, ... }:
 
 {
-  imports = let
-    default_users = (import ./global_settings.nix).default_users;
-  in
-    [ ./hardware-configuration.nix
-      ./settings.nix
-      ./users.nix
-      ./boot.nix
-      ./crypto.nix
-      ./reverse-tunnel.nix
-      ./fail2ban.nix
-      ./prometheus.nix ] ++
-    default_users;
+
+  # Default users
+  settings.users = {
+    ramses.enable = true;
+    msg.enable = true;
+    thierry.enable = true;
+    mohammad.enable = true;
+  };
+  
+  users.extraUsers.msfocb = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" ];
+    hashedPassword = (import ../global_settings.nix).admin_user_hashedPassword;
+    openssh.authorizedKeys.keyFiles = [];
+  };
+
+  imports = [
+    ./hardware-configuration.nix
+    ./settings.nix
+    ./users.nix
+    ./ocb_users.nix
+    ./boot.nix
+    ./crypto.nix
+    ./reverse-tunnel.nix
+    ./fail2ban.nix
+    ./prometheus.nix
+  ];
   
   networking.dhcpcd = {
     persistent = true;
