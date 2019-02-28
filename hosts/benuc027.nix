@@ -26,16 +26,18 @@
       enable = true;
       device = "/dev/LVMVolGroup/nixos_data";
     };    
+    users = {
+      yusuph.enable = true;
+      damien.enable = true;
+      didier.enable = true;
+      joana.enable  = true;
+      kathy.enable  = true;
+      godfried.enable = true;
+    };
   };
 
   imports = [
     ../docker.nix
-    ../users/yusuph.nix
-    ../users/damien.nix
-    ../users/didier.nix
-    ../users/joana.nix
-    ../users/kathy.nix
-    ../users/godfried.nix
   ];
 
 }
