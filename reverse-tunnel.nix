@@ -36,12 +36,23 @@ with lib;
         '';
       };
 
-      relay.enable = mkOption {
-        default = false;
-        type = types.bool;
-        description = ''
-          Whether this server acts as an ssh relay.
-        '';
+      relay = {
+        enable = mkOption {
+          default = false;
+          type = types.bool;
+          description = ''
+            Whether this server acts as an ssh relay.
+          '';
+        };
+
+        tunneller.allowedUsers = mkOption {
+          default = [ ];
+          type = with types; listOf string;
+          description = ''
+            The list of users who are allowed to access the tunneller user to create tunnels.
+          '';
+        };
+        
       };
     };
   };
@@ -62,7 +73,9 @@ with lib;
       isNormalUser = false;
       isSystemUser = true;
       shell = pkgs.nologin;
-      openssh.authorizedKeys.keyFiles = (import ./global_settings.nix).tunneller_keyfiles;
+      openssh.authorizedKeys.keyFiles =
+        concatMap (u: config.users.extraUsers.${u}.openssh.authorizedKeys.keyFiles)
+                  cfg.relay.tunneller.allowedUsers;
     };
 
     environment.etc.id_tunnel = mkIf cfg.enable {
