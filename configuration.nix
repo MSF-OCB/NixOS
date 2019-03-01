@@ -190,7 +190,15 @@
 
     timesyncd = {
       enable = true;
-      servers = [ "0.nixos.pool.ntp.org" "1.nixos.pool.ntp.org" "2.nixos.pool.ntp.org" "3.nixos.pool.ntp.org" "time.windows.com" "time.google.com" ];
+      servers = [ 
+        "172.16.0.101"
+        "0.nixos.pool.ntp.org"
+        "1.nixos.pool.ntp.org"
+        "2.nixos.pool.ntp.org"
+        "3.nixos.pool.ntp.org"
+        "time.windows.com" 
+        "time.google.com"
+      ];
     };
 
     htpdate = {
