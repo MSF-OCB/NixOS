@@ -41,7 +41,7 @@ with lib;
 
       device = mkOption {
         default = "";
-        type = with types; uniq string;
+        type = types.str;
         description = ''
           The device to mount.
         '';
@@ -58,7 +58,7 @@ with lib;
             };
 
             name = mkOption {
-              type = with types; uniq string;
+              type = types.str;
             };
 
             source = mkOption {
@@ -66,7 +66,7 @@ with lib;
             };
 
             required_by = mkOption {
-              type = with types; listOf string;
+              type = with types; listOf str;
             };
 
           };
