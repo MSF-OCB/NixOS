@@ -10,7 +10,6 @@
 
 {
 
-  networking.hostName = "dhis2-dev";
   time.timeZone = "Europe/Brussels";
 
   settings = {
@@ -26,11 +25,24 @@
 
   imports = [
     ../vmware.nix
-    ../local/static-network.nix
     ../docker-registry.nix
     ../docker.nix
     ../ansible.nix
   ];
+
+  networking = {
+    hostName = "dhis2-dev";
+    interfaces.ens32 = {
+      name = "ens32";
+      useDHCP = false;
+      ipv4.addresses = [ { address = "192.168.50.37"; prefixLength = 24; } ];
+    };
+    defaultGateway = {
+      address = "192.168.50.1";
+      interface = "ens32";
+    };
+    nameservers = [ "8.8.4.4" "8.8.8.8" ];
+  };
 
 }
 

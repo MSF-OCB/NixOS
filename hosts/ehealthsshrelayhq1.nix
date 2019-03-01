@@ -10,7 +10,6 @@
 
 {
 
-  networking.hostName = "ehealthsshrelayhq1";
   time.timeZone = "Europe/Brussels";
 
   settings = {
@@ -23,9 +22,22 @@
   };
 
   imports = [
-    ../local/static-network.nix
     ../vmware.nix
   ];
+
+  networking = {
+    hostName = "ehealthsshrelayhq1";
+    interfaces.ens160 = {
+      name = "ens160";
+      useDHCP = false;
+      ipv4.addresses = [ { address = "192.168.50.143"; prefixLength = 24; } ];
+    };
+    defaultGateway = {
+      address = "192.168.50.1";
+      interface = "ens160";
+    };
+    nameservers = [ "8.8.4.4" "8.8.8.8" ];
+  };
 
 }
 
