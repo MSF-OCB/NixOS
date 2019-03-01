@@ -8,7 +8,7 @@
 #                                                                      #
 ########################################################################
 
-{ config, lib, pkgs, ... }:
+{ config, lib, ... }:
 
 let
   cfg = config.settings.fail2ban;
