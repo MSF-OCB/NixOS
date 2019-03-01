@@ -28,7 +28,7 @@ let
       };
 
       extraGroups = mkOption {
-        type    = types.listOf types.str;
+        type    = with types; listOf str;
         default = [];
       };
 
