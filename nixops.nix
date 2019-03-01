@@ -8,20 +8,13 @@
 #                                                                      #
 ########################################################################
 
-{ config, lib, pkgs, ... }:
+{ pkgs, ... }:
 
 {
 
-  imports = [
-    ./docker.nix
+  environment.systemPackages = with pkgs; [
+    nixops
   ];
-
-  users.extraUsers.easynut = {
-    isSystemUser = true;
-    createHome = true;
-    home = "/home/easynut";
-    extraGroups = [ "docker" ];
-  };
 
 }
 
