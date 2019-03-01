@@ -30,9 +30,14 @@
     ./prometheus.nix
   ];
 
-  networking.dhcpcd = {
-    persistent = true;
-    denyInterfaces = [ "eth*" "wlan*" ];
+  networking = {
+    # All non-manually configured interfaces are configured by DHCP.
+    useDHCP = true;
+    dhcpcd = {
+      persistent = true;
+      # See: https://wiki.archlinux.org/index.php/Dhcpcd#dhcpcd_and_systemd_network_interfaces
+      denyInterfaces = [ "eth*" "wlan*" ];
+    };
   };
 
   environment = {
