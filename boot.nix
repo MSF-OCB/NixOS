@@ -28,7 +28,7 @@ with lib;
 
       device = mkOption {
         default = "nodev";
-        type = with types; uniq string;
+        type = types.str;
         description = ''
           The device to install GRUB to in legacy mode.
         '';
