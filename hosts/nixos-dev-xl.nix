@@ -10,7 +10,6 @@
 
 {
 
-  networking.hostName = "nixos-dev-xl";
   time.timeZone = "Europe/Brussels";
 
   settings = {
@@ -31,12 +30,25 @@
 
   imports = [
     ../vmware.nix
-    ../local/static-network.nix
     ../bahmni.nix
     ../docker-registry.nix
     ../ansible.nix
     ../nixops.nix
   ];
+
+  networking = {
+    hostName = "nixos-dev-xl";
+    interfaces.ens192 = {
+      name = "ens192";
+      useDHCP = false;
+      ipv4.addresses = [ { address = "172.16.0.75"; prefixLength = 16; } ];
+    };
+    defaultGateway = {
+      address = "172.16.0.100";
+      interface = "ens192";
+    };
+    nameservers = [ "8.8.4.4" "8.8.8.8" ];
+  };
 
 }
 
