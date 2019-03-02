@@ -20,7 +20,7 @@ with lib;
   options = {
     settings.fail2ban = {
       enable = mkOption {
-        default = false;
+        default = true;
         type = types.bool;
         description = ''
           Whether to start the fail2ban service.
