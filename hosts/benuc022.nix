@@ -29,7 +29,7 @@
   };
 
   imports = [
-    ../bahmni.nix
+    ../docker.nix
   ];
 
 }

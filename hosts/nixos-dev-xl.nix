@@ -30,7 +30,7 @@
 
   imports = [
     ../vmware.nix
-    ../bahmni.nix
+    ../docker.nix
     ../docker-registry.nix
     ../ansible.nix
     ../nixops.nix
