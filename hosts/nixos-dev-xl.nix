@@ -38,6 +38,7 @@
 
   networking = {
     hostName = "nixos-dev-xl";
+    useNetworkd = true;
     interfaces.ens192 = {
       name = "ens192";
       useDHCP = false;
@@ -45,7 +46,7 @@
     };
     defaultGateway = {
       address = "172.16.0.100";
-      interface = "ens192";
+#      interface = "ens192";
     };
     nameservers = [ "8.8.4.4" "8.8.8.8" ];
   };
