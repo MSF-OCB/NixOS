@@ -34,8 +34,8 @@ with lib;
     jails.ssh-iptables = lib.mkForce "";
     jails.ssh-iptables-extra = ''
       action   = iptables-multiport[name=SSH, port="${lib.concatMapStringsSep "," (p: toString p) config.services.openssh.ports}", protocol=tcp]
-      maxretry = 5
-      bantime  = 1800
+      maxretry = 3
+      bantime  = 3600
       filter   = sshd[mode=extra]
     '';
   };
