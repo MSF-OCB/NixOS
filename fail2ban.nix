@@ -35,6 +35,7 @@ with lib;
     jails.ssh-iptables-extra = ''
       action   = iptables-multiport[name=SSH, port="${lib.concatMapStringsSep "," (p: toString p) config.services.openssh.ports}", protocol=tcp]
       maxretry = 3
+      findtime = 3600
       bantime  = 3600
       filter   = sshd[mode=extra]
     '';
