@@ -8,15 +8,16 @@
 #                                                                      #
 ########################################################################
 
-{ pkgs, ... }:
+{ config, ... }:
 
 {
 
-  users.extraUsers.prometheus = {
-    isNormalUser = false;
+  settings.users.users.prometheus = {
+    enable       = true;
+    hasShell     = false;
+    canTunnel    = true;
+    extraGroups  = [ config.settings.users.ssh-group ];
     isSystemUser = true;
-    shell = pkgs.nologin;
-    openssh.authorizedKeys.keyFiles = [ ./keys/prometheus ];
   };
 
   services.prometheus.exporters.node = {

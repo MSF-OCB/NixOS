@@ -37,6 +37,11 @@ let
         default = false;
       };
 
+      isSystemUser = mkOption {
+        type    = types.bool;
+        default = false;
+      };
+
       canTunnel = mkOption {
         type    = types.bool;
         default = false;
@@ -53,9 +58,14 @@ in {
 
   options = {
 
-    settings.users = mkOption {
+    settings.users.users = mkOption {
       type    = with types; loaOf (submodule userOpts);
       default = [];
+    };
+
+    settings.users.ssh-group = mkOption {
+      type = types.str;
+      default = "ssh-users";
     };
 
   };
@@ -64,17 +74,21 @@ in {
     toKeyPath = name: ./keys + ("/" + name);
   in {
 
-    users.users = mapAttrs (name: user: {
-      name         = name;
-      isNormalUser = user.hasShell;
-      extraGroups  = user.extraGroups;
-      shell        = mkIf (!user.hasShell) pkgs.nologin;
-      openssh.authorizedKeys.keyFiles = [ (toKeyPath name) ];
-    }) (filterAttrs (_: user: user.enable) config.settings.users);
+    users = {
+      groups."${config.settings.users.ssh-group}" = { };
+      users  = mapAttrs (name: user: {
+        name         = name;
+        isNormalUser = user.hasShell;
+        isSystemUser = user.isSystemUser;
+        extraGroups  = user.extraGroups;
+        shell        = mkIf (!user.hasShell) pkgs.nologin;
+        openssh.authorizedKeys.keyFiles = [ (toKeyPath name) ];
+      }) (filterAttrs (_: user: user.enable) config.settings.users.users);
+    };
 
     settings.reverse_tunnel.relay.tunneller.keyFiles =
       mapAttrsToList (name: _: toKeyPath name)
-        (filterAttrs (_: user: user.canTunnel) config.settings.users);
+        (filterAttrs (_: user: user.canTunnel) config.settings.users.users);
 
   };
 

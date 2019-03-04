@@ -8,19 +8,23 @@
 #                                                                      #
 ########################################################################
 
+{ config, lib, ... }:
+
 {
 
-  settings.users = let
+  settings.users.users = let
 
+    ssh-group = config.settings.users.ssh-group;
     admin = {
       enable    = true;
       hasShell  = true;
       canTunnel = true;
-      extraGroups = [ "wheel" "docker" ];
+      extraGroups = [ "wheel" "docker" ssh-group ];
     };
     tunnelOnly = {
       hasShell  = false;
       canTunnel = true;
+      extraGroups = [ ssh-group ];
     };
 
   in {
@@ -40,7 +44,7 @@
     # wasim    = tunnelOnly;
     yusuph   = tunnelOnly // {
       hasShell = true;
-      extraGroups = [ "docker" ];
+      extraGroups = [ "docker" ssh-group ];
     };
 
   };
