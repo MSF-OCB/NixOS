@@ -87,13 +87,15 @@ with lib;
       home = "/home/tunnel";
       createHome = true;
       shell = pkgs.nologin;
+      extraGroups = mkIf cfg.relay.enable [ config.settings.users.ssh-group ];
       openssh.authorizedKeys.keyFiles = mkIf cfg.relay.enable [ ./keys/tunnel ];
     };
 
     users.extraUsers.tunneller = mkIf cfg.relay.enable {
       isNormalUser = false;
       isSystemUser = true;
-      shell = pkgs.nologin;
+      shell        = pkgs.nologin;
+      extraGroups  = [ config.settings.users.ssh-group ];
       openssh.authorizedKeys.keyFiles = cfg.relay.tunneller.keyFiles;
     };
 
