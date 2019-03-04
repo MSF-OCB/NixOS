@@ -76,7 +76,7 @@ in {
 
     users = {
       groups."${config.settings.users.ssh-group}" = { };
-      users  = mapAttrs (name: user: {
+      users = mapAttrs (name: user: {
         name         = name;
         isNormalUser = user.hasShell;
         isSystemUser = user.isSystemUser;
