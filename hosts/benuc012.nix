@@ -11,7 +11,6 @@
 {
 
   networking.hostName = "benuc012";
-  networking.useNetworkd = true;
   time.timeZone = "Europe/Brussels";
 
   settings = {
