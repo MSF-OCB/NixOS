@@ -27,6 +27,11 @@ let
         default = false;
       };
 
+      sshAllowed = mkOption {
+        type    = types.bool;
+        default = false;
+      };
+
       extraGroups = mkOption {
         type    = with types; listOf str;
         default = [];
@@ -66,24 +71,36 @@ in {
     settings.users.ssh-group = mkOption {
       type = types.str;
       default = "ssh-users";
+      description = ''
+        Group to tag users who are allowed log in via SSH
+        (either for shell or for tunnel access).
+      '';
     };
 
   };
 
   config = let
+    ssh-group = config.settings.users.ssh-group;
     toKeyPath = name: ./keys + ("/" + name);
   in {
 
     users = {
-      groups."${config.settings.users.ssh-group}" = { };
+
+      # !! This line is very important !!
+      # Without it, the ssh-users group is not created
+      # and no-one has SSH access to the system!
+      groups."${ssh-group}" = { };
+
       users = mapAttrs (name: user: {
         name         = name;
         isNormalUser = user.hasShell;
         isSystemUser = user.isSystemUser;
-        extraGroups  = user.extraGroups;
+        extraGroups  = user.extraGroups ++
+                         (optional (user.sshAllowed || user.canTunnel) ssh-group);
         shell        = mkIf (!user.hasShell) pkgs.nologin;
         openssh.authorizedKeys.keyFiles = [ (toKeyPath name) ];
       }) (filterAttrs (_: user: user.enable) config.settings.users.users);
+
     };
 
     settings.reverse_tunnel.relay.tunneller.keyFiles =
