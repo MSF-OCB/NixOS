@@ -33,6 +33,7 @@
     msg      = admin;
     thierry  = admin;
     mohammad = admin;
+    marco    = admin;
 
     damien   = tunnelOnly;
     didier   = tunnelOnly;
