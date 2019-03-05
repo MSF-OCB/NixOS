@@ -21,7 +21,7 @@
       enable = true;
       remote_forward_port = 7055;
     };
-    users = {
+    users.users = {
       yusuph.enable = true;
       didier.enable = true;
     };

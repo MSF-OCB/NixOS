@@ -22,7 +22,7 @@
       enable = true;
       device = "/safe.img";
     };
-    users = {
+    users.users = {
       yusuph.enable = true;
       damien.enable = true;
       didier.enable = true;

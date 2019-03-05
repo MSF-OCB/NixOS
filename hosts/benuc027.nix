@@ -26,7 +26,7 @@
       enable = true;
       device = "/dev/LVMVolGroup/nixos_data";
     };    
-    users = {
+    users.users = {
       yusuph.enable = true;
       damien.enable = true;
       didier.enable = true;
