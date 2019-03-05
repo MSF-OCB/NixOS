@@ -8,8 +8,6 @@
 #                                                                      #
 ########################################################################
 
-{ config, lib, ... }:
-
 {
 
   settings.users.users = let
@@ -29,11 +27,11 @@
 
   in {
 
-    ramses   = admin;
-    msg      = admin;
-    thierry  = admin;
-    mohammad = admin;
     marco    = admin;
+    mohammad = admin;
+    msg      = admin;
+    ramses   = admin;
+    thierry  = admin;
 
     damien   = tunnelOnly;
     didier   = tunnelOnly;
@@ -41,12 +39,12 @@
     godfried = tunnelOnly;
     joana    = tunnelOnly;
     kathy    = tunnelOnly;
-    # IHS Informatics consultant for Bahmni
-    # wasim    = tunnelOnly;
     yusuph   = tunnelOnly // {
       hasShell = true;
       extraGroups = [ "docker" ];
     };
+    # IHS Informatics consultant for Bahmni
+    # wasim    = tunnelOnly;
 
   };
 
