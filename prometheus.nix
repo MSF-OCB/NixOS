@@ -14,9 +14,9 @@
 
   settings.users.users.prometheus = {
     enable       = true;
+    sshAllowed   = true;
     hasShell     = false;
     canTunnel    = true;
-    extraGroups  = [ config.settings.users.ssh-group ];
     isSystemUser = true;
   };
 
