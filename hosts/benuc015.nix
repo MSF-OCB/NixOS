@@ -23,7 +23,12 @@
       enable = true;
       remote_forward_port = 6015;
     };
-
+    
+    crypto = {
+      enable = true;
+      device = "/safe.img";
+    };
+    
     users.users = {
       yusuph.enable = true;
       damien.enable = true;
