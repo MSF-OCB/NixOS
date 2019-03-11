@@ -10,7 +10,6 @@
 
 {
   networking.hostName = "benuc010";
-  networking.useNetworkd = true;
   time.timeZone = "Europe/Brussels";
 
   settings = {
