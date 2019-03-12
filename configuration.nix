@@ -23,6 +23,7 @@
     ./maintenance.nix
     ./users.nix
     ./ocb_users.nix
+    ./shell.nix
     ./boot.nix
     ./crypto.nix
     ./reverse-tunnel.nix
