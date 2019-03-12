@@ -68,16 +68,6 @@
       nix-info
       nox
     ];
-    # See https://nixos.org/nix/manual/#ssec-values for documentation on escaping ${
-    shellInit = ''
-      if [ "''${TERM}" != "screen" ] || [ -z "''${TMUX}" ]; then
-        alias nixos-rebuild='printf "Please run nixos-rebuild only from within a tmux session.\c" 2> /dev/null'
-      fi
-    '';
-    shellAliases = {
-      # Have bash resolve aliases with sudo (https://askubuntu.com/questions/22037/aliases-not-available-when-using-sudo)
-      sudo = "sudo ";
-    };
     etc = {
       lustrate = {
         # Can we have this permanently enabled? --> Seems not. Keeping it here for reference.
