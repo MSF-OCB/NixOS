@@ -12,6 +12,8 @@
   networking.hostName = "benuc006";
   time.timeZone = "Africa/Johannesburg";
 
+  networking.firewall.allowedTCPPorts = [ 80 443 ];
+
   settings = {
     boot.mode = "uefi";
     reverse_tunnel = {
