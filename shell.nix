@@ -20,6 +20,7 @@
       vi = "vim";
       # Have bash resolve aliases with sudo (https://askubuntu.com/questions/22037/aliases-not-available-when-using-sudo)
       sudo = "sudo ";
+      whereami = "curl ipinfo.io/$(curl https://ipinfo.io/ip)"
     };
   };
 }
