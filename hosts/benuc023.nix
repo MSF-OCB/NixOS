@@ -10,8 +10,8 @@
 
 {
 
-  networking.hostName = "benuc027";
-  time.timeZone = "Africa/Freetown";
+  networking.hostName = "benuc023";
+  time.timeZone = "America/Port-au-Prince";
 
   settings = {
     boot = {
@@ -20,11 +20,11 @@
     };
     reverse_tunnel = {
       enable = true;
-      remote_forward_port = 6027;
+      remote_forward_port = 6023;
     };
     crypto = {
-      enable = true;
-      device = "/dev/LVMVolGroup/nixos_data";
+      enable = false;
+      device = "/safe.img";
     };    
     users.users = {
       yusuph.enable = true;
