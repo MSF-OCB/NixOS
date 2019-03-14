@@ -10,21 +10,21 @@
 
 {
 
-  networking.hostName = "benuc027";
-  time.timeZone = "Africa/Freetown";
+  networking.hostName = "benuc004";
+  time.timeZone = "Asia/Karachi";
 
   settings = {
     boot = {
       mode = "legacy";
-      device = "/dev/disk/by-id/wwn-0x502b2a201d1c1b1a";
+      device = "/dev/disk/by-id/ata-TS128GMTS600_D130020403";
     };
     reverse_tunnel = {
       enable = true;
-      remote_forward_port = 6027;
+      remote_forward_port = 6004;
     };
     crypto = {
-      enable = true;
-      device = "/dev/LVMVolGroup/nixos_data";
+      enable = false;
+      device = "/safe.img";
     };    
     users.users = {
       yusuph.enable = true;
