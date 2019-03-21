@@ -106,6 +106,10 @@ with lib;
       group = "tunnel";
     };
 
+    services.openssh = mkIf cfg.relay.enable {
+      ports = [ 22 80 443 ];
+    };
+
     systemd.services = mkIf cfg.enable (let
       make_service = conf: {
         "autossh-reverse-tunnel-${conf.name}" = {
