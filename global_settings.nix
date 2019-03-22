@@ -15,7 +15,7 @@
   settings.reverse_tunnel.relay_servers = [
     { name = "google";     host = "msfrelay1.msfict.info"; }
     { name = "ixelles";    host = "ehealthsshrelayhq1.msf.be"; }
-    { name = "ixelles-ip"; host = "194.78.17.132"; port_prefix = 1; }
+    { name = "ixelles-ip"; host = "185.199.180.11"; port_prefix = 1; }
   ];
 
   # python3 -c 'import crypt,getpass; print(crypt.crypt(getpass.getpass(), crypt.mksalt(crypt.METHOD_SHA512)))'
