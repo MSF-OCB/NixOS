@@ -43,7 +43,7 @@
       address = "192.168.50.1";
       interface = "ens32";
     };
-    nameservers = [ "8.8.4.4" "8.8.8.8" ];
+    nameservers = [ "172.16.0.101" "8.8.8.8" ];
   };
 
 }
