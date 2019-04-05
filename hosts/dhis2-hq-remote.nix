@@ -21,6 +21,9 @@
       enable = true;
       remote_forward_port = 7052;
     };
+    users.users = {
+      yusuph.enable = true;
+    };
   };
 
   imports = [
