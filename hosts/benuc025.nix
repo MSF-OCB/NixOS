@@ -15,7 +15,7 @@
   settings = {
     boot = {
       mode = "legacy";
-      device = "wwn-0x502b2a201d1c1b1a";
+      device = "/dev/disk/by-id/wwn-0x502b2a201d1c1b1a";
     };
     reverse_tunnel = {
       enable = true;
