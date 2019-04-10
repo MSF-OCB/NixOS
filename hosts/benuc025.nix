@@ -13,7 +13,10 @@
   time.timeZone = "Africa/Freetown";
 
   settings = {
-    boot.mode = "uefi";
+    boot = {
+      mode = "legacy";
+      device = "wwn-0x502b2a201d1c1b1a";
+    };
     reverse_tunnel = {
       enable = true;
       remote_forward_port = 6025;
