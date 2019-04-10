@@ -135,6 +135,8 @@ with lib;
               -o "ConnectTimeout=360" \
               -o "UpdateHostKeys=yes" \
               -o "StrictHostKeyChecking=no" \
+              -o "GlobalKnownHostsFile=/dev/null" \
+              -o "UserKnownHostsFile=/dev/null" \
               -o "IdentitiesOnly=yes" \
               -o "Compression=yes" \
               -o "ControlMaster=no" \
