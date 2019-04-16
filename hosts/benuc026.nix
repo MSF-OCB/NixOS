@@ -33,6 +33,7 @@
       joana.enable  = true;
       kathy.enable  = true;
       godfried.enable = true;
+      vini.enable = true;
     };
   };
 
