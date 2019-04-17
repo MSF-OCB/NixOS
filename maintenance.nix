@@ -14,7 +14,7 @@
 
   system.autoUpgrade = {
     enable = true;
-    dates = "Mon 03:00";
+    dates = "Mon 03:20";
   };
 
   systemd.services = {
