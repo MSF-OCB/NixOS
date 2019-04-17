@@ -27,12 +27,13 @@
       device = "/dev/LVMVolGroup/nixos_data";
     };    
     users.users = {
-      yusuph.enable = true;
-      damien.enable = true;
-      didier.enable = true;
-      joana.enable  = true;
-      kathy.enable  = true;
+      yusuph.enable   = true;
+      damien.enable   = true;
+      didier.enable   = true;
+      joana.enable    = true;
+      kathy.enable    = true;
       godfried.enable = true;
+      vini.enable     = true;
     };
   };
 
