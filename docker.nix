@@ -28,6 +28,28 @@
     # Do not break currently running non-encrypted set-ups.
     extraOptions = lib.mkIf config.settings.crypto.enable "--data-root=/opt/docker";
   };
+  
+  environment.etc.docker_conf = {
+    enable = true;
+    target = "docker/daemon.json";
+    text = ''
+      {
+        "bip": "10.231.0.1/24",
+        "default-address-pools": [
+          {
+            "scope": "local",
+            "base": "10.232.0.0/16",
+            "size": 24
+          },
+          {
+            "scope": "global",
+            "base": "10.233.0.0/16",
+            "size": 24
+          }
+        ]
+      }
+    '';
+  };
 
   systemd.services.docker = {
     wants = [ "network-online.target" ];
