@@ -116,9 +116,7 @@
       "vm.mmap_rnd_bits" = 32;
     };
 
-    # Causes ordering cycle with zramswap, disable until the fix is released
-    # https://github.com/NixOS/nixpkgs/pull/52991
-    tmpOnTmpfs = false;
+    tmpOnTmpfs = true;
   };
 
   fileSystems."/".options = [ "defaults" "noatime" "acl" ];
