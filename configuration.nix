@@ -116,6 +116,7 @@
       "vm.mmap_rnd_bits" = 32;
     };
 
+    cleanTmpDir = true;
     tmpOnTmpfs = true;
   };
 
