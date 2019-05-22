@@ -120,30 +120,35 @@ with lib;
           environment = {
             AUTOSSH_GATETIME = "0";
             AUTOSSH_PORT = "0";
+            AUTOSSH_MAXSTART = "15";
           };
           serviceConfig = {
             User = "tunnel";
             Restart = "always";
-            RestartSec = 10;
+            RestartSec = "10min";
           };
           script = ''
-            ${pkgs.autossh}/bin/autossh \
-              -q -N \
-              -o "ExitOnForwardFailure=yes" \
-              -o "ServerAliveInterval=60" \
-              -o "ServerAliveCountMax=3" \
-              -o "ConnectTimeout=360" \
-              -o "UpdateHostKeys=yes" \
-              -o "StrictHostKeyChecking=no" \
-              -o "GlobalKnownHostsFile=/dev/null" \
-              -o "UserKnownHostsFile=/dev/null" \
-              -o "IdentitiesOnly=yes" \
-              -o "Compression=yes" \
-              -o "ControlMaster=no" \
-              -R ${toString (conf.port_prefix * 10000 + cfg.remote_forward_port)}:localhost:22 \
-              -R ${toString ((3 + conf.port_prefix) * 10000 + cfg.remote_forward_port)}:localhost:9100 \
-              -i /etc/id_tunnel \
-              tunnel@${conf.host}
+            for port in 22 80 443; do
+              echo "Attempting to connect to ${conf.host} on port ''${port}"
+              ${pkgs.autossh}/bin/autossh \
+                -q -N \
+                -o "ExitOnForwardFailure=yes" \
+                -o "ServerAliveInterval=60" \
+                -o "ServerAliveCountMax=3" \
+                -o "ConnectTimeout=360" \
+                -o "UpdateHostKeys=yes" \
+                -o "StrictHostKeyChecking=no" \
+                -o "GlobalKnownHostsFile=/dev/null" \
+                -o "UserKnownHostsFile=/dev/null" \
+                -o "IdentitiesOnly=yes" \
+                -o "Compression=yes" \
+                -o "ControlMaster=no" \
+                -R ${toString (conf.port_prefix * 10000 + cfg.remote_forward_port)}:localhost:22 \
+                -R ${toString ((3 + conf.port_prefix) * 10000 + cfg.remote_forward_port)}:localhost:9100 \
+                -i /etc/id_tunnel \
+                -p ''${port} \
+                tunnel@${conf.host}
+            done
           '';
         };
       };
