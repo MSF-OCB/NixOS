@@ -12,6 +12,8 @@
 
 let
   cfg = config.settings.reverse_tunnel;
+
+  ssh_relay_ports = [ 22 80 443 ];
 in
 
 with lib;
@@ -107,7 +109,7 @@ with lib;
     };
 
     services.openssh = mkIf cfg.relay.enable {
-      ports = [ 22 80 443 ];
+      ports = ssh_relay_ports;
     };
 
     systemd.services = mkIf cfg.enable (let
@@ -128,7 +130,7 @@ with lib;
             RestartSec = "10min";
           };
           script = ''
-            for port in 22 80 443; do
+            for port in ${concatMapStringsSep " " toString ssh_relay_ports}; do
               echo "Attempting to connect to ${conf.host} on port ''${port}"
               ${pkgs.autossh}/bin/autossh \
                 -q -N \
