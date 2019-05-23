@@ -35,6 +35,8 @@ with lib;
       GSSAPIAuthentication no
       KerberosAuthentication no
 
+      AllowGroups wheel ${config.settings.users.ssh-group}
+
       AllowTcpForwarding no
 
       Match Group wheel
