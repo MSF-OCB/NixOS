@@ -63,24 +63,33 @@ in {
 
   options = {
 
-    settings.users.users = mkOption {
-      type    = with types; loaOf (submodule userOpts);
-      default = [];
-    };
+    settings.users = {
+      users = mkOption {
+        type    = with types; loaOf (submodule userOpts);
+        default = [];
+      };
 
-    settings.users.ssh-group = mkOption {
-      type = types.str;
-      default = "ssh-users";
-      description = ''
-        Group to tag users who are allowed log in via SSH
-        (either for shell or for tunnel access).
-      '';
+      ssh-group = mkOption {
+        type = types.str;
+        default = "ssh-users";
+        description = ''
+          Group to tag users who are allowed log in via SSH
+          (either for shell or for tunnel access).
+        '';
+      };
+
+      fwd-tunnel-group = mkOption {
+        type = types.str;
+        default = "ssh-fwd-tun-users";
+      };
+
     };
 
   };
 
   config = let
     ssh-group = config.settings.users.ssh-group;
+    fwd-tunnel-group = config.settings.users.fwd-tunnel-group;
     toKeyPath = name: ./keys + ("/" + name);
   in {
 
@@ -89,14 +98,16 @@ in {
       # !! This line is very important !!
       # Without it, the ssh-users group is not created
       # and no-one has SSH access to the system!
-      groups."${ssh-group}" = { };
+      groups."${ssh-group}"        = { };
+      groups."${fwd-tunnel-group}" = { };
 
       users = mapAttrs (name: user: {
         name         = name;
         isNormalUser = user.hasShell;
         isSystemUser = user.isSystemUser;
         extraGroups  = user.extraGroups ++
-                         (optional (user.sshAllowed || user.canTunnel) ssh-group);
+                         (optional (user.sshAllowed || user.canTunnel) ssh-group) ++
+                         (optional user.canTunnel fwd-tunnel-group);
         shell        = mkIf (!user.hasShell) pkgs.nologin;
         openssh.authorizedKeys.keyFiles = [ (toKeyPath name) ];
       }) (filterAttrs (_: user: user.enable) config.settings.users.users);
