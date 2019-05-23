@@ -20,6 +20,7 @@
     ./hardware-configuration.nix
     ./settings.nix
     ./global_settings.nix
+    ./sshd.nix
     ./maintenance.nix
     ./users.nix
     ./ocb_users.nix
@@ -159,27 +160,6 @@
   };
 
   services = {
-    openssh = {
-      enable = true;
-      permitRootLogin = "no";
-      forwardX11 = false;
-      passwordAuthentication = false;
-      challengeResponseAuthentication = false;
-      extraConfig = ''
-        StrictModes yes
-        AllowAgentForwarding no
-        TCPKeepAlive yes
-        ClientAliveInterval 60
-        ClientAliveCountMax 3
-        UseDNS no
-        GSSAPIAuthentication no
-        KerberosAuthentication no
-        
-        Match User tunnel
-          AllowTcpForwarding remote
-      '';
-    };
-    
     fstrim.enable = true;
 
     timesyncd = {
