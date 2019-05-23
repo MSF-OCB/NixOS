@@ -174,6 +174,9 @@
         UseDNS no
         GSSAPIAuthentication no
         KerberosAuthentication no
+        
+        Match User tunnel
+          AllowTcpForwarding remote
       '';
     };
     
