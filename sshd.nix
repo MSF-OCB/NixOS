@@ -40,6 +40,9 @@ with lib;
       Match Group wheel
         AllowTcpForwarding yes
 
+      Match Group ${config.settings.users.fwd-tunnel-group},!wheel
+        AllowTcpForwarding local
+
       ${optionalString reverse_tunnel.relay.enable ''
         Match User tunnel
           AllowTcpForwarding remote
