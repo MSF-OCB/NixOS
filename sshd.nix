@@ -31,7 +31,6 @@ with lib;
       TCPKeepAlive yes
       ClientAliveInterval 60
       ClientAliveCountMax 3
-      UseDNS no
       GSSAPIAuthentication no
       KerberosAuthentication no
 
