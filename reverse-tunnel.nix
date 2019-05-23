@@ -133,7 +133,7 @@ with lib;
             for port in ${concatMapStringsSep " " toString ssh_relay_ports}; do
               echo "Attempting to connect to ${conf.host} on port ''${port}"
               ${pkgs.autossh}/bin/autossh \
-                -q -N \
+                -q -T -N \
                 -o "ExitOnForwardFailure=yes" \
                 -o "ServerAliveInterval=60" \
                 -o "ServerAliveCountMax=3" \
