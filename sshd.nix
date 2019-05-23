@@ -24,6 +24,7 @@ with lib;
     forwardX11 = false;
     passwordAuthentication = false;
     challengeResponseAuthentication = false;
+    allowSFTP = mkIf reverse_tunnel.relay.enable false;
     ports = mkIf reverse_tunnel.relay.enable reverse_tunnel.relay.ports;
     extraConfig = ''
       StrictModes yes
