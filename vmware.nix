@@ -11,8 +11,7 @@
 { pkgs, ... }:
 
 {
-  # Renamed to virtualisation.vmware.guest in 19.03
-  services.vmwareGuest = {
+  virtualisation.vmware.guest = {
     enable = true;
     headless = true;
   };
