@@ -42,48 +42,33 @@
     };
   };
 
-  environment = {
-    systemPackages = with pkgs; [
-      cryptsetup
-      keyutils
-      wget
-      curl
-      (import ./vim-config.nix)
-      coreutils
-      gptfdisk
-      file
-      htop
-      iotop
-      lsof
-      psmisc
-      rsync
-      git
-      acl
-      mkpasswd
-      unzip
-      lm_sensors
-      nmap
-      traceroute
-      bind
-      p7zip
-      python3
-      nix-info
-      nox
-    ];
-    etc = {
-      lustrate = {
-        # Can we have this permanently enabled? --> Seems not. Keeping it here for reference.
-        # What about /var/lib/docker ?? Other locations that we need to maintain on a working system?
-        enable = false;
-        target = "NIXOS_LUSTRATE";
-        text = ''
-          etc/nixos
-          opt
-          home
-        '';
-      };
-    };
-  };
+  environment.systemPackages = with pkgs; [
+    cryptsetup
+    keyutils
+    wget
+    curl
+    (import ./vim-config.nix)
+    coreutils
+    gptfdisk
+    file
+    htop
+    iotop
+    lsof
+    psmisc
+    rsync
+    git
+    acl
+    mkpasswd
+    unzip
+    lm_sensors
+    nmap
+    traceroute
+    bind
+    p7zip
+    python3
+    nix-info
+    nox
+  ];
 
   boot = {
 
