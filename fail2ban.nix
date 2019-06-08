@@ -20,7 +20,7 @@ with lib;
   options = {
     settings.fail2ban = {
       enable = mkOption {
-        default = true;
+        default = false;
         type = types.bool;
         description = ''
           Whether to start the fail2ban service.
@@ -29,7 +29,7 @@ with lib;
     };
   };
 
-  config.services.fail2ban = {
+  config.services.fail2ban = mkIf config.settings.fail2ban.enable {
     enable = cfg.enable;
     jails.ssh-iptables = lib.mkForce "";
     jails.ssh-iptables-extra = ''

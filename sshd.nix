@@ -18,42 +18,51 @@ with lib;
 
 {
 
-  config.services.openssh = {
-    enable = true;
-    permitRootLogin = "no";
-    forwardX11 = false;
-    passwordAuthentication = false;
-    challengeResponseAuthentication = false;
-    allowSFTP = mkIf reverse_tunnel.relay.enable false;
-    ports = mkIf reverse_tunnel.relay.enable reverse_tunnel.relay.ports;
-    extraConfig = ''
-      StrictModes yes
-      AllowAgentForwarding no
-      TCPKeepAlive yes
-      ClientAliveInterval 60
-      ClientAliveCountMax 3
-      GSSAPIAuthentication no
-      KerberosAuthentication no
+  config.services = {
+    openssh = {
+      enable = true;
+      permitRootLogin = "no";
+      forwardX11 = false;
+      passwordAuthentication = false;
+      challengeResponseAuthentication = false;
+      allowSFTP = mkIf reverse_tunnel.relay.enable false;
+      ports = mkIf reverse_tunnel.relay.enable reverse_tunnel.relay.ports;
+      extraConfig = ''
+        StrictModes yes
+        AllowAgentForwarding no
+        TCPKeepAlive yes
+        ClientAliveInterval 60
+        ClientAliveCountMax 3
+        GSSAPIAuthentication no
+        KerberosAuthentication no
 
-      AllowGroups wheel ${config.settings.users.ssh-group}
+        AllowGroups wheel ${config.settings.users.ssh-group}
 
-      AllowTcpForwarding no
+        AllowTcpForwarding no
 
-      Match Group wheel
-        AllowTcpForwarding yes
+        Match Group wheel
+          AllowTcpForwarding yes
 
-      Match Group ${config.settings.users.fwd-tunnel-group},!wheel
-        AllowTcpForwarding local
-
-      ${optionalString reverse_tunnel.relay.enable ''
-        Match User tunnel
-          AllowTcpForwarding remote
-
-        Match User tunneller
-          # Required to be able to proxy through the relay
+        Match Group ${config.settings.users.fwd-tunnel-group},!wheel
           AllowTcpForwarding local
-      ''}
-    '';
+
+        ${optionalString reverse_tunnel.relay.enable ''
+          Match User tunnel
+            AllowTcpForwarding remote
+
+          Match User tunneller
+            # Required to be able to proxy through the relay
+            AllowTcpForwarding local
+        ''}
+      '';
+    };
+
+    sshguard = {
+      enable = true;
+      blocktime = 600;
+      # 7 * 24 * 60 * 60
+      detection_time = 604800;
+    };
   };
 
 }
