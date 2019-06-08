@@ -8,7 +8,7 @@
 #                                                                      #
 ########################################################################
 
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   reverse_tunnel = config.settings.reverse_tunnel;
@@ -18,50 +18,58 @@ with lib;
 
 {
 
-  config.services = {
-    openssh = {
-      enable = true;
-      permitRootLogin = "no";
-      forwardX11 = false;
-      passwordAuthentication = false;
-      challengeResponseAuthentication = false;
-      allowSFTP = mkIf reverse_tunnel.relay.enable false;
-      ports = mkIf reverse_tunnel.relay.enable reverse_tunnel.relay.ports;
-      extraConfig = ''
-        StrictModes yes
-        AllowAgentForwarding no
-        TCPKeepAlive yes
-        ClientAliveInterval 60
-        ClientAliveCountMax 3
-        GSSAPIAuthentication no
-        KerberosAuthentication no
+  config = {
 
-        AllowGroups wheel ${config.settings.users.ssh-group}
+    environment.systemPackages = with pkgs; [
+      ipset
+    ];
 
-        AllowTcpForwarding no
+    services = {
+      openssh = {
+        enable = true;
+        permitRootLogin = "no";
+        forwardX11 = false;
+        passwordAuthentication = false;
+        challengeResponseAuthentication = false;
+        allowSFTP = mkIf reverse_tunnel.relay.enable false;
+        ports = mkIf reverse_tunnel.relay.enable reverse_tunnel.relay.ports;
+        extraConfig = ''
+          StrictModes yes
+          AllowAgentForwarding no
+          TCPKeepAlive yes
+          ClientAliveInterval 60
+          ClientAliveCountMax 3
+          GSSAPIAuthentication no
+          KerberosAuthentication no
 
-        Match Group wheel
-          AllowTcpForwarding yes
+          AllowGroups wheel ${config.settings.users.ssh-group}
 
-        Match Group ${config.settings.users.fwd-tunnel-group},!wheel
-          AllowTcpForwarding local
+          AllowTcpForwarding no
 
-        ${optionalString reverse_tunnel.relay.enable ''
-          Match User tunnel
-            AllowTcpForwarding remote
+          Match Group wheel
+            AllowTcpForwarding yes
 
-          Match User tunneller
-            # Required to be able to proxy through the relay
+          Match Group ${config.settings.users.fwd-tunnel-group},!wheel
             AllowTcpForwarding local
-        ''}
-      '';
-    };
 
-    sshguard = {
-      enable = true;
-      blocktime = 600;
-      # 7 * 24 * 60 * 60
-      detection_time = 604800;
+          ${optionalString reverse_tunnel.relay.enable ''
+            Match User tunnel
+              AllowTcpForwarding remote
+
+            Match User tunneller
+              # Required to be able to proxy through the relay
+              AllowTcpForwarding local
+          ''}
+        '';
+      };
+
+      sshguard = {
+        # Error in logs, "could not initialize firewall"
+        enable = false;
+        blocktime = 600;
+        # 7 * 24 * 60 * 60
+        detection_time = 604800;
+      };
     };
   };
 
