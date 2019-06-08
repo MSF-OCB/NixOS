@@ -18,7 +18,6 @@
       device = "/dev/disk/by-path/pci-0000:00:10.0-scsi-0:0:0:0";
     };
     reverse_tunnel.relay.enable = true;
-    fail2ban.enable = true;
   };
 
   imports = [
