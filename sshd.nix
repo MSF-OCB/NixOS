@@ -37,8 +37,8 @@ with lib;
           StrictModes yes
           AllowAgentForwarding no
           TCPKeepAlive yes
-          ClientAliveInterval 60
-          ClientAliveCountMax 3
+          ClientAliveInterval 10
+          ClientAliveCountMax 5
           GSSAPIAuthentication no
           KerberosAuthentication no
 
