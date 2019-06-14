@@ -134,8 +134,8 @@ with lib;
               ${pkgs.autossh}/bin/autossh \
                 -q -T -N \
                 -o "ExitOnForwardFailure=yes" \
-                -o "ServerAliveInterval=60" \
-                -o "ServerAliveCountMax=3" \
+                -o "ServerAliveInterval=10" \
+                -o "ServerAliveCountMax=5" \
                 -o "ConnectTimeout=360" \
                 -o "UpdateHostKeys=yes" \
                 -o "StrictHostKeyChecking=no" \
