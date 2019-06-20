@@ -11,20 +11,17 @@
 {
 
   networking.hostName = "benuc016";
-  time.timeZone = "Europe/Brussels";
+  time.timeZone = "Africa/Maputo";
 
   settings = {
-    boot = {
-      mode = "legacy";
-      device = "/dev/disk/by-id/wwn-0x502b2a201d1c1b1a";
-    };
+    boot.mode = "uefi";
     reverse_tunnel = {
       enable = true;
       remote_forward_port = 6016;
     };
     crypto = {
       enable = true;
-      device = "/safe.img";
+      device = "/dev/LVMVolGroup/nixos_data";
     };
   };
 
