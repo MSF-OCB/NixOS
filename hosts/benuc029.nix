@@ -9,18 +9,17 @@
 ########################################################################
 
 {
-
-  networking.hostName = "benuc016";
-  time.timeZone = "Africa/Maputo";
+  networking.hostName = "benuc029";
+  time.timeZone = "Europe/Brussels";
 
   settings = {
     boot.mode = "uefi";
     reverse_tunnel = {
       enable = true;
-      remote_forward_port = 6016;
+      remote_forward_port = 6029;
     };
     crypto = {
-      enable = true;
+      enable = false;
       device = "/dev/LVMVolGroup/nixos_data";
     };
   };
