@@ -9,7 +9,7 @@
 ########################################################################
 
 {
-  networking.hostName = "benuc020";
+  networking.hostName = "benuc030";
   time.timeZone = "Africa/Kinshasa";
 
   settings = {
