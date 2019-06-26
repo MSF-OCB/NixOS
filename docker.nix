@@ -14,10 +14,17 @@ with lib;
 
 {
 
-  environment.systemPackages = with pkgs; [
-    git
-    docker_compose
-  ]; 
+  environment = {
+    systemPackages = with pkgs; [
+      git
+      docker_compose
+    ];
+
+    # For containers running java, allows to bind mount /etc/timezone
+    etc = mkIf (config.time.timeZone != null) {
+      timezone.text = "${config.time.timeZone}";
+    };
+  };
 
   boot.kernel.sysctl = {
     "vm.overcommit_memory" = 1;
