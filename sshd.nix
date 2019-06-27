@@ -27,6 +27,7 @@ with lib;
     services = {
       openssh = {
         enable = true;
+        authorizedKeysFiles = mkForce [ "/etc/ssh/authorized_keys.d/%u" ];
         permitRootLogin = "no";
         forwardX11 = false;
         passwordAuthentication = false;
