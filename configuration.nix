@@ -51,6 +51,7 @@
     coreutils
     gptfdisk
     file
+    nfsUtils
     cifs-utils
     htop
     iotop
