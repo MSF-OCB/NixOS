@@ -12,23 +12,24 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, lib, pkgs, ... }:
+{ config, lib, ... }:
 
 {
 
   imports = [
     ./hardware-configuration.nix
+    ./boot.nix
     ./settings.nix
     ./global_settings.nix
+    ./packages.nix
     ./sshd.nix
+    ./fail2ban.nix
+    ./reverse-tunnel.nix
     ./maintenance.nix
     ./users.nix
     ./ocb_users.nix
     ./shell.nix
-    ./boot.nix
     ./crypto.nix
-    ./reverse-tunnel.nix
-    ./fail2ban.nix
     ./prometheus.nix
   ];
 
@@ -42,40 +43,7 @@
     };
   };
 
-  environment.systemPackages = with pkgs; [
-    cryptsetup
-    keyutils
-    wget
-    curl
-    (import ./vim-config.nix)
-    coreutils
-    gptfdisk
-    file
-    nfsUtils
-    cifs-utils
-    htop
-    iotop
-    lsof
-    psmisc
-    rsync
-    git
-    acl
-    mkpasswd
-    unzip
-    lm_sensors
-    nmap
-    traceroute
-    bind
-    dmidecode
-    p7zip
-    python3
-    nix-info
-    nox
-  ];
-
   boot = {
-
-    #kernelPackages = pkgs.linuxPackages_latest;
 
     kernelParams = [
       # Overwrite free'd memory
