@@ -121,7 +121,7 @@ with lib;
           environment = {
             AUTOSSH_GATETIME = "0";
             AUTOSSH_PORT = "0";
-            AUTOSSH_MAXSTART = "15";
+            AUTOSSH_MAXSTART = "10";
           };
           serviceConfig = {
             User = "tunnel";
