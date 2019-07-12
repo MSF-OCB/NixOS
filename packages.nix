@@ -35,6 +35,8 @@
     lm_sensors
     nmap
     traceroute
+    ethtool
+    tcptrack
     bind
     dmidecode
     p7zip
