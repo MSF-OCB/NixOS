@@ -29,7 +29,6 @@
 
     marco    = admin;
     mohammad = admin;
-    msg      = admin;
     ramses   = admin;
     thierry  = admin;
     xavier   = admin;
