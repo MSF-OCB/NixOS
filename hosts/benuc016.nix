@@ -13,6 +13,9 @@
   networking.hostName = "benuc016";
   time.timeZone = "Africa/Maputo";
 
+  #For kobo & let's encrypt
+  networking.firewall.allowedTCPPorts = [ 80 443 ];
+
   settings = {
     boot.mode = "uefi";
     reverse_tunnel = {
