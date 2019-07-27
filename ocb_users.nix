@@ -44,8 +44,6 @@
       hasShell = true;
       extraGroups = [ "docker" ];
     };
-    # IHS Informatics consultant for Bahmni
-    # wasim    = tunnelOnly;
 
   };
 
