@@ -14,7 +14,6 @@
 
   settings = {
     reverse_tunnel.relay.enable = true;
-    fail2ban.enable = true;
   };
 
   imports = [
