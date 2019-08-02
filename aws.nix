@@ -8,15 +8,16 @@
 #                                                                      #
 ########################################################################
 
-{ pkgs, ... }:
+{ config, ... }:
 
 {
-  virtualisation.vmware.guest = {
-    enable = true;
-    headless = true;
-  };
+  imports = [
+    <nixpkgs/nixos/modules/virtualisation/amazon-image.nix>
+  ];
+  ec2.hvm = true;
 
-  services.timesyncd.servers = [ "172.16.0.101" ];
+  settings.boot.mode = "none";
 
+  services.timesyncd.servers = ${config.networking.timeServers};
 }
 

@@ -19,20 +19,13 @@ with lib;
 
 {
 
-  options = {
-    settings.sshd.permitRootLogin = mkOption {
-      default = false;
-      type = types.bool;
-    };
-  };
-
   config = {
 
     services = {
       openssh = {
         enable = true;
         authorizedKeysFiles = mkForce [ "/etc/ssh/authorized_keys.d/%u" ];
-        permitRootLogin = if cfg.permitRootLogin then "without-password" else "no";
+        permitRootLogin = mkDefault "no";
         forwardX11 = false;
         passwordAuthentication = false;
         challengeResponseAuthentication = false;

@@ -14,17 +14,13 @@
   time.timeZone = "Europe/Brussels";
 
   settings = {
-    boot = {
-      mode = "none";
-      separate_partition = false;
-    };
-    sshd.permitRootLogin = true;
+    boot.separate_partition = false;
     reverse_tunnel.relay.enable = true;
   };
 
   imports = [
-    <nixpkgs/nixos/modules/virtualisation/amazon-image.nix>
+    ../aws.nix
   ];
-  ec2.hvm = true;
 
 }
+
