@@ -12,23 +12,27 @@
 
 let
   reverse_tunnel = config.settings.reverse_tunnel;
+  cfg = config.settings.sshd;
 in
 
 with lib;
 
 {
 
-  config = {
+  options = {
+    settings.sshd.permitRootLogin = mkOption {
+      default = false;
+      type = types.bool;
+    };
+  };
 
-    environment.systemPackages = with pkgs; [
-      ipset
-    ];
+  config = {
 
     services = {
       openssh = {
         enable = true;
         authorizedKeysFiles = mkForce [ "/etc/ssh/authorized_keys.d/%u" ];
-        permitRootLogin = "no";
+        permitRootLogin = if cfg.permitRootLogin then "without-password" else "no";
         forwardX11 = false;
         passwordAuthentication = false;
         challengeResponseAuthentication = false;

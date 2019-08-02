@@ -18,6 +18,7 @@
       mode = "none";
       separate_partition = false;
     };
+    sshd.permitRootLogin = true;
     reverse_tunnel.relay.enable = true;
   };
 
