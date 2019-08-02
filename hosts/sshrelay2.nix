@@ -10,9 +10,11 @@
 
 {
 
-  time.timeZone = "Europe/Paris";
+  networking.hostName = "sshrelay2";
+  time.timeZone = "Europe/Brussels";
 
   settings = {
+    boot.mode = "none";
     reverse_tunnel.relay.enable = true;
   };
 
@@ -20,9 +22,5 @@
     <nixpkgs/nixos/modules/virtualisation/amazon-image.nix>
   ];
   ec2.hvm = true;
-
-  networking = {
-    hostName = "nuc_relay_aws";
-  };
 
 }
