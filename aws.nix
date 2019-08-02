@@ -20,6 +20,6 @@ with lib;
 
   settings.boot.mode = "none";
 
-  services.timesyncd.servers = mkForce ${config.networking.timeServers};
+  services.timesyncd.servers = mkForce config.networking.timeServers;
 }
 
