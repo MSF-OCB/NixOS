@@ -19,6 +19,8 @@ with lib;
   ec2.hvm = true;
 
   settings.boot.mode = "none";
+  
+  networking.useDHCP = mkForce false;
 
   services.timesyncd.servers = mkForce config.networking.timeServers;
 }

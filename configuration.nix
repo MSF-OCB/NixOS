@@ -37,7 +37,7 @@ with lib;
 
   networking = {
     # All non-manually configured interfaces are configured by DHCP.
-    useDHCP = true;
+    useDHCP = mkDefault true;
     dhcpcd = {
       persistent = true;
       # See: https://wiki.archlinux.org/index.php/Dhcpcd#dhcpcd_and_systemd_network_interfaces
