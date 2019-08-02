@@ -14,7 +14,9 @@
   time.timeZone = "Europe/Brussels";
 
   settings = {
-    boot.mode = "none";
+    boot = {
+      mode = "none";
+      separate_partition = false;
     reverse_tunnel.relay.enable = true;
   };
 
