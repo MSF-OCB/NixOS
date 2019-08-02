@@ -8,7 +8,9 @@
 #                                                                      #
 ########################################################################
 
-{ config, ... }:
+{ config, lib, ... }:
+
+with lib;
 
 {
   imports = [
@@ -18,6 +20,6 @@
 
   settings.boot.mode = "none";
 
-  services.timesyncd.servers = ${config.networking.timeServers};
+  services.timesyncd.servers = mkForce ${config.networking.timeServers};
 }
 
