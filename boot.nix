@@ -45,33 +45,36 @@ with lib;
   };
 
   config = {
-    boot.loader = mkIf (cfg.mode != "none") (
-      let
-        mode = cfg.mode;
-        grub_common = {
-          enable = true;
-          version = 2;
-          memtest86.enable = true;
+    boot.loader = let
+      mode = cfg.mode;
+      is_none = (mode == "none");
+      grub_common = {
+        enable = true;
+        version = 2;
+        memtest86.enable = true;
+      };
+    in mkIf (!is_none) (
+      if mode == "legacy"
+      then {
+        grub = grub_common // {
+          efiSupport = false;
+          device = cfg.device;
         };
-      in
-        if mode == "legacy"
-        then {
-          grub = grub_common // {
-            efiSupport = false;
-            device = cfg.device;
-          };
-        }
-        else if mode == "uefi"
-        then {
-          grub = grub_common // {
-            efiSupport = true;
-            efiInstallAsRemovable = true;
-            device = "nodev";
-          };
-          efi.efiSysMountPoint = "/boot/efi";
-        }
-        else
-          throw "The settings.boot.mode parameter should be set to either \"legacy\", \"uefi\" or \"none\""
+      }
+      else if mode == "uefi"
+      then {
+        grub = grub_common // {
+          efiSupport = true;
+          efiInstallAsRemovable = true;
+          device = "nodev";
+        };
+        efi.efiSysMountPoint = "/boot/efi";
+      }
+      # This branch is needed because the expr given to mkIf seems to be evaluated eagerly
+      else if is_none
+      then {}
+      else
+        throw "The settings.boot.mode parameter should be set to either \"legacy\", \"uefi\" or \"none\""
     );
 
     fileSystems = mkIf cfg.separate_partition {
