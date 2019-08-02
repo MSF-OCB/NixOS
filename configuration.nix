@@ -14,6 +14,8 @@
 
 { config, lib, ... }:
 
+with lib;
+
 {
 
   imports = [
@@ -89,7 +91,7 @@
       enable = true;
       wheelNeedsPassword = false;
     };
-    pam.services.su.forwardXAuth = lib.mkForce false;
+    pam.services.su.forwardXAuth = mkForce false;
   };
 
   # No fonts needed on a headless system
@@ -120,8 +122,7 @@
 
     timesyncd = {
       enable = true;
-      servers = [ 
-        "172.16.0.101"
+      servers = mkDefault [ 
         "0.nixos.pool.ntp.org"
         "1.nixos.pool.ntp.org"
         "2.nixos.pool.ntp.org"
