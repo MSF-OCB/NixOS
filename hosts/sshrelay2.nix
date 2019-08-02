@@ -17,6 +17,7 @@
     boot = {
       mode = "none";
       separate_partition = false;
+    };
     reverse_tunnel.relay.enable = true;
   };
 
