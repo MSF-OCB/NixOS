@@ -59,7 +59,7 @@
     kernel.sysctl = {
       # Prevent replacing the running kernel image w/o reboot
       "kernel.kexec_load_disabled" = true;
-      
+
       # Reboot after 10 min following a kernel panic
       "kernel.panic" = "10";
 
