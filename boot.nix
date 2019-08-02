@@ -20,7 +20,7 @@ with lib;
   options = {
     settings.boot = {
       mode = mkOption {
-        type = types.enum [ "legacy" "uefi" ];
+        type = types.enum [ "legacy" "uefi" "none" ];
         description = ''
           Boot in either legacy or UEFI mode.
         '';
@@ -45,32 +45,34 @@ with lib;
   };
 
   config = {
-    boot.loader = let
-      mode = cfg.mode;
-      grub_common = {
-        enable = true;
-        version = 2;
-        memtest86.enable = true;
-      };
-    in
-      if mode == "legacy"
-      then {
-        grub = grub_common // {
-          efiSupport = false;
-          device = cfg.device;
+    boot.loader = mkIf (cfg.mode != "none") (
+      let
+        mode = cfg.mode;
+        grub_common = {
+          enable = true;
+          version = 2;
+          memtest86.enable = true;
         };
-      }
-      else if mode == "uefi"
-      then {
-        grub = grub_common // {
-          efiSupport = true;
-          efiInstallAsRemovable = true;
-          device = "nodev";
-        };
-        efi.efiSysMountPoint = "/boot/efi";
-      }
-      else
-        throw "The settings.boot.mode parameter should be set to either \"legacy\" or \"uefi\"";
+      in
+        if mode == "legacy"
+        then {
+          grub = grub_common // {
+            efiSupport = false;
+            device = cfg.device;
+          };
+        }
+        else if mode == "uefi"
+        then {
+          grub = grub_common // {
+            efiSupport = true;
+            efiInstallAsRemovable = true;
+            device = "nodev";
+          };
+          efi.efiSysMountPoint = "/boot/efi";
+        }
+        else
+          throw "The settings.boot.mode parameter should be set to either \"legacy\", \"uefi\" or \"none\""
+    );
 
     fileSystems = mkIf cfg.separate_partition {
       "/boot".options = [ "defaults" "noatime" "nosuid" "nodev" "noexec" ];
