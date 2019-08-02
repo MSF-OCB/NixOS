@@ -21,6 +21,7 @@ with lib;
   settings.boot.mode = "none";
   
   networking.useDHCP = mkForce false;
+  users.mutableUsers = mkForce true;
 
   services.timesyncd.servers = mkForce config.networking.timeServers;
 }
