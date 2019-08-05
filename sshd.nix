@@ -18,6 +18,18 @@ in
 with lib;
 
 {
+  options = {
+    settings = {
+      fail2ban.enable = mkOption {
+        default = !config.settings.sshguard.enable;
+        type = types.bool;
+      };
+      sshguard.enable = mkOption {
+        default = true;
+        type = types.bool;
+      };
+    };
+  };
 
   config = {
 
@@ -61,9 +73,20 @@ with lib;
         '';
       };
 
-      sshguard = {
-        # Error in logs, "could not initialize firewall"
-        enable = false;
+      fail2ban = mkIf config.settings.fail2ban.enable {
+        enable = true;
+        jails.ssh-iptables = lib.mkForce "";
+        jails.ssh-iptables-extra = ''
+          action   = iptables-multiport[name=SSH, port="${lib.concatMapStringsSep "," (p: toString p) config.services.openssh.ports}", protocol=tcp]
+          maxretry = 3
+          findtime = 3600
+          bantime  = 3600
+          filter   = sshd[mode=extra]
+        '';
+      };
+
+      sshguard = mkIf config.settings.sshguard.enable {
+        enable = true;
         blocktime = 600;
         # 7 * 24 * 60 * 60
         detection_time = 604800;

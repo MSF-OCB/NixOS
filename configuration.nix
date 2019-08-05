@@ -25,7 +25,6 @@ with lib;
     ./global_settings.nix
     ./packages.nix
     ./sshd.nix
-    ./fail2ban.nix
     ./reverse-tunnel.nix
     ./maintenance.nix
     ./users.nix
