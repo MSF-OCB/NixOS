@@ -25,7 +25,7 @@
   ];
 
   networking = {
-    hostName = "ehealthsshrelayhq1";
+    hostName = "sshrelay1";
     interfaces.ens160 = {
       name = "ens160";
       useDHCP = false;
