@@ -20,7 +20,10 @@ with lib;
 
   settings.boot.mode = "none";
   
-  networking.useDHCP = mkForce false;
+  networking = {
+    useDHCP = mkForce false;
+    nameservers = [ "169.254.169.253" "1.1.1.1" "1.0.0.1" ];
+  };
   users.mutableUsers = mkForce true;
 
   services.timesyncd.servers = mkForce config.networking.timeServers;
