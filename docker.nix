@@ -22,7 +22,7 @@ with lib;
 
     # For containers running java, allows to bind mount /etc/timezone
     etc = mkIf (config.time.timeZone != null) {
-      timezone.text = "${config.time.timeZone}";
+      timezone.text = config.time.timeZone;
     };
   };
 
