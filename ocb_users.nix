@@ -39,6 +39,7 @@
     godfried = tunnelOnly;
     joana    = tunnelOnly;
     kathy    = tunnelOnly;
+    pasquale = tunnelOnly;
     vini     = tunnelOnly;
     yusuph   = tunnelOnly // {
       hasShell = true;
