@@ -13,9 +13,10 @@
 {
 
   settings.reverse_tunnel.relay_servers = [
-    { name = "sshrelay1";    host = "sshrelay1.msf.be"; }
-    { name = "sshrelay2";    host = "sshrelay2.msf.be"; }
+    { name = "sshrelay1";    host = "sshrelay1.msf.be"; prometheus_endpoint = true; }
+    { name = "sshrelay2";    host = "sshrelay2.msf.be"; prometheus_endpoint = true; }
     { name = "sshrelay1-ip"; host = "185.199.180.11"; port_prefix = 1; }
+    { name = "sshrelay2-ip"; host = "15.188.17.148";  port_prefix = 1; }
   ];
 
   # python3 -c 'import crypt,getpass; print(crypt.crypt(getpass.getpass(), crypt.mksalt(crypt.METHOD_SHA512)))'

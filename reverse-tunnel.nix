@@ -53,6 +53,11 @@ with lib;
               default = 0;
             };
 
+            prometheus_endpoint = mkOption {
+              type    = types.bool;
+              default = false;
+            };
+
           };
         });
       };
@@ -111,8 +116,8 @@ with lib;
       group = "tunnel";
     };
 
-    systemd.services = mkIf cfg.enable (let
-      make_service = conf: {
+    systemd.services = let
+      make_tunnel_service = conf: {
         "autossh-reverse-tunnel-${conf.name}" = {
           enable = true;
           description = "AutoSSH reverse tunnel service to ensure resilient ssh access";
@@ -145,7 +150,10 @@ with lib;
                 -o "Compression=yes" \
                 -o "ControlMaster=no" \
                 -R ${toString (conf.port_prefix * 10000 + cfg.remote_forward_port)}:localhost:22 \
-                -R ${toString ((3 + conf.port_prefix) * 10000 + cfg.remote_forward_port)}:localhost:9100 \
+                ${if conf.prometheus_endpoint
+                  then "-R ${toString ((3 + conf.port_prefix) * 10000 + cfg.remote_forward_port)}:localhost:9100"
+                  else ""
+                } \
                 -i /etc/id_tunnel \
                 -p ''${port} \
                 tunnel@${conf.host}
@@ -153,8 +161,31 @@ with lib;
           '';
         };
       };
+      tunnel_services = optionalAttrs cfg.enable
+        foldr (conf: services: services // (make_tunnel_service conf)) {} cfg.relay_servers;
+
+      monitoring_services = optionalAttrs cfg.relay.enable {
+        port_monitor = {
+          enable = true;
+          restartIfChanged = false;
+          unitConfig.X-StopOnRemoval = false;
+          serviceConfig = {
+            User = "root";
+            Type = "oneshot";
+          };
+          script = let
+            file = "/root/timetunnels.txt";
+          in ''
+            echo "###" | ${pkgs.coreutils}/bin/tee -a ${file}
+            ${pkgs.coreutils}/bin/date | ${pkgs.coreutils}/bin/tee -a ${file}
+            ${pkgs.iproute}/bin/ss -Htpln | ${pkgs.coreutils}/bin/sort -n | ${pkgs.coreutils}/bin/tee -a ${file}
+          '';
+          # Every 5 min
+          startAt = "*:0/5:00";
+        };
+      };
     in
-      foldr (conf: services: services // (make_service conf)) {} cfg.relay_servers);
+      tunnel_services // monitoring_services;
   };
 }
 
