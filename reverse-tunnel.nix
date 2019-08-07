@@ -161,8 +161,8 @@ with lib;
           '';
         };
       };
-      tunnel_services = optionalAttrs cfg.enable
-        foldr (conf: services: services // (make_tunnel_service conf)) {} cfg.relay_servers;
+      tunnel_services = optionalAttrs cfg.enable (
+        foldr (conf: services: services // (make_tunnel_service conf)) {} cfg.relay_servers);
 
       monitoring_services = optionalAttrs cfg.relay.enable {
         port_monitor = {
