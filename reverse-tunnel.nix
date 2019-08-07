@@ -178,7 +178,7 @@ with lib;
           in ''
             echo "###" | ${pkgs.coreutils}/bin/tee -a ${file}
             ${pkgs.coreutils}/bin/date | ${pkgs.coreutils}/bin/tee -a ${file}
-            ${pkgs.iproute}/bin/ss -Htpln | ${pkgs.coreutils}/bin/sort -n | ${pkgs.coreutils}/bin/tee -a ${file}
+            ${pkgs.iproute}/bin/ss -Htpln6 | ${pkgs.coreutils}/bin/sort -n | ${pkgs.coreutils}/bin/tee -a ${file}
           '';
           # Every 5 min
           startAt = "*:0/5:00";
