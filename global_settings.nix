@@ -11,9 +11,9 @@
 { lib, ... }:
 
 {
-  
+
   settings.reverse_tunnel.relay_servers = [
-    { name = "ixelles";      host = "ehealthsshrelayhq1.msf.be"; }
+    { name = "sshrelay1";    host = "sshrelay1.msf.be"; }
     { name = "sshrelay2";    host = "sshrelay2.msf.be"; }
     { name = "sshrelay1-ip"; host = "185.199.180.11"; port_prefix = 1; }
   ];
