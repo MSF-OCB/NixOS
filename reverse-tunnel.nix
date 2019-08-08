@@ -134,7 +134,7 @@ with lib;
             RestartSec = "10min";
           };
           script = ''
-            for port in ${concatMapStringsSep " " toString cfg.relay.ports}; do
+            for port in ${toString cfg.relay.ports}; do
               echo "Attempting to connect to ${conf.host} on port ''${port}"
               ${pkgs.autossh}/bin/autossh \
                 -q -T -N \
