@@ -36,6 +36,8 @@ with lib;
     services = {
       openssh = {
         enable = true;
+        # TODO 19.09: check changed behaviour which makes this the default for immutable users
+        # Might need stateVersion update
         authorizedKeysFiles = mkForce [ "/etc/ssh/authorized_keys.d/%u" ];
         permitRootLogin = mkDefault "no";
         forwardX11 = false;
