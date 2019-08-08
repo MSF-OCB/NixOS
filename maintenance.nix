@@ -46,6 +46,7 @@
       startAt = "Tue 12:00";
     };
 
+    # TODO 19.09: check new allowReboot option
     reboot-after-kernel-change = {
       enable = true;
       description = "Reboot the system if the running kernel is different than the kernel of the NixOS current-system.";
