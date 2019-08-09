@@ -33,6 +33,7 @@
     mkpasswd
     unzip
     lm_sensors
+    ipset
     nmap
     traceroute
     ethtool
