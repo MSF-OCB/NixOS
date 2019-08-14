@@ -8,9 +8,7 @@
 #                                                                      #
 ########################################################################
 
-{ config, lib, ... }:
-
-with lib;
+{ config, ... }:
 
 {
   imports = [
@@ -20,11 +18,8 @@ with lib;
 
   settings.boot.mode = "none";
   
-  networking = {
-    useDHCP = mkForce false;
-    nameservers = [ "169.254.169.253" "1.1.1.1" "1.0.0.1" ];
-  };
+  networking.dhcpcd.denyInterfaces = [ ];
 
-  services.timesyncd.servers = mkForce config.networking.timeServers;
+  services.timesyncd.servers = config.networking.timeServers;
 }
 

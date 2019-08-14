@@ -40,7 +40,7 @@ with lib;
     dhcpcd = {
       persistent = true;
       # See: https://wiki.archlinux.org/index.php/Dhcpcd#dhcpcd_and_systemd_network_interfaces
-      denyInterfaces = [ "eth*" "wlan*" ];
+      denyInterfaces = mkDefault [ "eth*" "wlan*" ];
     };
   };
 
