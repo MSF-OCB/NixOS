@@ -94,6 +94,18 @@ with lib;
         detection_time = 604800;
       };
     };
+
+    systemd.services.sshguard = {
+      # https://github.com/NixOS/nixpkgs/pull/65995
+      preStart = ''
+        ${pkgs.ipset}/bin/ipset -quiet create -exist sshguard4 hash:net family inet
+        ${pkgs.ipset}/bin/ipset -quiet create -exist sshguard6 hash:net family inet6
+      '';
+      postStop = ''
+        ${pkgs.ipset}/bin/ipset -quiet destroy sshguard4
+        ${pkgs.ipset}/bin/ipset -quiet destroy sshguard6
+      '';
+    };
   };
 
 }
