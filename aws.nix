@@ -18,7 +18,7 @@
 
   settings.boot.mode = "none";
   
-  networking.dhcpcd.denyInterfaces = [ ];
+  networking.dhcpcd.denyInterfaces = mkForce [ ];
 
   services.timesyncd.servers = config.networking.timeServers;
 }
