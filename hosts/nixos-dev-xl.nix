@@ -8,6 +8,8 @@
 #                                                                      #
 ########################################################################
 
+{ pkgs, ...}:
+
 {
 
   time.timeZone = "Europe/Brussels";
@@ -32,8 +34,11 @@
     ../vmware.nix
     ../docker.nix
     ../docker-registry.nix
-    ../ansible.nix
-    ../nixops.nix
+  ];
+  
+  environment.systemPackages = with pkgs; [
+    ansible
+    rsync
   ];
 
   networking = {

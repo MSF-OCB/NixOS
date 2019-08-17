@@ -31,7 +31,11 @@
     ../vmware.nix
     ../docker-registry.nix
     ../docker.nix
-    ../ansible.nix
+  ];
+  
+  environment.systemPackages = with pkgs; [
+    ansible
+    rsync
   ];
 
   networking = {
