@@ -164,6 +164,13 @@ with lib;
   users.extraUsers.root = {
     hashedPassword = "!";
   };
+  
+  documentation = {
+    man.enable  = true;
+    doc.enable  = false;
+    dev.enable  = false;
+    info.enable = false;
+  };
 
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
