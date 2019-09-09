@@ -8,15 +8,32 @@
 #                                                                      #
 ########################################################################
 
-{ config, ... }:
+{ config, lib, ... }:
 
 {
-# Enable cron service
-  services.cron = {
-    enable = true;
-    systemCronJobs = [
-      "5 4 * * * root date >>/root/kobohack.log;cd /opt/kobo-docker/;docker-compose exec kpi bash -c 'rm /tmp/celery*';docker-compose restart >> /root/kobohack.log"
-    ];
+
+  options = {
+    settings.kobofix.kobo_directory = mkOption {
+      default = "/opt/kobo-docker";
+      type = types.str;
+    };
+  };
+
+  config = {
+    systemd.services.kobofix = {
+      enable = true;
+      serviceConfig = {
+        User = "root";
+        Type = "oneshot";
+        WorkingDirectory = config.settings.kobofix.kobo_directory;
+      };
+      restartIfChanged = false;
+      script = ''
+        docker-compose exec kpi bash -c 'rm /tmp/celery*'
+        docker-compose restart
+      '';
+      startAt = "04:05";
+    };
   };
 
 }
