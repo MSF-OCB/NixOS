@@ -8,7 +8,7 @@
 #                                                                      #
 ########################################################################
 
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
@@ -28,10 +28,13 @@ with lib;
         Type = "oneshot";
         WorkingDirectory = config.settings.kobofix.kobo_directory;
       };
+      path = [ pkgs.docker ];
       restartIfChanged = false;
       script = ''
-        docker-compose exec kpi bash -c 'rm /tmp/celery*'
-        docker-compose restart
+        echo "Running rm /tmp/celery* ..."
+        ${pkgs.docker_compose}/bin/docker-compose exec -T kpi sh -c 'rm /tmp/celery*'
+        echo "Restarting the containers ..."
+        ${pkgs.docker_compose}/bin/docker-compose restart
       '';
       startAt = "04:05";
     };
