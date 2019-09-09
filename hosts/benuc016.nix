@@ -26,7 +26,7 @@
 
   imports = [
     ../docker.nix
-    ../kobocron.nix
+    ../kobofix.nix
   ];
   
   networking = {
