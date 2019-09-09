@@ -10,8 +10,9 @@
 
 { config, lib, ... }:
 
-{
+with lib;
 
+{
   options = {
     settings.kobofix.kobo_directory = mkOption {
       default = "/opt/kobo-docker";
@@ -35,6 +36,5 @@
       startAt = "04:05";
     };
   };
-
 }
 
