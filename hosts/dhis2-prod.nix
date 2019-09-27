@@ -21,6 +21,11 @@
       enable = true;
       remote_forward_port = 7054;
     };
+    
+    users.users = {
+      yusuph.enable = true;
+    };
+  
     crypto = {
       enable = false;
       device = "/dev/LVMVolGroup/nixos_data";
