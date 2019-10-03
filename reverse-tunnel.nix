@@ -93,11 +93,8 @@ with lib;
     users.extraUsers.tunnel = {
       isNormalUser = false;
       isSystemUser = true;
-      # We need the home dir for ssh to store the known_hosts file.
-      home = "/home/tunnel";
-      createHome = true;
-      shell = pkgs.nologin;
-      extraGroups = mkIf cfg.relay.enable [ config.settings.users.ssh-group ];
+      shell        = pkgs.nologin;
+      extraGroups  = mkIf cfg.relay.enable [ config.settings.users.ssh-group ];
       openssh.authorizedKeys.keyFiles = mkIf cfg.relay.enable [ ./keys/tunnel ];
     };
 
