@@ -122,6 +122,17 @@ with lib;
           requisite = dependent_services;
         }
 
+        {
+          enable   = true;
+          what     = "/opt/.home";
+          where    = "/home";
+          type     = "none";
+          options  = "bind";
+          after    = [ "opt.mount" ];
+          wants    = [ "opt.mount" ];
+          wantedBy = [ "multi-user.target" ];
+        }
+
       ] ++ foldr (mount: mounts: mounts ++ [ (addBindMount mount) ]) [] cfg.bind_mounts;
 
     };
