@@ -66,6 +66,7 @@ with lib;
             };
 
             required_by = mkOption {
+              default = [];
               type = with types; listOf str;
             };
 
