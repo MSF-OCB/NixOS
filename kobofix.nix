@@ -34,7 +34,8 @@ with lib;
         echo "Running rm /tmp/celery* ..."
         ${pkgs.docker_compose}/bin/docker-compose exec -T kpi sh -c 'rm /tmp/celery*'
         echo "Restarting the containers ..."
-        ${pkgs.docker_compose}/bin/docker-compose restart
+        ${pkgs.docker_compose}/bin/docker-compose down
+        ${pkgs.docker_compose}/bin/docker-compose up -d
       '';
       startAt = "04:05";
     };
