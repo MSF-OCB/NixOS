@@ -63,13 +63,18 @@
       # Current system is the most recently activated system, but its kernel only gets loaded after a reboot.
       # Booted system is the system that we booted in, and whose kernel is thus currently loaded.
       script = ''
-        if [ $(dirname $(readlink /run/current-system/kernel)) = $(dirname $(readlink /run/booted-system/kernel)) ]; then
+        DATE=${pkgs.coreutils}/bin/date
+        DIRNAME=${pkgs.coreutils}/bin/dirname
+        READLINK=${pkgs.coreutils}/bin/readlink
+        SYSTEMCTL=${pkgs.systemd}/bin/systemctl
+
+        if [ $("$DIRNAME" $("$READLINK" /run/current-system/kernel)) = $("$DIRNAME" $("$READLINK" /run/booted-system/kernel)) ]; then
           echo No reboot required.
-        elif [ $(date +%s) -gt $(date --date="$(date --date='today' +%Y-%m-%d) + 5 hours" +%s) ]; then
+        elif [ $("$DATE" +%s) -gt $("$DATE" --date="$("$DATE" --date='today' +%Y-%m-%d) + 5 hours" +%s) ]; then
           echo Time window for reboot has passed.
         else
           echo Rebooting...
-          systemctl --no-block reboot
+          "$SYSTEMCTL" --no-block reboot
         fi
       '';
     };
