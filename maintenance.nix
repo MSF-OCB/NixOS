@@ -43,7 +43,7 @@
       script = ''
         ${config.system.build.nixos-rebuild}/bin/nixos-rebuild boot ${toString cfg.flags}
       '';
-      startAt = "Tue 12:00";
+      startAt = "Mon 12:00";
     };
 
     # TODO 19.09: check new allowReboot option
