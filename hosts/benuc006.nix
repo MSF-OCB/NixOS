@@ -28,6 +28,7 @@
 
   imports = [
     ../docker.nix
+    ../kobofix.nix
   ];
 
 }
