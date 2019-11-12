@@ -56,7 +56,7 @@
         after = [ "network-online.target" ];
         requires = [ "network-online.target" ];
         before = dependent_services;
-        requisite = dependent_services;
+        requiredBy = dependent_services;
       }
     ];
   };
