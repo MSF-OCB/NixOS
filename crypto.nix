@@ -14,12 +14,12 @@ with lib;
 let
   cfg = config.settings.crypto;
   addBindMount = c: {
-    enable = c.enable;
-    what = "/opt/${c.name}";
-    where = toString c.source;
+    enable  = c.enable;
+    what    = "/opt/${c.name}";
+    where   = toString c.source;
     options = "bind";
-    before = c.required_by;
-    requisite = c.required_by;
+    before  = c.required_by;
+    requiredBy = c.required_by;
     after = [ "opt.mount" ];
     wants = [ "opt.mount" ];
     wantedBy = [ "multi-user.target" ];
@@ -114,12 +114,12 @@ with lib;
           what   = "/dev/disk/by-label/nixos_data";
           where  = "/opt";
           type   = "ext4";
-          options   = "acl,noatime,nosuid,nodev";
-          after     = [ "open_nixos_data.service" ];
-          wants     = [ "open_nixos_data.service" ];
-          wantedBy  = [ "multi-user.target" ];
-          before    = dependent_services;
-          requisite = dependent_services;
+          options    = "acl,noatime,nosuid,nodev";
+          after      = [ "open_nixos_data.service" ];
+          requires   = [ "open_nixos_data.service" ];
+          wantedBy   = [ "multi-user.target" ];
+          before     = dependent_services;
+          requiredBy = dependent_services;
         }
 
         {
@@ -129,7 +129,7 @@ with lib;
           type     = "none";
           options  = "bind";
           after    = [ "opt.mount" ];
-          wants    = [ "opt.mount" ];
+          requires = [ "opt.mount" ];
           wantedBy = [ "multi-user.target" ];
         }
 
