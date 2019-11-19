@@ -82,10 +82,10 @@ with lib;
       services.open_nixos_data = {
         enable = cfg.enable;
         description = "Open nixos_data volume";
-        after = [ "lvm2-monitor.service" ];
-        wantedBy = [ "multi-user.target" ];
-        wants = [ "lvm2-monitor.service" ];
+        conflicts = [ "shutdown.target" ];
+        before    = [ "shutdown.target" ];
         unitConfig = {
+          DefaultDependencies = "no";
           ConditionPathExists = "!/dev/mapper/nixos_data_decrypted";
         };
         serviceConfig = {
