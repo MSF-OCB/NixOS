@@ -70,7 +70,7 @@
 
         if [ $("$DIRNAME" $("$READLINK" /run/current-system/kernel)) = $("$DIRNAME" $("$READLINK" /run/booted-system/kernel)) ]; then
           echo No reboot required.
-        elif [ $("$DATE" +%s) -gt $("$DATE" --date="$("$DATE" --date='today' +%Y-%m-%d) + 5 hours" +%s) ]; then
+        elif [ $("$DATE" +%s) -gt $("$DATE" --date="$("$DATE" +%Y-%m-%d) 05:00" +%s) ]; then
           echo Time window for reboot has passed.
         else
           echo Rebooting...
