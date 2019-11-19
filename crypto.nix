@@ -13,22 +13,8 @@ with lib;
 
 let
   cfg = config.settings.crypto;
-  addBindMount = c: {
-    enable  = c.enable;
-    what    = "/opt/${c.name}";
-    where   = toString c.source;
-    options = "bind";
-    before  = c.required_by;
-    requiredBy = c.required_by;
-    after = [ "opt.mount" ];
-    wants = [ "opt.mount" ];
-    wantedBy = [ "multi-user.target" ];
-  };
-in
+in {
 
-with lib;
-
-{
   options = {
     settings.crypto = {
       enable = mkOption {
@@ -46,38 +32,10 @@ with lib;
           The device to mount.
         '';
       };
-
-      bind_mounts = mkOption {
-        default = [ ];
-        type = with types; listOf (submodule {
-          options = {
-
-            enable = mkOption {
-              default = true;
-              type = types.bool;
-            };
-
-            name = mkOption {
-              type = types.str;
-            };
-
-            source = mkOption {
-              type = types.path;
-            };
-
-            required_by = mkOption {
-              default = [];
-              type = with types; listOf str;
-            };
-
-          };
-        });
-      };
     };
   };
 
   config = {
-
     systemd = mkIf cfg.enable {
       services.open_nixos_data = {
         enable = cfg.enable;
@@ -102,8 +60,7 @@ with lib;
       };
 
       mounts = let
-        # When /opt is a separate partition, it needs to be mounted before
-        # starting docker and docker-registry.
+        # When /opt is a separate partition, it needs to be mounted before starting docker and docker-registry.
         # For documentation about "optional" see: https://github.com/NixOS/nixpkgs/blob/master/lib/lists.nix
         dependent_services = (optional config.virtualisation.docker.enable "docker.service") ++
                              (optional config.services.dockerRegistry.enable "docker-registry.service");
@@ -133,11 +90,8 @@ with lib;
           wantedBy = [ "multi-user.target" ];
         }
 
-      ] ++ foldr (mount: mounts: mounts ++ [ (addBindMount mount) ]) [] cfg.bind_mounts;
-
+      ];
     };
-
   };
-
 }
 
