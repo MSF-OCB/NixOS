@@ -118,6 +118,7 @@ with lib;
         "autossh-reverse-tunnel-${conf.name}" = {
           enable = true;
           description = "AutoSSH reverse tunnel service to ensure resilient ssh access";
+          wants = [ "network.target" ];
           after = [ "network.target" ];
           wantedBy = [ "multi-user.target" ];
           environment = {
