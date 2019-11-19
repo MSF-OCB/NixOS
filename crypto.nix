@@ -21,7 +21,7 @@ in {
         default = false;
         type = types.bool;
         description = ''
-          Whether to try and mount the encrypted data partition.
+          Whether to mount the encrypted data partition.
         '';
       };
 
