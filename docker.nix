@@ -60,10 +60,5 @@ with lib;
     );
   };
   
-  systemd.services.docker = {
-    wants = [ "network-online.target" ];
-    after = [ "network-online.target" ];
-  };
-
 }
 
