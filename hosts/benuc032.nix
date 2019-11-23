@@ -25,6 +25,7 @@
 
     users.users = {
       "msf-kunduz-ehealthsupport" = {
+        enable      = true;
         sshAllowed  = true;
         hasShell    = true;
         canTunnel   = true;
