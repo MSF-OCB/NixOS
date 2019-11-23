@@ -29,6 +29,7 @@
         hasShell    = true;
         canTunnel   = true;
         extraGroups = [ "docker" ];
+      };
     };
   };
 
