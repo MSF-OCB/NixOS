@@ -20,7 +20,7 @@
     };
     crypto = {
       enable = false;
-      device = "/dev/LVMVolGroup/nixos_data";
+      device = "/safe.img";
     };
   };
 
