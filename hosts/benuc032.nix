@@ -8,6 +8,8 @@
 #                                                                      #
 ########################################################################
 
+{ pkgs, ...}:
+
 {
   networking.hostName = "benuc032";
   time.timeZone = "Asia/Kabul";
