@@ -22,6 +22,16 @@
       enable = true;
       device = "/dev/LVMVolGroup/nixos_data";
     };
+    
+    users.users = {
+      "msf-kunduz-ehealthsupport" = {
+        enable      = true;
+        sshAllowed  = true;
+        hasShell    = true;
+        canTunnel   = true;
+        extraGroups = [ "docker" ];
+      };
+    };
   };
 
   imports = [
