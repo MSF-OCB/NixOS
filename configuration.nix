@@ -25,6 +25,7 @@ with lib;
     ./global_settings.nix
     ./packages.nix
     ./sshd.nix
+    ./avahi.nix
     ./reverse-tunnel.nix
     ./maintenance.nix
     ./users.nix
