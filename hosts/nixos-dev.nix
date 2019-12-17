@@ -42,7 +42,7 @@
   ];
 
   networking = {
-    hostName = "nixos-dev-xl";
+    hostName = "nixos-dev";
     interfaces.ens192 = {
       name = "ens192";
       useDHCP = false;
