@@ -8,7 +8,7 @@
 #                                                                      #
 ########################################################################
 
-{ config, pkgs, ... }:
+{ lib, config, pkgs, ... }:
 
 {
 
@@ -17,66 +17,44 @@
     dates = "Mon 03:20";
   };
 
-  systemd.services = {
+  systemd = {
+    services = {
+      nixos-upgrade = {
+        serviceConfig = {
+          TimeOutStartSec = "2 days";
+        };
+        script = let
+          cfg = config.system.autoUpgrade;
+          nixos-rebuild = "${config.system.build.nixos-rebuild}/bin/nixos-rebuild";
+          date = "${pkgs.coreutils}/bin/date";
+          readlink = "/run/current-system/sw/bin/readlink";
+          shutdown = "/run/current-system/sw/bin/shutdown";
+        in lib.mkForce ''
+          ${nixos-rebuild} boot --no-build-output --upgrade
+          booted="$(${readlink} /run/booted-system/{initrd,kernel,kernel-modules})"
+          built="$(${readlink} /nix/var/nix/profiles/system/{initrd,kernel,kernel-modules})"
+          threshold="$(${date} --date="$(${date} --date='today' +%Y-%m-%d) 05:00" +%s)";
 
-    # Service which runs during the day, to catch the situation where servers
-    # are turned off every evening.
-    # This service updates and sets the new config as the boot default but
-    # does not activate it yet.
-    # Mainly copied from  nixpkgs/nixos/modules/installer/tools/auto-upgrade.nix.
-    nixos-upgrade-boot = let cfg = config.system.autoUpgrade; in {
-      enable = true;
-      description = "NixOS Upgrade Boot";
-      restartIfChanged = false;
-      unitConfig.X-StopOnRemoval = false;
-      serviceConfig = {
-        User = "root";
-        Type = "oneshot";
+          if [ "$booted" = "$built" ]; then
+            ${nixos-rebuild} switch --no-build-output
+          elif [ "$(${date} +%s)" -gt "''${threshold}" ]; then
+            echo "Reboot max time exceeded, skipping."
+          else
+            ${shutdown} -r +1
+          fi
+        '';
       };
-
-      environment = config.nix.envVars //
-        { inherit (config.environment.sessionVariables) NIX_PATH;
-          HOME = "/root";
-        } // config.networking.proxy.envVars;
-
-      path = [ pkgs.gnutar pkgs.xz.bin config.nix.package.out ];
-      script = ''
-        ${config.system.build.nixos-rebuild}/bin/nixos-rebuild boot ${toString cfg.flags}
-      '';
-      startAt = "Mon 12:00";
     };
-
-    # TODO 19.09: check new allowReboot option
-    reboot-after-kernel-change = {
-      enable = true;
-      description = "Reboot the system if the running kernel is different than the kernel of the NixOS current-system.";
-      after = [ "nixos-upgrade.service" ];
-      wantedBy = [ "nixos-upgrade.service" ];
-      restartIfChanged = false;
-      unitConfig.X-StopOnRemoval = false;
-      serviceConfig = {
-        User = "root";
-        Type = "oneshot";
+    # Run the upgrade service during the day, to catch the situation where servers
+    # are turned off every evening. We will be outside of the reboot window.
+    timers = {
+      nixos-upgrade-day = {
+        timerConfig = {
+          Unit = "nixos-upgrade.service";
+          OnCalendar = "Mon 12:00";
+        };
+        wantedBy = [ "timers.target" ];
       };
-      # Check whether the kernel version has been changed and whether we didn't pass 05h00,
-      # otherwise we postpone the reboot until the next execution of this service.
-      # Current system is the most recently activated system, but its kernel only gets loaded after a reboot.
-      # Booted system is the system that we booted in, and whose kernel is thus currently loaded.
-      script = ''
-        DATE=${pkgs.coreutils}/bin/date
-        DIRNAME=${pkgs.coreutils}/bin/dirname
-        READLINK=${pkgs.coreutils}/bin/readlink
-        SYSTEMCTL=${pkgs.systemd}/bin/systemctl
-
-        if [ $("$DIRNAME" $("$READLINK" /run/current-system/kernel)) = $("$DIRNAME" $("$READLINK" /run/booted-system/kernel)) ]; then
-          echo No reboot required.
-        elif [ $("$DATE" +%s) -gt $("$DATE" --date="$("$DATE" +%Y-%m-%d) 05:00" +%s) ]; then
-          echo Time window for reboot has passed.
-        else
-          echo Rebooting...
-          "$SYSTEMCTL" --no-block reboot
-        fi
-      '';
     };
   };
 
