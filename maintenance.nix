@@ -26,7 +26,7 @@
         script = let
           cfg = config.system.autoUpgrade;
           nixos-rebuild = "${config.system.build.nixos-rebuild}/bin/nixos-rebuild";
-          date = "/run/current-system/sw/bin/date";
+          date     = "/run/current-system/sw/bin/date";
           readlink = "/run/current-system/sw/bin/readlink";
           shutdown = "/run/current-system/sw/bin/shutdown";
         in lib.mkForce ''
