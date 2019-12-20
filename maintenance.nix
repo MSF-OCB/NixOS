@@ -33,12 +33,13 @@
           ${nixos-rebuild} boot --no-build-output --upgrade
           booted="$(${readlink} /run/booted-system/{initrd,kernel,kernel-modules})"
           built="$(${readlink} /nix/var/nix/profiles/system/{initrd,kernel,kernel-modules})"
-          threshold="$(${date} --date="$(${date} --date='today' +%Y-%m-%d) 05:00" +%s)";
+          upper="$(${date} --date="$(${date} --date='today' +%Y-%m-%d) 05:00" +%s)";
+          lower="$(${date} --date="$(${date} --date='today' +%Y-%m-%d) 01:00" +%s)";
 
           if [ "$booted" = "$built" ]; then
             ${nixos-rebuild} switch --no-build-output
-          elif [ "$(${date} +%s)" -gt "''${threshold}" ]; then
-            echo "Reboot max time exceeded, skipping."
+          elif ([ "$(${date} +%s)" -gt "''${upper}" ] || [ "$(${date} +%s)" -lt "''${lower}" ]); then
+            echo "Outside of configured reboot window, skipping."
           else
             ${shutdown} -r +1
           fi
