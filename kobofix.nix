@@ -30,12 +30,14 @@ with lib;
       };
       path = [ pkgs.docker ];
       restartIfChanged = false;
-      script = ''
-        echo "Running rm /tmp/celery* ..."
-        ${pkgs.docker_compose}/bin/docker-compose exec -T kpi sh -c 'rm /tmp/celery*'
+      script = let
+        docker_compose = "${pkgs.docker_compose}/bin/docker-compose";
+      in ''
+        #echo "Running rm /tmp/celery* ..."
+        #${docker_compose} exec -T kpi sh -c 'rm /tmp/celery*'
         echo "Restarting the containers ..."
-        ${pkgs.docker_compose}/bin/docker-compose down
-        ${pkgs.docker_compose}/bin/docker-compose up -d
+        ${docker_compose} down
+        ${docker_compose} up -d
       '';
       startAt = "04:05";
     };
