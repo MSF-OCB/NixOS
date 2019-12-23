@@ -12,9 +12,12 @@
 
 {
 
+  # We run the upgrade service once at night and once during the day, to catch the situation
+  # where the server is turned off every evening.
+  # When the service is being run during the day, we will be outside of the reboot window.
   system.autoUpgrade = {
     enable = true;
-    dates = "Mon 03:20";
+    dates = "Mon 03,12:20";
   };
 
   systemd = {
@@ -44,17 +47,6 @@
             ${shutdown} -r +1
           fi
         '';
-      };
-    };
-    # Run the upgrade service during the day, to catch the situation where servers
-    # are turned off every evening. We will be outside of the reboot window.
-    timers = {
-      nixos-upgrade-day = {
-        timerConfig = {
-          Unit = "nixos-upgrade.service";
-          OnCalendar = "Mon 12:00";
-        };
-        wantedBy = [ "timers.target" ];
       };
     };
   };
