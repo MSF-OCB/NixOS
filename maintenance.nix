@@ -20,35 +20,31 @@
     dates = "Mon 03,12:20";
   };
 
-  systemd = {
-    services = {
-      nixos-upgrade = {
-        serviceConfig = {
-          TimeoutStartSec = "2 days";
-        };
-        script = let
-          cfg = config.system.autoUpgrade;
-          nixos-rebuild = "${config.system.build.nixos-rebuild}/bin/nixos-rebuild";
-          date     = "/run/current-system/sw/bin/date";
-          readlink = "/run/current-system/sw/bin/readlink";
-          shutdown = "/run/current-system/sw/bin/shutdown";
-        in lib.mkForce ''
-          ${nixos-rebuild} boot --no-build-output --upgrade
-          booted="$(${readlink} /run/booted-system/{initrd,kernel,kernel-modules})"
-          built="$(${readlink} /nix/var/nix/profiles/system/{initrd,kernel,kernel-modules})"
-          upper="$(${date} --date="$(${date} --date='today' +%Y-%m-%d) 05:00" +%s)";
-          lower="$(${date} --date="$(${date} --date='today' +%Y-%m-%d) 01:00" +%s)";
-
-          if [ "$booted" = "$built" ]; then
-            ${nixos-rebuild} switch --no-build-output
-          elif ([ "$(${date} +%s)" -gt "''${upper}" ] || [ "$(${date} +%s)" -lt "''${lower}" ]); then
-            echo "Outside of configured reboot window, skipping."
-          else
-            ${shutdown} -r +1
-          fi
-        '';
-      };
+  systemd.services.nixos-upgrade = {
+    serviceConfig = {
+      TimeoutStartSec = "2 days";
     };
+    script = let
+      cfg = config.system.autoUpgrade;
+      nixos-rebuild = "${config.system.build.nixos-rebuild}/bin/nixos-rebuild";
+      date     = "/run/current-system/sw/bin/date";
+      readlink = "/run/current-system/sw/bin/readlink";
+      shutdown = "/run/current-system/sw/bin/shutdown";
+    in lib.mkForce ''
+      ${nixos-rebuild} boot --no-build-output --upgrade
+      booted="$(${readlink} /run/booted-system/{initrd,kernel,kernel-modules})"
+      built="$(${readlink} /nix/var/nix/profiles/system/{initrd,kernel,kernel-modules})"
+      upper="$(${date} --date="$(${date} --date='today' +%Y-%m-%d) 05:00" +%s)";
+      lower="$(${date} --date="$(${date} --date='today' +%Y-%m-%d) 01:00" +%s)";
+
+      if [ "$booted" = "$built" ]; then
+        ${nixos-rebuild} switch --no-build-output
+      elif ([ "$(${date} +%s)" -gt "''${upper}" ] || [ "$(${date} +%s)" -lt "''${lower}" ]); then
+        echo "Outside of configured reboot window, skipping."
+      else
+        ${shutdown} -r +1
+      fi
+    '';
   };
 
   nix = {
