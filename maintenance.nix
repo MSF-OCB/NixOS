@@ -21,7 +21,7 @@
     services = {
       nixos-upgrade = {
         serviceConfig = {
-          TimeOutStartSec = "2 days";
+          TimeoutStartSec = "2 days";
         };
         script = let
           cfg = config.system.autoUpgrade;
