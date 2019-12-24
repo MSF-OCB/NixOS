@@ -131,7 +131,10 @@ with lib;
             Restart = "always";
             RestartSec = "10min";
           };
-          script = ''
+          script = let
+            tunnel_port = toString (conf.port_prefix * 10000 + cfg.remote_forward_port);
+            prometheus_port = toString ((3 + conf.port_prefix) * 10000 + cfg.remote_forward_port);
+          in ''
             for port in ${toString cfg.relay.ports}; do
               echo "Attempting to connect to ${conf.host} on port ''${port}"
               ${pkgs.autossh}/bin/autossh \
@@ -147,11 +150,8 @@ with lib;
                 -o "IdentitiesOnly=yes" \
                 -o "Compression=yes" \
                 -o "ControlMaster=no" \
-                -R ${toString (conf.port_prefix * 10000 + cfg.remote_forward_port)}:localhost:22 \
-                ${if conf.prometheus_endpoint
-                  then "-R ${toString ((3 + conf.port_prefix) * 10000 + cfg.remote_forward_port)}:localhost:9100"
-                  else ""
-                } \
+                -R ${tunnel_port}:localhost:22 \
+                ${optionalString conf.prometheus_endpoint "-R ${prometheus_port}:localhost:9100 "}\
                 -i /etc/id_tunnel \
                 -p ''${port} \
                 tunnel@${conf.host}
