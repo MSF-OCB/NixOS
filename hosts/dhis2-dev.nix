@@ -29,10 +29,7 @@
       yusuph.enable = true;
     };
     
-    crypto = {
-      enable = true;
-      device = "/dev/LVMVolGroup/nixos_data";
-    };    
+    crypto.enable = true;
   };
 
   imports = [
