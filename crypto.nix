@@ -26,7 +26,7 @@ in {
       };
 
       device = mkOption {
-        default = "";
+        default = "/dev/LVMVolGroup/nixos_data";
         type = types.str;
         description = ''
           The device to mount.
