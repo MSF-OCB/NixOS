@@ -35,6 +35,23 @@ with lib;
     ./prometheus.nix
   ];
 
+  fileSystems = {
+    "/" = {
+      device = "/dev/disk/by-label/nixos_root";
+      fsType = "ext4";
+      options = [ "defaults" "noatime" "acl" ];
+    };
+    "/boot" = mkIf config.settings.boot.separate_partition {
+      device = "/dev/disk/by-label/nixos_boot";
+      fsType = "ext4";
+      options = [ "defaults" "noatime" "nosuid" "nodev" "noexec" ];
+    };
+    "/boot/efi" = mkIf (config.settings.boot.mode == "uefi") {
+      device = "/dev/disk/by-label/EFI";
+      fsType = "vfat";
+    };
+  };
+
   networking = {
     # All non-manually configured interfaces are configured by DHCP.
     useDHCP = true;
@@ -78,8 +95,6 @@ with lib;
     cleanTmpDir = true;
     tmpOnTmpfs = true;
   };
-
-  fileSystems."/".options = [ "defaults" "noatime" "acl" ];
 
   zramSwap = {
     enable = true;

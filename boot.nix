@@ -76,11 +76,6 @@ with lib;
       else
         throw "The settings.boot.mode parameter should be set to either \"legacy\", \"uefi\" or \"none\""
     );
-
-    fileSystems = mkIf cfg.separate_partition {
-      "/boot".options = [ "defaults" "noatime" "nosuid" "nodev" "noexec" ];
-    };
-
   };
 }
 
