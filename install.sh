@@ -2,14 +2,14 @@
 set -e
 
 # To install, run:
-# curl -L https://github.com/msf-ocb/nixos/raw/master/install.sh | sudo bash -s <disk device> <host name> [<root size>]
+# curl -L https://github.com/msf-ocb/nixos/raw/master/install.sh | sudo bash -s <disk device> <host name> [<root partition size (GB)>]
 
 DEVICE="$1"
 HOSTNAME="$2"
 ROOT_SIZE="${3:-30}"
 
 if [ -z "${DEVICE}" ] || [ -z "${HOSTNAME}" ]; then
-  echo "usage: install.sh <disk device> <host name>"
+  echo "Usage: install.sh <disk device> <host name> [<root partition size (GB)>]"
   exit 1
 fi
 
@@ -20,6 +20,7 @@ fi
 
 if [ "${ROOT_SIZE}" -gt $(($(blockdev --getsize64 "${DEVICE}")/1024/1024/1024 - 2)) ]; then
   echo "Root size bigger than the provided device, please specify a smaller root size."
+  echo "Usage: install.sh <disk device> <host name> [<root partition size (GB)>]"
   exit 1
 fi
 
