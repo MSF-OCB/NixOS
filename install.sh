@@ -8,7 +8,7 @@ DEVICE="$1"
 HOSTNAME="$2"
 ROOT_SIZE="${3:-30}"
 
-if [ -z "$c{DEVICE}" ] || [ -z "${HOSTNAME}" ]; then
+if [ -z "${DEVICE}" ] || [ -z "${HOSTNAME}" ]; then
   echo "usage: install.sh <disk device> <host name>"
   exit 1
 fi
