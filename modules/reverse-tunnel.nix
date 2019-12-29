@@ -95,7 +95,7 @@ with lib;
       isSystemUser = true;
       shell        = pkgs.nologin;
       extraGroups  = mkIf cfg.relay.enable [ config.settings.users.ssh-group ];
-      openssh.authorizedKeys.keyFiles = mkIf cfg.relay.enable [ ./keys/tunnel ];
+      openssh.authorizedKeys.keyFiles = mkIf cfg.relay.enable [ ../keys/tunnel ];
     };
 
     users.extraUsers.tunneller = mkIf cfg.relay.enable {
