@@ -101,6 +101,4 @@ mv /tmp/keyfile /mnt/keyfile
 chown root:root /mnt/keyfile
 chmod 0600 /mnt/keyfile
 
-cryptsetup luksAddKey --key-slot 1 --key-file /mnt/keyfile /dev/LVMVolGroup/nixos_data
-
 echo -e "\nNixOS installation finished, please reboot using \"sudo systemctl reboot\""
