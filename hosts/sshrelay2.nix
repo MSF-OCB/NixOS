@@ -19,7 +19,7 @@
   };
 
   imports = [
-    ../aws.nix
+    ../modules/aws.nix
   ];
 
 }

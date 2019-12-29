@@ -21,7 +21,7 @@
   };
 
   imports = [
-    ../virtualbox-guest.nix
+    ../modules/virtualbox-guest.nix
   ];
 
 }

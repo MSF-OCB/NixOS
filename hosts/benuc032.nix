@@ -34,7 +34,7 @@
   };
 
   imports = [
-    ../docker.nix
+    ../modules/docker.nix
   ];
   
   environment.systemPackages = with pkgs; [

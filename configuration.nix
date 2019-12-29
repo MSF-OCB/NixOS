@@ -19,20 +19,20 @@ with lib;
 {
 
   imports = [
-    ./hardware-configuration.nix
-    ./boot.nix
-    ./settings.nix
-    ./global_settings.nix
-    ./packages.nix
-    ./sshd.nix
-    ./avahi.nix
-    ./reverse-tunnel.nix
-    ./maintenance.nix
-    ./users.nix
-    ./ocb_users.nix
-    ./shell.nix
-    ./crypto.nix
-    ./prometheus.nix
+    ./modules/hardware-configuration.nix
+    ./modules/boot.nix
+    ./modules/settings.nix
+    ./modules/global_settings.nix
+    ./modules/packages.nix
+    ./modules/sshd.nix
+    ./modules/avahi.nix
+    ./modules/reverse-tunnel.nix
+    ./modules/maintenance.nix
+    ./modules/users.nix
+    ./modules/ocb_users.nix
+    ./modules/shell.nix
+    ./modules/crypto.nix
+    ./modules/prometheus.nix
   ];
 
   fileSystems = {

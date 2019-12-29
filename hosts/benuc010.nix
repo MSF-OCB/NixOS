@@ -22,7 +22,7 @@
   };
 
   imports = [
-    ../docker.nix
+    ../modules/docker.nix
   ];
 
 }

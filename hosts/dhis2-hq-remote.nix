@@ -27,8 +27,8 @@
   };
 
   imports = [
-    ../vmware.nix
-    ../docker.nix
+    ../modules/vmware.nix
+    ../modules/docker.nix
   ];
 
   networking = {
