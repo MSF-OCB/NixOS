@@ -90,7 +90,7 @@ in {
   config = let
     ssh-group = config.settings.users.ssh-group;
     fwd-tunnel-group = config.settings.users.fwd-tunnel-group;
-    toKeyPath = name: ./keys + ("/" + name);
+    toKeyPath = name: ../keys + ("/" + name);
   in {
 
     users = {
