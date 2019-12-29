@@ -20,8 +20,8 @@ with lib;
 
   imports = [
     ./hardware-configuration.nix
+    ./settings.nix
     ./modules/boot.nix
-    ./modules/settings.nix
     ./modules/global_settings.nix
     ./modules/packages.nix
     ./modules/sshd.nix
