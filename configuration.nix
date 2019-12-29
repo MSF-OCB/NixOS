@@ -19,7 +19,7 @@ with lib;
 {
 
   imports = [
-    ./modules/hardware-configuration.nix
+    ./hardware-configuration.nix
     ./modules/boot.nix
     ./modules/settings.nix
     ./modules/global_settings.nix
