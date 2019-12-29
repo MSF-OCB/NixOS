@@ -27,8 +27,8 @@
   };
 
   imports = [
-    ../docker.nix
-    ../kobofix.nix
+    ../modules/docker.nix
+    ../modules/kobofix.nix
   ];
 
 }

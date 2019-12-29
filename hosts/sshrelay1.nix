@@ -21,7 +21,7 @@
   };
 
   imports = [
-    ../vmware.nix
+    ../modules/vmware.nix
   ];
 
   networking = {

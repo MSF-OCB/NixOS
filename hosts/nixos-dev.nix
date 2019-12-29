@@ -28,9 +28,9 @@
   };
 
   imports = [
-    ../vmware.nix
-    ../docker.nix
-    ../docker-registry.nix
+    ../modules/vmware.nix
+    ../modules/docker.nix
+    ../modules/docker-registry.nix
   ];
   
   environment.systemPackages = with pkgs; [

@@ -27,7 +27,7 @@
   };
 
   imports = [
-    ../docker.nix
+    ../modules/docker.nix
   ];
 
   systemd = with lib; {
