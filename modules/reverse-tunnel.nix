@@ -107,7 +107,7 @@ with lib;
     };
 
     environment.etc.id_tunnel = mkIf cfg.enable {
-      source = ./local/id_tunnel;
+      source = ../local/id_tunnel;
       mode = "0400";
       user = "tunnel";
       group = "tunnel";
