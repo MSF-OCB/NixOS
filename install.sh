@@ -104,6 +104,6 @@ chmod 0600 /mnt/keyfile
 echo -e "\nNixOS installation finished, please reboot using \"sudo systemctl reboot\""
 
 echo -e "\nDo not forget to:"
-echo    "  1. Set a recovery passphrase for the encrypted partition (see https://github.com/MSF-OCB/NixOS/wiki/Install-NixOS for the command)."
+echo    "  1. Set a recovery passphrase for the encrypted partition and add it to Keeper (see https://github.com/MSF-OCB/NixOS/wiki/Install-NixOS for the command)."
 echo -e "  2. Upload the public tunnel key to GitHub.\n"
 
