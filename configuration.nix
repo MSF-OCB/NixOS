@@ -35,16 +35,19 @@ with lib;
     ./modules/prometheus.nix
   ];
 
-  fileSystems = {
+  # We need to force to override the definition in the default AWS config.
+  fileSystems = mkForce {
     "/" = {
       device = "/dev/disk/by-label/nixos_root";
       fsType = "ext4";
       options = [ "defaults" "noatime" "acl" ];
+      autoResize = true;
     };
     "/boot" = mkIf config.settings.boot.separate_partition {
       device = "/dev/disk/by-label/nixos_boot";
       fsType = "ext4";
       options = [ "defaults" "noatime" "nosuid" "nodev" "noexec" ];
+      autoResize = true;
     };
     "/boot/efi" = mkIf (config.settings.boot.mode == "uefi") {
       device = "/dev/disk/by-label/EFI";
@@ -92,6 +95,7 @@ with lib;
       "vm.mmap_rnd_bits" = 32;
     };
 
+    growPartition = true;
     cleanTmpDir = true;
     tmpOnTmpfs = true;
   };
@@ -135,6 +139,8 @@ with lib;
 
   services = {
     fstrim.enable = true;
+    # Avoid pulling in unneeded dependencies
+    udisks2.enable = false;
 
     timesyncd = {
       enable = true;
