@@ -72,7 +72,7 @@ with lib;
       #"page_poison=1"
 
       # Disable legacy virtual syscalls
-      #"vsyscall=none"
+      "vsyscall=none"
 
       # Disable hibernation (allows replacing the running kernel)
       "nohibernate"
