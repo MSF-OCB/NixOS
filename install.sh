@@ -35,8 +35,8 @@ vgremove -f LVMVolGroup || true
 pvremove /dev/disk/by-partlabel/nixos_lvm || true
 
 sgdisk -og "${DEVICE}"
-sgdisk -n 1:2048:+550M -c 1:"efi" -t 1:ef00 "${DEVICE}"
-sgdisk -n 2:0:+1G -c 2:"nixos_boot" -t 2:8300 "${DEVICE}"
+sgdisk -n 1:2048:+512M -c 1:"efi" -t 1:ef00 "${DEVICE}"
+sgdisk -n 2:0:+512M -c 2:"nixos_boot" -t 2:8300 "${DEVICE}"
 sgdisk -n 3:0:0 -c 3:"nixos_lvm" -t 3:8e00 "${DEVICE}"
 sgdisk -p "${DEVICE}"
 
