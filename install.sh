@@ -58,7 +58,7 @@ mkfs.ext4 -e remount-ro -L nixos_boot /dev/disk/by-partlabel/nixos_boot
 mkfs.ext4 -e remount-ro -L nixos_root /dev/LVMVolGroup/nixos_root
 
 # Give udev time to catch up on the new filesystems
-sleep 5
+sleep 2
 
 mount /dev/disk/by-label/nixos_root /mnt
 mkdir -p /mnt/boot
@@ -87,13 +87,25 @@ cryptsetup --verbose \
            /dev/LVMVolGroup/nixos_data
 cryptsetup open --key-file /tmp/keyfile /dev/LVMVolGroup/nixos_data nixos_data_decrypted
 mkfs.ext4 -e remount-ro -m 1 -L nixos_data /dev/mapper/nixos_data_decrypted
-cryptsetup close nixos_data_decrypted
+
+# Give udev time to catch up on the new filesystem
+sleep 2
+
+mkdir -p /mnt/opt
+mount /dev/disk/by-label/nixos_data /mnt/opt
+mkdir -p /mnt/home
+mkdir -p /mnt/opt/.home
+mount -o bind /mnt/opt/.home /mnt/home
 
 ln -s hosts/"${HOSTNAME}".nix /mnt/etc/nixos/settings.nix
 
 ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${HOSTNAME}" -f /mnt/etc/nixos/local/id_tunnel
 
 nixos-install --no-root-passwd --max-jobs 4
+
+umount /mnt/home
+umount /mnt/opt
+cryptsetup close nixos_data_decrypted
 
 nixos-enter --root /mnt/ -c "nix-channel --add https://nixos.org/channels/nixos-19.09 nixos"
 
