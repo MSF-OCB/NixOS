@@ -18,14 +18,7 @@
       enable = true;
       remote_forward_port = 6002;
     };
-    crypto = {
-      enable = true;
-      device = "/safe.img";
-    };
+    crypto.enable = true;
   };
-
-  imports = [
-  ];
-
 }
 
