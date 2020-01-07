@@ -25,7 +25,8 @@
     crypto = {
       enable = true;
       device = "/safe.img";
-    }; 
+    };
+    docker.enable = true;
     users.users = {
       yusuph.enable   = true;
       damien.enable   = true;
@@ -37,9 +38,5 @@
       vini.enable     = true;
     };
   };
-
-  imports = [
-    ../modules/docker.nix
-  ];
 
 }

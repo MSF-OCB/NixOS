@@ -19,11 +19,7 @@
       remote_forward_port = 6010;
     };
     crypto.enable = true;
+    docker.enable = true;
   };
-
-  imports = [
-    ../modules/docker.nix
-  ];
-
 }
 

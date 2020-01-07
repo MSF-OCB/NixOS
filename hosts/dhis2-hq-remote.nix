@@ -24,11 +24,11 @@
     users.users = {
       yusuph.enable = true;
     };
+    docker.enable = true;
   };
 
   imports = [
     ../modules/vmware.nix
-    ../modules/docker.nix
   ];
 
   networking = {

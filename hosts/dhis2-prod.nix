@@ -27,11 +27,11 @@
     };
   
     crypto.enable = false;
+    docker.enable = false;
   };
 
   imports = [
     ../modules/vmware.nix
-    ../modules/docker.nix
   ];
 
   networking = {

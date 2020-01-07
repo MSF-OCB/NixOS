@@ -21,6 +21,7 @@
       remote_forward_port = 6032;
     };
     crypto.enable = true;
+    docker.enable = true;
 
     users.users = {
       "msf-kunduz-ehealthsupport" = {
@@ -33,10 +34,6 @@
     };
   };
 
-  imports = [
-    ../modules/docker.nix
-  ];
-  
   environment.systemPackages = with pkgs; [
     ansible
     rsync
