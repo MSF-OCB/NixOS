@@ -32,7 +32,7 @@ with lib;
     ./modules/ocb_users.nix
     ./modules/shell.nix
     ./modules/crypto.nix
-    ./docker.nix
+    ./modules/docker.nix
     ./modules/prometheus.nix
   ];
 
