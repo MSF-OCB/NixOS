@@ -22,10 +22,7 @@
       enable = true;
       device = "/safe.img";
     };
+    docker.enable = true;
   };
-
-  imports = [
-    ../modules/docker.nix
-  ];
 
 }

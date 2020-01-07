@@ -19,6 +19,7 @@
       remote_forward_port = 6002;
     };
     crypto.enable = true;
+    docker.enable = true;
   };
 }
 

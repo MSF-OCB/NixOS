@@ -19,6 +19,7 @@
       remote_forward_port = 6031;
     };
     crypto.enable = true;
+    docker.enable = true;
     
     users.users = {
       "msf-kunduz-ehealthsupport" = {
@@ -30,9 +31,5 @@
       };
     };
   };
-
-  imports = [
-    ../modules/docker.nix
-  ];
-
 }
+
