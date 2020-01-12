@@ -33,7 +33,7 @@ let cfg = config.system.autoUpgrade; in
       nixos-rebuild = "${config.system.build.nixos-rebuild}/bin/nixos-rebuild";
       # TODO: add times as module option,
       # calculate flags and upgradeFlag in a let expression (instead of overwritting the option)
-      flags = [ "--no-build-output" ] ++
+      flags = cfg.flags ++ [ "--no-build-output" ] ++
         optionals (cfg.channel != null) [ "-I" "nixpkgs=${cfg.channel}/nixexprs.tar.xz" ];
       upgradeFlag = optional (cfg.channel == null) "--upgrade";
       times    = { lower = "01:00"; upper = "05:00"; };
