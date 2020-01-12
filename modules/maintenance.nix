@@ -10,6 +10,10 @@
 
 { lib, config, pkgs, ... }:
 
+with lib;
+
+let cfg = config.system.autoUpgrade; in
+
 {
 
   # We run the upgrade service once at night and once during the day, to catch the situation
@@ -17,6 +21,7 @@
   # When the service is being run during the day, we will be outside of the reboot window.
   system.autoUpgrade = {
     enable = true;
+    allowReboot = true;
     dates = "Mon 03,12:20";
   };
 
@@ -25,26 +30,37 @@
       TimeoutStartSec = "2 days";
     };
     script = let
-      cfg = config.system.autoUpgrade;
       nixos-rebuild = "${config.system.build.nixos-rebuild}/bin/nixos-rebuild";
+      # TODO: add times as module option,
+      # calculate flags and upgradeFlag in a let expression (instead of overwritting the option)
+      flags = [ "--no-build-output" ] ++
+        optionals (cfg.channel != null) [ "-I" "nixpkgs=${cfg.channel}/nixexprs.tar.xz" ];
+      upgradeFlag = optional (cfg.channel == null) "--upgrade";
+      times    = { lower = "01:00"; upper = "05:00"; };
       date     = "/run/current-system/sw/bin/date";
       readlink = "/run/current-system/sw/bin/readlink";
       shutdown = "/run/current-system/sw/bin/shutdown";
-    in lib.mkForce ''
-      ${nixos-rebuild} boot --no-build-output --upgrade
+    in mkForce (if cfg.allowReboot then ''
+      ${nixos-rebuild} boot ${toString (flags ++ upgradeFlag)}
       booted="$(${readlink} /run/booted-system/{initrd,kernel,kernel-modules})"
       built="$(${readlink} /nix/var/nix/profiles/system/{initrd,kernel,kernel-modules})"
-      upper="$(${date} --date="$(${date} --date='today' +%Y-%m-%d) 05:00" +%s)";
-      lower="$(${date} --date="$(${date} --date='today' +%Y-%m-%d) 01:00" +%s)";
+      ${optionalString (times != null) ''
+        lower="$(${date} --date="$(${date} --date='today' +%Y-%m-%d) ${times.lower}" +%s)";
+        upper="$(${date} --date="$(${date} --date='today' +%Y-%m-%d) ${times.upper}" +%s)";
+      ''}
 
       if [ "$booted" = "$built" ]; then
-        ${nixos-rebuild} switch --no-build-output
-      elif ([ "$(${date} +%s)" -gt "''${upper}" ] || [ "$(${date} +%s)" -lt "''${lower}" ]); then
-        echo "Outside of configured reboot window, skipping."
+        ${nixos-rebuild} switch ${toString flags}
+      ${optionalString (times != null) ''
+        elif ([ "$(${date} +%s)" -gt "''${upper}" ] || [ "$(${date} +%s)" -lt "''${lower}" ]); then
+          echo "Outside of configured reboot window, skipping."
+      ''}
       else
         ${shutdown} -r +1
       fi
-    '';
+    '' else ''
+      ${nixos-rebuild} switch ${toString (flags ++ upgradeFlag)}
+    '');
   };
 
   nix = {
