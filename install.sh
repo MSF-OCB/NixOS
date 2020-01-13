@@ -7,10 +7,10 @@ NIXOS_RELEASE="19-09"
 # curl -L https://github.com/msf-ocb/nixos/raw/master/install.sh | sudo bash -s <disk device> <host name> [<root partition size (GB)>]
 
 DEVICE="$1"
-HOSTNAME="$2"
+TARGET_HOSTNAME="$2"
 ROOT_SIZE="${3:-30}"
 
-if [ -z "${DEVICE}" ] || [ -z "${HOSTNAME}" ]; then
+if [ -z "${DEVICE}" ] || [ -z "${TARGET_HOSTNAME}" ]; then
   echo "Usage: install.sh <disk device> <host name> [<root partition size (GB)>]"
   exit 1
 fi
@@ -91,9 +91,9 @@ cryptsetup open --key-file /tmp/keyfile /dev/LVMVolGroup/nixos_data nixos_data_d
 mkfs.ext4 -e remount-ro -m 1 -L nixos_data /dev/mapper/nixos_data_decrypted
 cryptsetup close nixos_data_decrypted
 
-ln -s hosts/"${HOSTNAME}".nix /mnt/etc/nixos/settings.nix
+ln -s hosts/"${TARGET_HOSTNAME}".nix /mnt/etc/nixos/settings.nix
 
-ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${HOSTNAME}" -f /mnt/etc/nixos/local/id_tunnel
+ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${TARGET_HOSTNAME}" -f /mnt/etc/nixos/local/id_tunnel
 
 nixos-install --no-root-passwd --max-jobs 4
 
