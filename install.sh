@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+NIXOS_RELEASE="19-09"
+
 # To install, run:
 # curl -L https://github.com/msf-ocb/nixos/raw/master/install.sh | sudo bash -s <disk device> <host name> [<root partition size (GB)>]
 
@@ -95,7 +97,7 @@ ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${HOSTNAME}" -f /mnt/etc/nixos/loc
 
 nixos-install --no-root-passwd --max-jobs 4
 
-nixos-enter --root /mnt/ -c "nix-channel --add https://nixos.org/channels/nixos-19.09 nixos"
+nixos-enter --root /mnt/ -c "nix-channel --add https://nixos.org/channels/nixos-${NIXOS_RELEASE} nixos"
 
 mv /tmp/keyfile /mnt/keyfile
 chown root:root /mnt/keyfile
