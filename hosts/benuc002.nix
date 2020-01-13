@@ -8,6 +8,8 @@
 #                                                                      #
 ########################################################################
 
+{ pkgs, ... }:
+
 {
   networking.hostName = "benuc002";
   time.timeZone = "Europe/Brussels";
@@ -19,6 +21,12 @@
       remote_forward_port = 6002;
     };
     crypto.enable = true;
+    docker.enable = true;
   };
+  
+  environment.systemPackages = with pkgs; [
+    ansible
+    rsync
+  ];
 }
 

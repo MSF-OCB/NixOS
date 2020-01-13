@@ -26,6 +26,7 @@
       enable = true;
       device = "/safe.img";
     }; 
+    docker.enable = false;
     users.users = {
       yusuph.enable   = true;
       damien.enable   = true;
@@ -38,8 +39,5 @@
     };
   };
 
-  imports = [
-    ../modules/docker.nix
-  ];
-
 }
+

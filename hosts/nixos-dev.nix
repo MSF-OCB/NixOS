@@ -25,11 +25,11 @@
       remote_forward_port = 7030;
     };
     crypto.enable = true;
+    docker.enable = true;
   };
 
   imports = [
     ../modules/vmware.nix
-    ../modules/docker.nix
     ../modules/docker-registry.nix
   ];
   

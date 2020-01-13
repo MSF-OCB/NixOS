@@ -23,6 +23,7 @@
       remote_forward_port = 6027;
     };
     crypto.enable = true;
+    docker.enable = true;
     users.users = {
       yusuph.enable   = true;
       damien.enable   = true;
@@ -34,10 +35,6 @@
       vini.enable     = true;
     };
   };
-
-  imports = [
-    ../modules/docker.nix
-  ];
 
 }
 

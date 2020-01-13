@@ -32,6 +32,7 @@ with lib;
     ./modules/ocb_users.nix
     ./modules/shell.nix
     ./modules/crypto.nix
+    ./modules/docker.nix
     ./modules/prometheus.nix
   ];
 
@@ -72,7 +73,7 @@ with lib;
       #"page_poison=1"
 
       # Disable legacy virtual syscalls
-      "vsyscall=none"
+      #"vsyscall=none"
 
       # Disable hibernation (allows replacing the running kernel)
       "nohibernate"

@@ -25,11 +25,8 @@
       remote_forward_port = 7000;
     };
     crypto.enable = true;
+    docker.enable = true;
   };
-
-  imports = [
-    ../modules/docker.nix
-  ];
 
   systemd = with lib; {
     automounts = [

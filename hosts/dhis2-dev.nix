@@ -30,12 +30,12 @@
     };
     
     crypto.enable = true;
+    docker.enable = true;
   };
 
   imports = [
     ../modules/vmware.nix
     ../modules/docker-registry.nix
-    ../modules/docker.nix
   ];
   
   environment.systemPackages = with pkgs; [

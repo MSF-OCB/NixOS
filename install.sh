@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 set -e
 
+NIXOS_RELEASE="19-09"
+
 # To install, run:
 # curl -L https://github.com/msf-ocb/nixos/raw/master/install.sh | sudo bash -s <disk device> <host name> [<root partition size (GB)>]
 
 DEVICE="$1"
-HOSTNAME="$2"
+TARGET_HOSTNAME="$2"
 ROOT_SIZE="${3:-30}"
 
-if [ -z "${DEVICE}" ] || [ -z "${HOSTNAME}" ]; then
+if [ -z "${DEVICE}" ] || [ -z "${TARGET_HOSTNAME}" ]; then
   echo "Usage: install.sh <disk device> <host name> [<root partition size (GB)>]"
   exit 1
 fi
@@ -35,8 +37,8 @@ vgremove -f LVMVolGroup || true
 pvremove /dev/disk/by-partlabel/nixos_lvm || true
 
 sgdisk -og "${DEVICE}"
-sgdisk -n 1:2048:+550M -c 1:"efi" -t 1:ef00 "${DEVICE}"
-sgdisk -n 2:0:+1G -c 2:"nixos_boot" -t 2:8300 "${DEVICE}"
+sgdisk -n 1:2048:+512M -c 1:"efi" -t 1:ef00 "${DEVICE}"
+sgdisk -n 2:0:+512M -c 2:"nixos_boot" -t 2:8300 "${DEVICE}"
 sgdisk -n 3:0:0 -c 3:"nixos_lvm" -t 3:8e00 "${DEVICE}"
 sgdisk -p "${DEVICE}"
 
@@ -97,9 +99,9 @@ mkdir -p /mnt/home
 mkdir -p /mnt/opt/.home
 mount -o bind /mnt/opt/.home /mnt/home
 
-ln -s hosts/"${HOSTNAME}".nix /mnt/etc/nixos/settings.nix
+ln -s hosts/"${TARGET_HOSTNAME}".nix /mnt/etc/nixos/settings.nix
 
-ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${HOSTNAME}" -f /mnt/etc/nixos/local/id_tunnel
+ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${TARGET_HOSTNAME}" -f /mnt/etc/nixos/local/id_tunnel
 
 nixos-install --no-root-passwd --max-jobs 4
 
@@ -107,7 +109,7 @@ umount /mnt/home
 umount /mnt/opt
 cryptsetup close nixos_data_decrypted
 
-nixos-enter --root /mnt/ -c "nix-channel --add https://nixos.org/channels/nixos-19.09 nixos"
+nixos-enter --root /mnt/ -c "nix-channel --add https://nixos.org/channels/nixos-${NIXOS_RELEASE} nixos"
 
 mv /tmp/keyfile /mnt/keyfile
 chown root:root /mnt/keyfile
