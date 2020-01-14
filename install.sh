@@ -6,6 +6,31 @@ NIXOS_RELEASE="19-09"
 # To install, run:
 # curl -L https://github.com/msf-ocb/nixos/raw/master/install.sh | sudo bash -s <disk device> <host name> [<root partition size (GB)>]
 
+function wait_for_devices() {
+  arr=("$@")
+  all_found=false
+  for countdown in $( seq 60 -1 0 ) ; do
+    missing=false
+    for dev in "${arr[@]}"; do
+      if [ ! -b ${dev} ]; then
+        missing=true
+        echo "waiting for ${dev}... ($countdown)"
+      fi
+    done
+    if ${missing}; then
+      partprobe
+      sleep 1
+    else
+      all_found=true
+      break;
+    fi
+  done
+  if ! ${all_found}; then
+    echo "Time-out waiting for devices."
+    exit 1
+  fi
+}
+
 DEVICE="$1"
 TARGET_HOSTNAME="$2"
 ROOT_SIZE="${3:-30}"
@@ -42,21 +67,7 @@ sgdisk -n 2:0:+512M -c 2:"nixos_boot" -t 2:8300 "${DEVICE}"
 sgdisk -n 3:0:0 -c 3:"nixos_lvm" -t 3:8e00 "${DEVICE}"
 sgdisk -p "${DEVICE}"
 
-for countdown in $( seq 60 -1 0 ); do
-  if [ ! -b /dev/disk/by-partlabel/efi ] || [ ! -b /dev/disk/by-partlabel/nixos_boot ] || [ ! -b /dev/disk/by-partlabel/nixos_lvm ]; then
-    echo "waiting for /dev/disk/by-partlabel to be populated ($countdown)"
-    partprobe
-    sleep 1
-  else
-    break
-  fi
-done
-if [ ! -b /dev/disk/by-partlabel/efi ] || [ ! -b /dev/disk/by-partlabel/nixos_boot ] || [ ! -b /dev/disk/by-partlabel/nixos_lvm ]; then
-  echo "/dev/disk/by-partlabel is missing devices..."
-  ls -la /dev/disk/by-partlabel
-  exit 1
-fi
-ls -l /dev/disk/by-partlabel/
+wait_for_devices "/dev/disk/by-partlabel/efi" "/dev/disk/by-partlabel/nixos_boot" "/dev/disk/by-partlabel/nixos_lvm"
 
 pvcreate /dev/disk/by-partlabel/nixos_lvm
 vgcreate LVMVolGroup /dev/disk/by-partlabel/nixos_lvm
@@ -70,20 +81,7 @@ wipefs -a /dev/disk/by-partlabel/nixos_boot
 mkfs.ext4 -e remount-ro -L nixos_boot /dev/disk/by-partlabel/nixos_boot
 mkfs.ext4 -e remount-ro -L nixos_root /dev/LVMVolGroup/nixos_root
 
-for countdown in $( seq 60 -1 0 ) ; do
-  if [ ! -b /dev/disk/by-label/EFI ] || [ ! -b /dev/disk/by-label/nixos_boot ] || [ ! -b /dev/disk/by-label/nixos_root ]; then
-    echo "waiting for /dev/disk/by-label to be populated ($countdown)"
-    partprobe
-    sleep 1
-  else
-    break;
-  fi
-done
-if [ ! -b /dev/disk/by-label/EFI ] || [ ! -b /dev/disk/by-label/nixos_boot ] || [ ! -b /dev/disk/by-label/nixos_root ]; then
-  echo "/dev/disk/by-label is missing devices..."
-  ls -la /dev/disk/by-label
-  exit 1
-fi
+wait_for_devices "/dev/disk/by-label/EFI" "/dev/disk/by-label/nixos_boot" "/dev/disk/by-label/nixos_root"
 
 mount /dev/disk/by-label/nixos_root /mnt
 mkdir -p /mnt/boot
@@ -112,13 +110,24 @@ cryptsetup --verbose \
            /dev/LVMVolGroup/nixos_data
 cryptsetup open --key-file /tmp/keyfile /dev/LVMVolGroup/nixos_data nixos_data_decrypted
 mkfs.ext4 -e remount-ro -m 1 -L nixos_data /dev/mapper/nixos_data_decrypted
-cryptsetup close nixos_data_decrypted
+
+wait_for_devices "/dev/disk/by-label/nixos_data"
+
+mkdir -p /mnt/opt
+mount /dev/disk/by-label/nixos_data /mnt/opt
+mkdir -p /mnt/home
+mkdir -p /mnt/opt/.home
+mount -o bind /mnt/opt/.home /mnt/home
 
 ln -s hosts/"${TARGET_HOSTNAME}".nix /mnt/etc/nixos/settings.nix
 
 ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${TARGET_HOSTNAME}" -f /mnt/etc/nixos/local/id_tunnel
 
 nixos-install --no-root-passwd --max-jobs 4
+
+umount /mnt/home
+umount /mnt/opt
+cryptsetup close nixos_data_decrypted
 
 nixos-enter --root /mnt/ -c "nix-channel --add https://nixos.org/channels/nixos-${NIXOS_RELEASE} nixos"
 
