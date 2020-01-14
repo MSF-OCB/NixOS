@@ -8,6 +8,7 @@ NIXOS_RELEASE="19-09"
 
 function wait_for_devices() {
   arr=("$@")
+  all_found=false
   for countdown in $( seq 60 -1 0 ) ; do
     missing=false
     for dev in "${arr[@]}"; do
@@ -20,9 +21,14 @@ function wait_for_devices() {
       partprobe
       sleep 1
     else
+      all_found=true
       break;
     fi
   done
+  if ! ${all_found}; then
+    echo "Time-out waiting for devices."
+    exit 1
+  fi
 }
 
 DEVICE="$1"
@@ -62,7 +68,6 @@ sgdisk -n 3:0:0 -c 3:"nixos_lvm" -t 3:8e00 "${DEVICE}"
 sgdisk -p "${DEVICE}"
 
 wait_for_devices "/dev/disk/by-partlabel/efi" "/dev/disk/by-partlabel/nixos_boot" "/dev/disk/by-partlabel/nixos_lvm"
-ls -l /dev/disk/by-partlabel/
 
 pvcreate /dev/disk/by-partlabel/nixos_lvm
 vgcreate LVMVolGroup /dev/disk/by-partlabel/nixos_lvm
@@ -77,7 +82,6 @@ mkfs.ext4 -e remount-ro -L nixos_boot /dev/disk/by-partlabel/nixos_boot
 mkfs.ext4 -e remount-ro -L nixos_root /dev/LVMVolGroup/nixos_root
 
 wait_for_devices "/dev/disk/by-label/EFI" "/dev/disk/by-label/nixos_boot" "/dev/disk/by-label/nixos_root"
-ls -l /dev/disk/by-label/
 
 mount /dev/disk/by-label/nixos_root /mnt
 mkdir -p /mnt/boot
@@ -108,7 +112,6 @@ cryptsetup open --key-file /tmp/keyfile /dev/LVMVolGroup/nixos_data nixos_data_d
 mkfs.ext4 -e remount-ro -m 1 -L nixos_data /dev/mapper/nixos_data_decrypted
 
 wait_for_devices "/dev/disk/by-label/nixos_data"
-ls -l /dev/disk/by-label
 
 mkdir -p /mnt/opt
 mount /dev/disk/by-label/nixos_data /mnt/opt
