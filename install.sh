@@ -6,6 +6,25 @@ NIXOS_RELEASE="19-09"
 # To install, run:
 # curl -L https://github.com/msf-ocb/nixos/raw/master/install.sh | sudo bash -s <disk device> <host name> [<root partition size (GB)>]
 
+function wait_for_devices() {
+  arr=("$@")
+  for countdown in $( seq 60 -1 0 ) ; do
+    missing=false
+    for dev in "${arr[@]}"; do
+      if [ ! -b ${dev} ]; then
+        missing=true
+        echo "waiting for ${dev}... ($countdown)"
+      fi
+    done
+    if ${missing}; then
+      partprobe
+      sleep 1
+    else
+      break;
+    fi
+  done
+}
+
 DEVICE="$1"
 TARGET_HOSTNAME="$2"
 ROOT_SIZE="${3:-30}"
@@ -42,9 +61,7 @@ sgdisk -n 2:0:+512M -c 2:"nixos_boot" -t 2:8300 "${DEVICE}"
 sgdisk -n 3:0:0 -c 3:"nixos_lvm" -t 3:8e00 "${DEVICE}"
 sgdisk -p "${DEVICE}"
 
-partprobe
-# Give udev time to catch up on the new partitions
-sleep 5
+wait_for_devices "/dev/disk/by-partlabel/efi" "/dev/disk/by-partlabel/nixos_boot" "/dev/disk/by-partlabel/nixos_lvm"
 ls -l /dev/disk/by-partlabel/
 
 pvcreate /dev/disk/by-partlabel/nixos_lvm
@@ -59,9 +76,8 @@ wipefs -a /dev/disk/by-partlabel/nixos_boot
 mkfs.ext4 -e remount-ro -L nixos_boot /dev/disk/by-partlabel/nixos_boot
 mkfs.ext4 -e remount-ro -L nixos_root /dev/LVMVolGroup/nixos_root
 
-# Give udev time to catch up on the new filesystems
-partprobe
-sleep 5
+wait_for_devices "/dev/disk/by-label/EFI" "/dev/disk/by-label/nixos_boot" "/dev/disk/by-label/nixos_root"
+ls -l /dev/disk/by-label/
 
 mount /dev/disk/by-label/nixos_root /mnt
 mkdir -p /mnt/boot
@@ -91,8 +107,8 @@ cryptsetup --verbose \
 cryptsetup open --key-file /tmp/keyfile /dev/LVMVolGroup/nixos_data nixos_data_decrypted
 mkfs.ext4 -e remount-ro -m 1 -L nixos_data /dev/mapper/nixos_data_decrypted
 
-# Give udev time to catch up on the new filesystem
-sleep 5
+wait_for_devices "/dev/disk/by-label/nixos_data"
+ls -l /dev/disk/by-label
 
 mkdir -p /mnt/opt
 mount /dev/disk/by-label/nixos_data /mnt/opt
