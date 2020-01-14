@@ -60,7 +60,7 @@ mkfs.ext4 -e remount-ro -L nixos_boot /dev/disk/by-partlabel/nixos_boot
 mkfs.ext4 -e remount-ro -L nixos_root /dev/LVMVolGroup/nixos_root
 
 # Give udev time to catch up on the new filesystems
-sleep 2
+sleep 5
 
 mount /dev/disk/by-label/nixos_root /mnt
 mkdir -p /mnt/boot
@@ -91,7 +91,7 @@ cryptsetup open --key-file /tmp/keyfile /dev/LVMVolGroup/nixos_data nixos_data_d
 mkfs.ext4 -e remount-ro -m 1 -L nixos_data /dev/mapper/nixos_data_decrypted
 
 # Give udev time to catch up on the new filesystem
-sleep 2
+sleep 5
 
 mkdir -p /mnt/opt
 mount /dev/disk/by-label/nixos_data /mnt/opt
