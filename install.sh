@@ -60,6 +60,7 @@ mkfs.ext4 -e remount-ro -L nixos_boot /dev/disk/by-partlabel/nixos_boot
 mkfs.ext4 -e remount-ro -L nixos_root /dev/LVMVolGroup/nixos_root
 
 # Give udev time to catch up on the new filesystems
+partprobe
 sleep 5
 
 mount /dev/disk/by-label/nixos_root /mnt
