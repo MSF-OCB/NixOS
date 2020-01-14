@@ -42,13 +42,16 @@ sgdisk -n 2:0:+512M -c 2:"nixos_boot" -t 2:8300 "${DEVICE}"
 sgdisk -n 3:0:0 -c 3:"nixos_lvm" -t 3:8e00 "${DEVICE}"
 sgdisk -p "${DEVICE}"
 
-for countdown in $( seq 60 -1 0 ) ; do
-    test -b /dev/disk/by-partlabel/efi && test -b /dev/disk/by-partlabel/nixos_boot && test -b /dev/disk/by-partlabel/nixos_lvm && break
+for countdown in $( seq 60 -1 0 ); do
+  if [ ! -b /dev/disk/by-partlabel/efi ] || [ ! -b /dev/disk/by-partlabel/nixos_boot ] || [ ! -b /dev/disk/by-partlabel/nixos_lvm ]; then
     echo "waiting for /dev/disk/by-partlabel to be populated ($countdown)"
     partprobe
     sleep 1
+  else
+    break
+  fi
 done
-if [ ! -b /dev/by-partlabel/efi ] || [ ! -b /dev/by-partlabel/nixos_boot ] || [ ! -b /dev/by-partlabel/nixos_lvm ]; then
+if [ ! -b /dev/disk/by-partlabel/efi ] || [ ! -b /dev/disk/by-partlabel/nixos_boot ] || [ ! -b /dev/disk/by-partlabel/nixos_lvm ]; then
   echo "/dev/disk/by-partlabel is missing devices..."
   ls -la /dev/disk/by-partlabel
   exit 1
@@ -68,12 +71,15 @@ mkfs.ext4 -e remount-ro -L nixos_boot /dev/disk/by-partlabel/nixos_boot
 mkfs.ext4 -e remount-ro -L nixos_root /dev/LVMVolGroup/nixos_root
 
 for countdown in $( seq 60 -1 0 ) ; do
-    test -b /dev/disk/by-label/EFI && test -b /dev/disk/by-label/nixos_boot && test -b /dev/disk/by-label/nixos_root && break
+  if [ ! -b /dev/disk/by-label/EFI ] || [ ! -b /dev/disk/by-label/nixos_boot ] || [ ! -b /dev/disk/by-label/nixos_root ]; then
     echo "waiting for /dev/disk/by-label to be populated ($countdown)"
     partprobe
     sleep 1
+  else
+    break;
+  fi
 done
-if [ ! -b /dev/by-label/EFI ] || [ ! -b /dev/by-label/nixos_boot ] || [ ! -b /dev/by-label/nixos_root ]; then
+if [ ! -b /dev/disk/by-label/EFI ] || [ ! -b /dev/disk/by-label/nixos_boot ] || [ ! -b /dev/disk/by-label/nixos_root ]; then
   echo "/dev/disk/by-label is missing devices..."
   ls -la /dev/disk/by-label
   exit 1
