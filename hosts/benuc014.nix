@@ -26,7 +26,7 @@
       enable = true;
       device = "/safe.img";
     }; 
-    docker.enable = false;
+    docker.enable = true;
     users.users = {
       yusuph.enable   = true;
       damien.enable   = true;
