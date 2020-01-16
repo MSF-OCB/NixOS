@@ -34,7 +34,7 @@ with lib;
     ./modules/crypto.nix
     ./modules/docker.nix
     ./modules/prometheus.nix
-    ./auto_shutdown.nix
+    ./modules/auto_shutdown.nix
   ];
 
   # We need to force to override the definition in the default AWS config.
