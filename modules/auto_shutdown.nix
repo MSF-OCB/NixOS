@@ -21,7 +21,7 @@ with lib;
     };
 
     startAt = mkOption {
-      type  = with types; either str (listOf str)
+      type  = with types; either str (listOf str);
       default = [];
     };
   };
