@@ -20,6 +20,10 @@
     };
     crypto.enable = true;
     docker.enable = true;
+    autoShutdown = {
+      enable = true;
+      startAt = "22:00";
+    };
     users.users = {
       yusuph.enable = true;
       damien.enable = true;
