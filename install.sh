@@ -35,6 +35,10 @@ DEVICE="$1"
 TARGET_HOSTNAME="$2"
 ROOT_SIZE="${3:-30}"
 
+if [ -z ${CREATE_DATA_PART} ]; then
+  CREATE_DATA_PART=true
+fi
+
 if [ -z "${DEVICE}" ] || [ -z "${TARGET_HOSTNAME}" ]; then
   echo "Usage: install.sh <disk device> <host name> [<root partition size (GB)>]"
   exit 1
@@ -73,7 +77,7 @@ pvcreate /dev/disk/by-partlabel/nixos_lvm
 vgcreate LVMVolGroup /dev/disk/by-partlabel/nixos_lvm
 
 lvcreate --yes -L "${ROOT_SIZE}"GB -n nixos_root LVMVolGroup
-lvcreate --yes -l 100%FREE -n nixos_data LVMVolGroup
+wait_for_devices "/dev/LVMVolGroup/nixos_root"
 
 wipefs -a /dev/disk/by-partlabel/efi
 mkfs.vfat -n EFI -F32 /dev/disk/by-partlabel/efi
@@ -94,30 +98,36 @@ nix-env -iA nixos.git
 git clone https://github.com/msf-ocb/nixos.git /mnt/etc/nixos/
 nixos-generate-config --root /mnt --no-filesystems
 
-# Do this only after generating the hardware config
-dd bs=512 count=4 if=/dev/urandom of=/tmp/keyfile
-chown root:root /tmp/keyfile
-chmod 0600 /tmp/keyfile
-cryptsetup --verbose \
-           --batch-mode \
-           --cipher aes-xts-plain64 \
-           --key-size 512 \
-           --hash sha512 \
-           --use-random \
-           luksFormat \
-           --type luks2 \
-           --key-file /tmp/keyfile \
-           /dev/LVMVolGroup/nixos_data
-cryptsetup open --key-file /tmp/keyfile /dev/LVMVolGroup/nixos_data nixos_data_decrypted
-mkfs.ext4 -e remount-ro -m 1 -L nixos_data /dev/mapper/nixos_data_decrypted
+if [ ${CREATE_DATA_PART} = true ]; then
+  # Do this only after generating the hardware config
+  lvcreate --yes -l 100%FREE -n nixos_data LVMVolGroup
+  wait_for_devices "/dev/LVMVolGroup/nixos_data"
 
-wait_for_devices "/dev/disk/by-label/nixos_data"
+  dd bs=512 count=4 if=/dev/urandom of=/tmp/keyfile
+  chown root:root /tmp/keyfile
+  chmod 0600 /tmp/keyfile
 
-mkdir -p /mnt/opt
-mount /dev/disk/by-label/nixos_data /mnt/opt
-mkdir -p /mnt/home
-mkdir -p /mnt/opt/.home
-mount -o bind /mnt/opt/.home /mnt/home
+  cryptsetup --verbose \
+             --batch-mode \
+             --cipher aes-xts-plain64 \
+             --key-size 512 \
+             --hash sha512 \
+             --use-random \
+             luksFormat \
+             --type luks2 \
+             --key-file /tmp/keyfile \
+             /dev/LVMVolGroup/nixos_data
+  cryptsetup open --key-file /tmp/keyfile /dev/LVMVolGroup/nixos_data nixos_data_decrypted
+  mkfs.ext4 -e remount-ro -m 1 -L nixos_data /dev/mapper/nixos_data_decrypted
+
+  wait_for_devices "/dev/disk/by-label/nixos_data"
+
+  mkdir -p /mnt/opt
+  mount /dev/disk/by-label/nixos_data /mnt/opt
+  mkdir -p /mnt/home
+  mkdir -p /mnt/opt/.home
+  mount -o bind /mnt/opt/.home /mnt/home
+fi
 
 ln -s hosts/"${TARGET_HOSTNAME}".nix /mnt/etc/nixos/settings.nix
 
@@ -125,15 +135,17 @@ ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${TARGET_HOSTNAME}" -f /mnt/etc/ni
 
 nixos-install --no-root-passwd --max-jobs 4
 
-umount /mnt/home
-umount /mnt/opt
-cryptsetup close nixos_data_decrypted
+if [ ${CREATE_DATA_PART} = true ]; then
+  umount /mnt/home
+  umount /mnt/opt
+  cryptsetup close nixos_data_decrypted
+
+  mv /tmp/keyfile /mnt/keyfile
+  chown root:root /mnt/keyfile
+  chmod 0600 /mnt/keyfile
+fi
 
 nixos-enter --root /mnt/ -c "nix-channel --add https://nixos.org/channels/nixos-${NIXOS_RELEASE} nixos"
-
-mv /tmp/keyfile /mnt/keyfile
-chown root:root /mnt/keyfile
-chmod 0600 /mnt/keyfile
 
 echo -e "\nNixOS installation finished, please reboot using \"sudo systemctl reboot\""
 
