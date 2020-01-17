@@ -15,11 +15,7 @@
   time.timeZone = "Europe/Brussels";
 
   settings = {
-    boot = {
-      mode = "legacy";
-      device = "/dev/disk/by-path/pci-0000:03:00.0-scsi-0:0:0:0";
-      separate_partition = false;
-    };
+    boot."uefi";
     reverse_tunnel = {
       enable = true;
       remote_forward_port = 7030;
