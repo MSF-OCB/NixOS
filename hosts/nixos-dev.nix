@@ -20,7 +20,10 @@
       enable = true;
       remote_forward_port = 7030;
     };
-    crypto.enable = true;
+    crypto = {
+      enable = true;
+      device = "/dev/LVMVolGroup_slow/nixos_data"
+    };
     docker.enable = true;
   };
 
