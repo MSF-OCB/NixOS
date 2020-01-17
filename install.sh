@@ -145,7 +145,7 @@ if [ ${CREATE_DATA_PART} = true ]; then
   chmod 0600 /mnt/keyfile
 fi
 
-nixos-enter --root /mnt/ -c "nix-channel --add https://nixos.org/channels/nixos-${NIXOS_RELEASE} nixos"
+nixos-enter --root /mnt/ -c "sudo nix-channel --add https://nixos.org/channels/nixos-${NIXOS_RELEASE} nixos"
 
 echo -e "\nNixOS installation finished, please reboot using \"sudo systemctl reboot\""
 
