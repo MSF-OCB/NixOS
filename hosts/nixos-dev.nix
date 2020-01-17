@@ -22,7 +22,7 @@
     };
     crypto = {
       enable = true;
-      device = "/dev/LVMVolGroup_slow/nixos_data"
+      device = "/dev/LVMVolGroup_slow/nixos_data";
     };
     docker.enable = true;
   };
