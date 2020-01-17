@@ -15,7 +15,7 @@
   time.timeZone = "Europe/Brussels";
 
   settings = {
-    boot."uefi";
+    boot.mode = "uefi";
     reverse_tunnel = {
       enable = true;
       remote_forward_port = 7030;
