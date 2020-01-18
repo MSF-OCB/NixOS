@@ -62,6 +62,11 @@ with lib;
         });
       };
 
+      private_key = mkOption {
+        default = ../local/id_tunnel;
+        type = types.path;
+      };
+
       relay = {
         enable = mkOption {
           default = false;
@@ -107,7 +112,7 @@ with lib;
     };
 
     environment.etc.id_tunnel = mkIf cfg.enable {
-      source = ../local/id_tunnel;
+      source = cfg.private_key;
       mode = "0400";
       user = "tunnel";
       group = "tunnel";
