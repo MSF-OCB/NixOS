@@ -29,7 +29,7 @@ with lib;
   };
 
   isoImage = {
-    isoName = mkForce "${config.isoImage.isoBaseName}-msfocb_rescue-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}.iso";
+    isoName = mkForce "${config.isoImage.isoBaseName}-msfocb-rescue-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}.iso";
     appendToMenuLabel = " MSF OCB rescue system";
   };
 
