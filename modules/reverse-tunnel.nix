@@ -28,6 +28,14 @@ with lib;
         '';
       };
 
+      prometheus = mkOption {
+        default = true;
+        type = types.bool;
+        description = ''
+          Whether to enable the reverse tunnel for the Prometheus node exporter.
+        '';
+      };
+
       remote_forward_port = mkOption {
         default = 0;
         type = types.ints.between 0 9999;
@@ -139,6 +147,7 @@ with lib;
           script = let
             tunnel_port = toString (conf.port_prefix * 10000 + cfg.remote_forward_port);
             prometheus_port = toString ((3 + conf.port_prefix) * 10000 + cfg.remote_forward_port);
+            prometheus_enable = cfg.prometheus && conf.prometheus_endpoint;
           in ''
             for port in ${toString cfg.relay.ports}; do
               echo "Attempting to connect to ${conf.host} on port ''${port}"
@@ -156,7 +165,7 @@ with lib;
                 -o "Compression=yes" \
                 -o "ControlMaster=no" \
                 -R ${tunnel_port}:localhost:22 \
-                ${optionalString conf.prometheus_endpoint "-R ${prometheus_port}:localhost:9100 "}\
+                ${optionalString prometheus_enable "-R ${prometheus_port}:localhost:9100 "}\
                 -i /etc/id_tunnel \
                 -p ''${port} \
                 tunnel@${conf.host}
