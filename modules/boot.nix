@@ -44,8 +44,12 @@ with lib;
     };
   };
 
-  config = {
-    boot.loader = let
+  config.boot = {
+    growPartition = true;
+    cleanTmpDir   = true;
+    tmpOnTmpfs    = true;
+
+    loader = let
       mode = cfg.mode;
       is_none = (mode == "none");
       grub_common = {
@@ -76,6 +80,35 @@ with lib;
       else
         throw "The settings.boot.mode parameter should be set to either \"legacy\", \"uefi\" or \"none\""
     );
+
+    kernelParams = [
+      # Overwrite free'd memory
+      #"page_poison=1"
+
+      # Disable legacy virtual syscalls
+      #"vsyscall=none"
+
+      # Disable hibernation (allows replacing the running kernel)
+      "nohibernate"
+    ];
+
+    kernel.sysctl = {
+      # Prevent replacing the running kernel image w/o reboot
+      "kernel.kexec_load_disabled" = true;
+
+      # Reboot after 10 min following a kernel panic
+      "kernel.panic" = "10";
+
+      # Disable bpf() JIT (to eliminate spray attacks)
+      #"net.core.bpf_jit_enable" = mkDefault false;
+
+      # ... or at least apply some hardening to it
+      "net.core.bpf_jit_harden" = true;
+
+      # Raise ASLR entropy
+      "vm.mmap_rnd_bits" = 32;
+    };
+
   };
 }
 
