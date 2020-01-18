@@ -48,12 +48,19 @@
 
   };
 
-  # Only user with a password, but not usable via SSH.
-  # To be used for console access in case of emergencies.
-  users.extraUsers.msfocb = {
-    isNormalUser = true;
-    extraGroups  = [ "wheel" ];
-    openssh.authorizedKeys.keyFiles = [];
+  users.users = {
+    # Only user with a password, but not usable via SSH.
+    # To be used for console access in case of emergencies.
+    msfocb = {
+      isNormalUser = true;
+      extraGroups  = [ "wheel" ];
+      openssh.authorizedKeys.keyFiles = [];
+    };
+
+    # Lock the root user
+    root = {
+      hashedPassword = "!";
+    };
   };
 
 }
