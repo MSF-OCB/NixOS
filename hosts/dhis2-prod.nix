@@ -21,11 +21,10 @@
       enable = true;
       remote_forward_port = 7054;
     };
-    
     users.users = {
       yusuph.enable = true;
     };
-  
+    system.nix_channel = "19.03";
     crypto.enable = false;
     docker.enable = false;
   };

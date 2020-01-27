@@ -9,23 +9,17 @@
 ########################################################################
 
 {
-
-  networking.hostName = "benuc022";
-  time.timeZone = "Africa/Cairo";
+  networking.hostName = "benuc037";
+  time.timeZone = "Africa/Nairobi";
 
   settings = {
-    boot = {
-      mode = "legacy";
-      device = "/dev/disk/by-id/ata-DGM28-A28D81BCBQC-27_20180223AA1724144410";
-    };
+    boot.mode = "uefi";
     reverse_tunnel = {
       enable = true;
-      remote_forward_port = 6022;
+      remote_forward_port = 6037;
     };
-    system.nix_channel = "19.03";
     crypto.enable = true;
     docker.enable = true;
   };
 
 }
-
