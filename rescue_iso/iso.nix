@@ -25,8 +25,6 @@ with lib;
 
   settings.reverse_tunnel = {
     enable = true;
-    prometheus = false;
-    remote_forward_port = 8000;
     private_key = ./iso_key/id_tunnel;
   };
 
