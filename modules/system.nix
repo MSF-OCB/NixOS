@@ -51,10 +51,12 @@ with lib;
         fi
       done
     '';
-    settings_link = ''
-      SETTINGS_PATH="/etc/nixos/settings.nix"
-      if [ $(realpath ''${SETTINGS_PATH}) != "/etc/nixos/hosts/''${HOSTNAME}.nix" ]; then
-        ln --force --symbolic hosts/''${HOSTNAME}.nix ''${SETTINGS_PATH}
+    settings_link = let
+      hostname = config.networking.hostName;
+      settings_path = "/etc/nixos/settings.nix";
+    in ''
+      if [ $(realpath ${settings_path}) != "/etc/nixos/hosts/${hostname}.nix" ]; then
+        ln --force --symbolic hosts/${hostname}.nix ${settings_path}
       fi
     '';
   };
