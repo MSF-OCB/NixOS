@@ -10,79 +10,86 @@
 
 { config, pkgs, lib, ... }:
 
-let
-  cfg = config.settings.reverse_tunnel;
-in
-
 with lib;
 
-{
+let
+  cfg = config.settings.reverse_tunnel;
 
-  options = {
-    settings.reverse_tunnel = {
-      enable = mkOption {
-        default = false;
-        type = types.bool;
-        description = ''
-          Whether to enable the reverse tunnel services.
-        '';
-      };
-
-      prometheus = mkOption {
-        default = true;
-        type = types.bool;
-        description = ''
-          Whether to enable the reverse tunnel for the Prometheus node exporter.
-        '';
+  tunnelOpts = { name, ... }: {
+    options = {
+      name = mkOption {
+        type = types.str;
       };
 
       remote_forward_port = mkOption {
-        default = 0;
         type = types.ints.between 0 9999;
         description = ''
           The port on the relay servers.
         '';
       };
 
-      relay_servers = mkOption {
-        type = with types; listOf (submodule {
-          options = {
-
-            name = mkOption {
-              type = types.str;
-            };
-
-            host = mkOption {
-              type = types.str;
-            };
-
-            port_prefix = mkOption {
-              type    = types.ints.between 0 6;
-              default = 0;
-            };
-
-            prometheus_endpoint = mkOption {
-              type    = types.bool;
-              default = false;
-            };
-
-          };
-        });
+      public_key = mkOption {
+        type = types.str;
       };
+    };
+
+    config = {
+      name = mkDefault name;
+    };
+  };
+
+  relayServerOpts = { name, ... }: {
+    options = {
+      name = mkOption {
+        type = types.str;
+      };
+
+      host = mkOption {
+        type = types.str;
+      };
+
+      ip_tunnel = mkOption {
+        type    = types.bool;
+        default = false;
+      };
+    };
+
+    config = {
+      name = mkDefault name;
+    };
+  };
+in {
+
+  options = {
+    settings.reverse_tunnel = {
+      enable = mkEnableOption "the reverse tunnel services";
 
       private_key = mkOption {
         default = ../local/id_tunnel;
         type = types.path;
       };
 
+      tunnels = mkOption {
+        type    = with types; loaOf (submodule tunnelOpts);
+        default = [];
+      };
+
+      relay_servers = mkOption {
+        type = with types; loaOf (submodule relayServerOpts);
+      };
+
+      ip_tunnel_port_prefix = mkOption {
+        type = types.ints.between 0 9;
+        default = 1;
+      };
+
+      prometheus_tunnel_port_prefix = mkOption {
+        type = types.ints.between 0 9;
+        default = 3;
+      };
+
       relay = {
-        enable = mkOption {
-          default = false;
-          type = types.bool;
-          description = ''
-            Whether this server acts as an ssh relay.
-          '';
-        };
+        enable = mkEnableOption "the relay server functionality";
 
         ports = mkOption {
           default = [ 22 80 443 ];
@@ -96,19 +103,34 @@ with lib;
             The list of key files which are allowed to access the tunneller user to create tunnels.
           '';
         };
-        
       };
     };
   };
 
-  config = mkIf (cfg.enable || cfg.relay.enable) {
+  config = let
+    add_port_prefix = prefix: base_port: toString (10000 * prefix + base_port);
+  in mkIf (cfg.enable || cfg.relay.enable) {
 
-    users.extraUsers.tunnel = {
+    assertions = [
+      {
+        assertion = !cfg.enable || (hasAttr config.networking.hostName cfg.tunnels);
+        message   = "The reverse tunnel service is enabled but this host's host name is not present in the tunnel config (global_settings.nix).";
+      }
+    ];
+
+    users.extraUsers.tunnel = let
+      prefixes = [ 0 cfg.ip_tunnel_port_prefix cfg.prometheus_tunnel_port_prefix
+                   (cfg.ip_tunnel_port_prefix + cfg.prometheus_tunnel_port_prefix) ];
+      make_limitation = base_port: prefix: "permitlisten=\"${add_port_prefix prefix base_port}\"";
+      make_port_limitations = tunnel:
+        "${concatMapStringsSep "," (make_limitation tunnel.remote_forward_port) prefixes} ${tunnel.public_key} tunnel@${tunnel.name}";
+    in {
       isNormalUser = false;
       isSystemUser = true;
       shell        = pkgs.nologin;
       extraGroups  = mkIf cfg.relay.enable [ config.settings.users.ssh-group ];
-      openssh.authorizedKeys.keyFiles = mkIf cfg.relay.enable [ ../keys/tunnel ];
+      openssh.authorizedKeys.keys = mkIf cfg.relay.enable (
+        mapAttrsToList (_: tunnel: make_port_limitations tunnel) cfg.tunnels);
     };
 
     users.extraUsers.tunneller = mkIf cfg.relay.enable {
@@ -129,53 +151,54 @@ with lib;
 
     systemd.services = let
       make_tunnel_service = conf: {
-        "autossh-reverse-tunnel-${conf.name}" = {
-          enable = true;
-          description = "AutoSSH reverse tunnel service to ensure resilient ssh access";
-          wants = [ "network.target" ];
-          after = [ "network.target" ];
-          wantedBy = [ "multi-user.target" ];
-          environment = {
-            AUTOSSH_GATETIME = "0";
-            AUTOSSH_PORT = "0";
-            AUTOSSH_MAXSTART = "10";
-          };
-          serviceConfig = {
-            User = "tunnel";
-            Restart = "always";
-            RestartSec = "10min";
-          };
-          script = let
-            tunnel_port = toString (conf.port_prefix * 10000 + cfg.remote_forward_port);
-            prometheus_port = toString ((3 + conf.port_prefix) * 10000 + cfg.remote_forward_port);
-            prometheus_enable = cfg.prometheus && conf.prometheus_endpoint;
-          in ''
-            for port in ${toString cfg.relay.ports}; do
-              echo "Attempting to connect to ${conf.host} on port ''${port}"
-              ${pkgs.autossh}/bin/autossh \
-                -q -T -N \
-                -o "ExitOnForwardFailure=yes" \
-                -o "ServerAliveInterval=10" \
-                -o "ServerAliveCountMax=5" \
-                -o "ConnectTimeout=360" \
-                -o "UpdateHostKeys=yes" \
-                -o "StrictHostKeyChecking=no" \
-                -o "GlobalKnownHostsFile=/dev/null" \
-                -o "UserKnownHostsFile=/dev/null" \
-                -o "IdentitiesOnly=yes" \
-                -o "Compression=yes" \
-                -o "ControlMaster=no" \
-                -R ${tunnel_port}:localhost:22 \
-                ${optionalString prometheus_enable "-R ${prometheus_port}:localhost:9100 "}\
-                -i /etc/id_tunnel \
-                -p ''${port} \
-                tunnel@${conf.host}
-            done
-          '';
+        enable = true;
+        description = "AutoSSH reverse tunnel service to ensure resilient ssh access";
+        wants = [ "network.target" ];
+        after = [ "network.target" ];
+        wantedBy = [ "multi-user.target" ];
+        environment = {
+          AUTOSSH_GATETIME = "0";
+          AUTOSSH_PORT = "0";
+          AUTOSSH_MAXSTART = "10";
         };
+        serviceConfig = {
+          User = "tunnel";
+          Restart = "always";
+          RestartSec = "10min";
+        };
+        script = let
+          fwd_port = cfg.tunnels."${config.networking.hostName}".remote_forward_port;
+          port_prefix = if conf.ip_tunnel then cfg.ip_tunnel_port_prefix else 0;
+          tunnel_port = add_port_prefix port_prefix fwd_port;
+          prometheus_port = add_port_prefix (cfg.prometheus_tunnel_port_prefix + port_prefix) fwd_port;
+        in ''
+          for port in ${concatMapStringsSep " " toString cfg.relay.ports}; do
+            echo "Attempting to connect to ${conf.host} on port ''${port}"
+            ${pkgs.autossh}/bin/autossh \
+              -q -T -N \
+              -o "ExitOnForwardFailure=yes" \
+              -o "ServerAliveInterval=10" \
+              -o "ServerAliveCountMax=5" \
+              -o "ConnectTimeout=360" \
+              -o "UpdateHostKeys=yes" \
+              -o "StrictHostKeyChecking=no" \
+              -o "GlobalKnownHostsFile=/dev/null" \
+              -o "UserKnownHostsFile=/dev/null" \
+              -o "IdentitiesOnly=yes" \
+              -o "Compression=yes" \
+              -o "ControlMaster=no" \
+              -R ${tunnel_port}:localhost:22 \
+              -R ${prometheus_port}:localhost:9100 \
+              -i /etc/id_tunnel \
+              -p ''${port} \
+              tunnel@${conf.host}
+          done
+        '';
       };
       tunnel_services = optionalAttrs cfg.enable (
-        foldr (conf: services: services // (make_tunnel_service conf)) {} cfg.relay_servers);
+        mapAttrs' (name: conf: nameValuePair ("autossh-reverse-tunnel-${name}")
+                                             (make_tunnel_service conf))
+                  cfg.relay_servers);
 
       monitoring_services = optionalAttrs cfg.relay.enable {
         port_monitor = {
@@ -186,12 +209,8 @@ with lib;
             User = "root";
             Type = "oneshot";
           };
-          script = let
-            file = "/root/timetunnels.txt";
-          in ''
-            echo "###" | ${pkgs.coreutils}/bin/tee -a ${file}
-            ${pkgs.coreutils}/bin/date | ${pkgs.coreutils}/bin/tee -a ${file}
-            ${pkgs.iproute}/bin/ss -Htpln6 | ${pkgs.coreutils}/bin/sort -n | ${pkgs.coreutils}/bin/tee -a ${file}
+          script = ''
+            ${pkgs.iproute}/bin/ss -Htpln6 | ${pkgs.coreutils}/bin/sort -n
           '';
           # Every 5 min
           startAt = "*:0/5:00";

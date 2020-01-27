@@ -12,12 +12,24 @@
 
 {
 
-  settings.reverse_tunnel.relay_servers = [
-    { name = "sshrelay1";    host = "sshrelay1.msf.be"; prometheus_endpoint = true; }
-    { name = "sshrelay2";    host = "sshrelay2.msf.be"; prometheus_endpoint = true; }
-    { name = "sshrelay1-ip"; host = "185.199.180.11"; port_prefix = 1; }
-    { name = "sshrelay2-ip"; host = "15.188.17.148";  port_prefix = 1; }
-  ];
+  settings.reverse_tunnel = {
+    relay_servers = {
+      sshrelay1.host = "sshrelay1.msf.be";
+      sshrelay2.host = "sshrelay2.msf.be";
+      sshrelay1-ip = { host = "185.199.180.11"; ip_tunnel = true; };
+      sshrelay2-ip = { host = "15.188.17.148";  ip_tunnel = true; };
+    };
+    tunnels = {
+      benuc002 = {
+        remote_forward_port = 6002;
+        public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA3YY2F1iOlm/7w9dSXzHU6ZbOuUx9oMwpfi5xFm6jrz";
+      };
+      rescue_iso = {
+        remote_forward_port = 8000;
+        public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDPkVmtj3Jkh/8tLJP+tE0/t3GMWJj6mVQ/PfkF7wIL6";
+      };
+    };
+  };
 
   # python3 -c 'import crypt,getpass; print(crypt.crypt(getpass.getpass(), crypt.mksalt(crypt.METHOD_SHA512)))'
   users.users.msfocb.hashedPassword = lib.mkDefault
