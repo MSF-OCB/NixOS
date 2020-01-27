@@ -16,10 +16,8 @@
 
   settings = {
     boot.mode = "uefi";
-    reverse_tunnel = {
-      enable = true;
-      remote_forward_port = 6002;
-    };
+    reverse_tunnel.enable = true;
+    reverse_tunnel.relay.enable = true;
     crypto.enable = true;
     docker.enable = true;
   };
