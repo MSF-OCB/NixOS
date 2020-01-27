@@ -41,6 +41,23 @@ with lib;
       whereami = "curl ipinfo.io";
     };
   };
+  
+  system.activationScripts = {
+    tunnel_key_permissions = ''
+      for FILE in "/etc/nixos/local/id_tunnel" "/etc/nixos/local/id_tunnel.pub"; do
+        if [ -f ''${FILE} ]; then
+          chown root:root ''${FILE}
+          chmod 0400 ''${FILE}
+        fi
+      done
+    '';
+    settings_link = ''
+      SETTINGS_PATH="/etc/nixos/settings.nix"
+      if [ $(realpath ''${SETTINGS_PATH}) != "/etc/nixos/hosts/''${HOSTNAME}.nix" ]; then
+        ln --force --symbolic hosts/''${HOSTNAME}.nix ''${SETTINGS_PATH}
+      fi
+    '';
+  };
 
   # No fonts needed on a headless system
   fonts.fontconfig.enable = mkForce false;
