@@ -13,7 +13,10 @@
   time.timeZone = "Europe/Brussels";
 
   settings = {
-    boot.mode = "uefi";
+    boot = {
+      mode = "legacy";                                                                                                                            │···························
+      device = "/dev/disk/by-id/ata-TS128GSSD420I_D675520211";
+    };
     reverse_tunnel = {
       enable = true;
       remote_forward_port = 6005;
