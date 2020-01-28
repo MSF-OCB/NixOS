@@ -18,8 +18,20 @@
       enable = true;
       remote_forward_port = 6037;
     };
+    
     crypto.enable = true;
     docker.enable = true;
+    
+    users.users = {
+      yusuph.enable = true;
+      damien.enable = true;
+      didier.enable = true;
+      joana.enable  = true;
+      kathy.enable  = true;
+      pasquale.enable  = true;
+      godfried.enable = true;
+      vini.enable = true;
+    };    
   };
 
 }
