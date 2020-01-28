@@ -10,35 +10,25 @@
 
 {
   networking.hostName = "benuc015";
-  time.timeZone = "Europe/Brussels";
+  time.timeZone = "Africa/Kinshasa";
 
   settings = {
-    boot = {
-      mode = "legacy";
-      device = "/dev/disk/by-id/wwn-0x502b2a201d1c1b1a";
-      separate_partition = false;
-    };
-
+    boot.mode = "uefi";
     reverse_tunnel = {
       enable = true;
       remote_forward_port = 6015;
     };
-
-    crypto = {
-      enable = true;
-      device = "/safe.img";
-    };
-
+    
+    crypto.enable = true;
     docker.enable = true;
- 
+
     users.users = {
-      yusuph.enable   = true;
-      damien.enable   = true;
-      didier.enable   = true;
-      joana.enable    = true;
-      kathy.enable    = true;
+      yusuph.enable = true;
+      damien.enable = true;
+      didier.enable = true;
+      pasquale.enable  = true;
       godfried.enable = true;
-      vini.enable     = true;
+      vini.enable = true;
     };
   };
 }
