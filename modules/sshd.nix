@@ -32,12 +32,11 @@ with lib;
   };
 
   config = {
-
     services = {
       openssh = {
         enable = true;
-        # TODO 19.09: check changed behaviour which makes this the default for immutable users
-        # Might need stateVersion update
+        # Ignore the authorized_keys files in the users' home directories,
+        # keys should be added through the config.
         authorizedKeysFiles = mkForce [ "/etc/ssh/authorized_keys.d/%u" ];
         permitRootLogin = mkDefault "no";
         forwardX11 = false;
@@ -93,18 +92,6 @@ with lib;
         # 7 * 24 * 60 * 60
         detection_time = 604800;
       };
-    };
-
-    systemd.services.sshguard = {
-      # https://github.com/NixOS/nixpkgs/pull/65995
-      preStart = ''
-        ${pkgs.ipset}/bin/ipset -quiet create -exist sshguard4 hash:net family inet
-        ${pkgs.ipset}/bin/ipset -quiet create -exist sshguard6 hash:net family inet6
-      '';
-      postStop = ''
-        ${pkgs.ipset}/bin/ipset -quiet destroy sshguard4
-        ${pkgs.ipset}/bin/ipset -quiet destroy sshguard6
-      '';
     };
   };
 
