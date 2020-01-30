@@ -32,6 +32,7 @@
     ramses   = admin;
     thierry  = admin;
     xavier   = admin;
+    yves     = admin;
 
     damien   = tunnelOnly;
     didier   = tunnelOnly;
