@@ -28,7 +28,7 @@
   ];
 
   networking = {
-    hostName = "sshrelay1";
+    hostName = "lndict";
     interfaces.ens160 = {
       name = "ens160";
       useDHCP = false;
