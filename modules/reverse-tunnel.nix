@@ -130,7 +130,7 @@ in {
       shell        = pkgs.nologin;
       extraGroups  = mkIf cfg.relay.enable [ config.settings.users.ssh-group ];
       openssh.authorizedKeys.keys = mkIf cfg.relay.enable (
-        mapAttrsToList (_: tunnel: make_port_limitations tunnel) cfg.tunnels);
+        naturalSort (mapAttrsToList (_: tunnel: make_port_limitations tunnel) cfg.tunnels));
     };
 
     users.extraUsers.tunneller = mkIf cfg.relay.enable {
