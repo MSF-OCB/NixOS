@@ -21,8 +21,9 @@
       enable = true;
       remote_forward_port = 7080;
     };
+    docker.enable = true;
   };
-
+    
   imports = [
     ../modules/vmware.nix
   ];
