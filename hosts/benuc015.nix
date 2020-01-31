@@ -10,7 +10,7 @@
 
 {
   networking.hostName = "benuc015";
-  time.timeZone = "Africa/Kinshasa";
+  time.timeZone = "Africa/Nord-Kivu";
 
   settings = {
     boot.mode = "uefi";
