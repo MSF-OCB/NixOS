@@ -24,14 +24,10 @@
     users.users = {
       yusuph.enable = true;
     };
-    system.nix_channel = "19.03";
+    vmware.enable = true;
     crypto.enable = false;
-    docker.enable = false;
+    docker.enable = true;
   };
-
-  imports = [
-    ../modules/vmware.nix
-  ];
 
   networking = {
     hostName = "dhis2-prod";
@@ -40,11 +36,7 @@
       useDHCP = false;
       ipv4.addresses = [ { address = "192.168.50.52"; prefixLength = 24; } ];
     };
-    defaultGateway = {
-      address = "192.168.50.1";
-      interface = "ens32";
-    };
-    nameservers = [ "172.16.0.101" "9.9.9.9" ];
+    defaultGateway.address = "192.168.50.1";
   };
 
 }

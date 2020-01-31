@@ -24,14 +24,10 @@
       enable = true;
       device = "/dev/LVMVolGroup_slow/nixos_data";
     };
+    vmware.enable = true;
     docker.enable = true;
   };
 
-  imports = [
-    ../modules/vmware.nix
-    ../modules/docker-registry.nix
-  ];
-  
   environment.systemPackages = with pkgs; [
     ansible
     rsync
@@ -44,11 +40,7 @@
       useDHCP = false;
       ipv4.addresses = [ { address = "172.16.0.75"; prefixLength = 16; } ];
     };
-    defaultGateway = {
-      address = "172.16.0.100";
-#      interface = "ens192";
-    };
-    nameservers = [ "172.16.0.101" "9.9.9.9" ];
+    defaultGateway.address = "172.16.0.100";
   };
 
 }

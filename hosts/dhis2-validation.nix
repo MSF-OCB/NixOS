@@ -21,16 +21,13 @@
       enable = true;
       remote_forward_port = 7055;
     };
+    vmware.enable = true;
     docker.enable = true;
     users.users = {
       yusuph.enable = true;
       didier.enable = true;
     };
   };
-
-  imports = [
-    ../modules/vmware.nix
-  ];
 
   networking = {
     hostName = "dhis2-validation";
@@ -39,11 +36,7 @@
       useDHCP = false;
       ipv4.addresses = [ { address = "192.168.50.54"; prefixLength = 24; } ];
     };
-    defaultGateway = {
-      address = "192.168.50.1";
-      interface = "ens32";
-    };
-    nameservers = [ "172.16.0.101" "9.9.9.9" ];
+    defaultGateway.address = "192.168.50.1";
   };
 
 }

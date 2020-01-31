@@ -21,12 +21,9 @@
       enable = true;
       remote_forward_port = 7053;
     };
+    vmware.enable = true;
     docker.enable = true;
   };
-
-  imports = [
-    ../modules/vmware.nix
-  ];
 
   networking = {
     hostName = "dhis2-hq-monitoring";
@@ -35,11 +32,7 @@
       useDHCP = false;
       ipv4.addresses = [ { address = "192.168.50.53"; prefixLength = 24; } ];
     };
-    defaultGateway = {
-      address = "192.168.50.1";
-      interface = "ens32";
-    };
-    nameservers = [ "172.16.0.101" "9.9.9.9" ];
+    defaultGateway.address = "192.168.50.1";
   };
 
 }
