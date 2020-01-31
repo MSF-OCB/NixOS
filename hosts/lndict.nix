@@ -37,9 +37,8 @@
     };
     defaultGateway = {
       address = "192.168.50.1";
-      interface = "ens160";
     };
-    nameservers = [ "9.9.9.9" "149.112.112.112" ];
+    nameservers = [ "172.16.0.101" "9.9.9.9" ];
   };
 
 }
