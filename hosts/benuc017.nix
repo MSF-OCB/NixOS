@@ -23,7 +23,6 @@
       enable = true;
       remote_forward_port = 6017;
     };
-    system.nix_channel = "19.03";
     crypto.enable = true;
     docker.enable = true;
   };
