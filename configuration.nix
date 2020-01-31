@@ -34,6 +34,7 @@ with lib;
     ./modules/docker.nix
     ./modules/prometheus.nix
     ./modules/auto_shutdown.nix
+    ./modules/vmware.nix
   ];
 
   # We need to force to override the definition in the default AWS config.
