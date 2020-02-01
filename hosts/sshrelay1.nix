@@ -27,7 +27,6 @@
   networking = {
     hostName = "sshrelay1";
     interfaces.ens160 = {
-      name = "ens160";
       useDHCP = false;
       ipv4.addresses = [ { address = "192.168.50.143"; prefixLength = 24; } ];
     };

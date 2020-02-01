@@ -28,7 +28,6 @@
   networking = {
     hostName = "lndict";
     interfaces.ens160 = {
-      name = "ens160";
       useDHCP = false;
       ipv4.addresses = [ { address = "192.168.50.157"; prefixLength = 24; } ];
     };
