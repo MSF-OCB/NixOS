@@ -44,7 +44,6 @@
   networking = {
     hostName = "dhis2-dev";
     interfaces.ens32 = {
-      name = "ens32";
       useDHCP = false;
       ipv4.addresses = [ { address = "192.168.50.37"; prefixLength = 24; } ];
     };

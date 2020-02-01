@@ -36,7 +36,6 @@
   networking = {
     hostName = "nixos-dev";
     interfaces.ens32 = {
-      name = "ens32";
       useDHCP = false;
       ipv4.addresses = [ { address = "172.16.0.75"; prefixLength = 16; } ];
     };

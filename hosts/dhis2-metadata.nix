@@ -31,7 +31,6 @@
   networking = {
     hostName = "dhis2-metadata";
     interfaces.ens32 = {
-      name = "ens32";
       useDHCP = false;
       ipv4.addresses = [ { address = "192.168.50.38"; prefixLength = 24; } ];
     };
