@@ -18,10 +18,7 @@
       mode = "legacy";
       device = "/dev/disk/by-id/wwn-0x5000c50093627fae";
     };
-    reverse_tunnel = {
-      enable = true;
-      remote_forward_port = 7040;
-    };
+    reverse_tunnel.enable = true;
     crypto = {
       enable = true;
       device = "/safe.img";

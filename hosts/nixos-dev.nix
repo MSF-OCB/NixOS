@@ -16,10 +16,7 @@
 
   settings = {
     boot.mode = "uefi";
-    reverse_tunnel = {
-      enable = true;
-      remote_forward_port = 7030;
-    };
+    reverse_tunnel.enable = true;
     crypto = {
       enable = true;
       device = "/dev/LVMVolGroup_slow/nixos_data";
@@ -27,11 +24,6 @@
     vmware.enable = true;
     docker.enable = true;
   };
-
-  environment.systemPackages = with pkgs; [
-    ansible
-    rsync
-  ];
 
   networking = {
     hostName = "nixos-dev";

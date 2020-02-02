@@ -17,10 +17,7 @@
       mode = "legacy";
       device = "/dev/disk/by-id/ata-TS128GMTS600_D274641630";
     };
-    reverse_tunnel = {
-      enable = true;
-      remote_forward_port = 6013;
-    };
+    reverse_tunnel.enable = true;
     crypto.enable = false;
     docker.enable = false;
   };
