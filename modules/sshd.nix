@@ -66,10 +66,6 @@ with lib;
           ${optionalString reverse_tunnel.relay.enable ''
             Match User tunnel
               AllowTcpForwarding remote
-
-            Match User tunneller
-              # Required to be able to proxy through the relay
-              AllowTcpForwarding local
           ''}
         '';
       };

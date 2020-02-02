@@ -115,7 +115,8 @@ with lib;
       isNormalUser = false;
       isSystemUser = true;
       shell        = pkgs.nologin;
-      extraGroups  = [ config.settings.users.ssh-group ];
+      # The fwd-tunnel-group is required to be able to proxy through the relay
+      extraGroups  = [ config.settings.users.ssh-group config.settings.users.fwd-tunnel-group ];
       openssh.authorizedKeys.keyFiles = cfg.relay.tunneller.keyFiles;
     };
 
