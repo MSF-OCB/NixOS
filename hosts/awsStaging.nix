@@ -16,10 +16,7 @@
   time.timeZone = "Europe/Paris";
 
   settings = {
-reverse_tunnel = {
-      enable = true;
-      remote_forward_port = 7070;
-    };
+    reverse_tunnel.enable = true;
     docker.enable = true;
   };
 

@@ -21,10 +21,5 @@
     crypto.enable = true;
     docker.enable = true;
   };
-  
-  environment.systemPackages = with pkgs; [
-    ansible
-    rsync
-  ];
 }
 
