@@ -18,10 +18,7 @@
       mode = "legacy";
       device = "/dev/disk/by-id/ata-DGM28-A28D81BCBQC-27_20180223AA1724144410";
     };
-    reverse_tunnel = {
-      enable = true;
-      remote_forward_port = 6022;
-    };
+    reverse_tunnel.enable = true;
     crypto.enable = true;
     docker.enable = true;
   };

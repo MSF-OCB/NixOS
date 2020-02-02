@@ -20,10 +20,7 @@
       mode = "legacy";
       device = "/dev/disk/by-id/wwn-0x5000c500935b35ec";
     };
-    reverse_tunnel = {
-      enable = true;
-      remote_forward_port = 7000;
-    };
+    reverse_tunnel.enable = true;
     crypto.enable = true;
     docker.enable = true;
   };

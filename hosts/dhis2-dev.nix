@@ -11,7 +11,6 @@
 { pkgs, ... }:
 
 {
-
   time.timeZone = "Europe/Brussels";
 
   settings = {
@@ -19,17 +18,14 @@
       mode = "legacy";
       device = "/dev/disk/by-path/pci-0000:00:10.0-scsi-0:0:0:0";
     };
-    reverse_tunnel = {
-      enable = true;
-      remote_forward_port = 7050;
-    };
+    reverse_tunnel.enable = true;
+    vmware.enable = true;
+    crypto.enable = true;
+    docker.enable = true;
     users.users = {
       xavier.enable = true;
       yusuph.enable = true;
     };
-    vmware.enable = true;
-    crypto.enable = true;
-    docker.enable = true;
   };
 
   imports = [
@@ -49,6 +45,5 @@
     };
     defaultGateway.address = "192.168.50.1";
   };
-
 }
 

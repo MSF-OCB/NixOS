@@ -17,10 +17,7 @@
       mode = "legacy";                                                                                                                            │···························
       device = "/dev/disk/by-id/ata-TS128GSSD420I_D675520211";
     };
-    reverse_tunnel = {
-      enable = true;
-      remote_forward_port = 6005;
-    };
+    reverse_tunnel.enable = true;
     crypto.enable = false;
     docker.enable = true;
   };

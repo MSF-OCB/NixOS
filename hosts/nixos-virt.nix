@@ -14,9 +14,7 @@
 
   settings = {
     boot.mode = "uefi";
-    reverse_tunnel = {
-      enable = false;
-    };
+    reverse_tunnel.enable = false;
     crypto.enable = true;
   };
 
