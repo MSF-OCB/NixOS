@@ -70,12 +70,12 @@ in {
       };
 
       tunnels = mkOption {
-        type    = with types; loaOf (submodule tunnelOpts);
+        type    = with types; attrsOf (submodule tunnelOpts);
         default = [];
       };
 
       relay_servers = mkOption {
-        type = with types; loaOf (submodule relayServerOpts);
+        type = with types; attrsOf (submodule relayServerOpts);
       };
 
       ip_tunnel_port_prefix = mkOption {
