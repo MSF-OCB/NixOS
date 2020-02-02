@@ -65,7 +65,7 @@ in {
 
     settings.users = {
       users = mkOption {
-        type    = with types; loaOf (submodule userOpts);
+        type    = with types; attrsOf (submodule userOpts);
         default = [];
       };
 
