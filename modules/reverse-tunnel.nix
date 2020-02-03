@@ -69,6 +69,11 @@ in {
         type = types.path;
       };
 
+      copy_private_key_to_store = mkOption {
+        default = false;
+        type = types.bool;
+      };
+
       tunnels = mkOption {
         type    = with types; attrsOf (submodule tunnelOpts);
         default = [];
@@ -108,13 +113,18 @@ in {
   };
 
   config = let
+    id_tunnel_path = "/run/id_tunnel";
     add_port_prefix = prefix: base_port: toString (10000 * prefix + base_port);
   in mkIf (cfg.enable || cfg.relay.enable) {
 
     assertions = [
       {
-        assertion = !cfg.enable || (hasAttr config.networking.hostName cfg.tunnels);
+        assertion = cfg.enable -> (hasAttr config.networking.hostName cfg.tunnels);
         message   = "The reverse tunnel service is enabled but this host's host name is not present in the tunnel config (global_settings.nix).";
+      }
+      {
+        assertion = builtins.pathExists cfg.private_key;
+        message   = "The reverse tunnel key file at ${toString cfg.private_key} does not exist.";
       }
     ];
 
@@ -142,11 +152,28 @@ in {
       openssh.authorizedKeys.keyFiles = cfg.relay.tunneller.keyFiles;
     };
 
-    environment.etc.id_tunnel = mkIf cfg.enable {
-      source = cfg.private_key;
-      mode = "0400";
-      user = "tunnel";
-      group = "tunnel";
+    system.activationScripts = let
+      key_path = if cfg.copy_private_key_to_store
+                 then "${cfg.private_key}"
+                 else "${toString cfg.private_key}";
+    in {
+      tunnel_key_permissions = {
+        text = ''
+          for FILE in "/etc/nixos/local/id_tunnel" "/etc/nixos/local/id_tunnel.pub"; do
+            if [ -f ''${FILE} ]; then
+              chown root:root ''${FILE}
+              chmod 0400 ''${FILE}
+            fi
+          done
+        '';
+        deps = [ "users" ];
+      };
+      copy_tunnel_key = {
+        text = ''
+          install -o tunnel -g root -m 0400 ${key_path} ${id_tunnel_path}
+        '';
+        deps = [ "specialfs" "users" ];
+      };
     };
 
     systemd.services = let
@@ -189,7 +216,7 @@ in {
               -o "ControlMaster=no" \
               -R ${tunnel_port}:localhost:22 \
               -R ${prometheus_port}:localhost:9100 \
-              -i /etc/id_tunnel \
+              -i ${id_tunnel_path} \
               -p ''${port} \
               tunnel@${conf.host}
           done

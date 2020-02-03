@@ -26,6 +26,7 @@ with lib;
   settings.reverse_tunnel = {
     enable = true;
     private_key = ./iso_key/id_tunnel;
+    copy_private_key_to_store = true;
   };
 
   services.mingetty.helpLine = mkForce "";
