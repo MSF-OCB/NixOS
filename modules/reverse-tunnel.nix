@@ -159,7 +159,7 @@ in {
     in {
       tunnel_key_permissions = {
         text = ''
-          for FILE in "/etc/nixos/local/id_tunnel" "/etc/nixos/local/id_tunnel.pub"; do
+          for FILE in "${key_path}" "${key_path}.pub"; do
             if [ -f ''${FILE} ]; then
               chown root:root ''${FILE}
               chmod 0400 ''${FILE}
