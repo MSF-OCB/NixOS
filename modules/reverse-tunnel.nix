@@ -165,7 +165,7 @@ in {
         # Use toString, we do not want to change permissions
         # of files in the nix store, only of the source files, if present.
         text = ''
-          for FILE in "${toString key_path}" "${toString key_path}.pub"; do
+          for FILE in "${toString cfg.private_key}" "${toString cfg.private_key}.pub"; do
             if [ -f ''${FILE} ]; then
               chown root:root ''${FILE}
               chmod 0400 ''${FILE}
