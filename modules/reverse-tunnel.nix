@@ -153,13 +153,17 @@ in {
     };
 
     system.activationScripts = let
+      # Referencing the path directly, causes the file to be copied to the nix store.
+      # By converting the path to a string with toString, we can avoid the file being copied.
       key_path = if cfg.copy_private_key_to_store
                  then "${cfg.private_key}"
                  else "${toString cfg.private_key}";
     in {
       tunnel_key_permissions = {
+        # Use toString, we do not want to change permissions
+        # of files in the nix store, only of the source files, if present.
         text = ''
-          for FILE in "${key_path}" "${key_path}.pub"; do
+          for FILE in "${toString key_path}" "${toString key_path}.pub"; do
             if [ -f ''${FILE} ]; then
               chown root:root ''${FILE}
               chmod 0400 ''${FILE}
