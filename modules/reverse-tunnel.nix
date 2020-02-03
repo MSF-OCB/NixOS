@@ -119,11 +119,11 @@ in {
 
     assertions = [
       {
-        assertion = cfg.enable -> (hasAttr config.networking.hostName cfg.tunnels);
+        assertion = cfg.enable -> hasAttr config.networking.hostName cfg.tunnels;
         message   = "The reverse tunnel service is enabled but this host's host name is not present in the tunnel config (global_settings.nix).";
       }
       {
-        assertion = builtins.pathExists cfg.private_key;
+        assertion = cfg.enable -> builtins.pathExists cfg.private_key;
         message   = "The reverse tunnel key file at ${toString cfg.private_key} does not exist.";
       }
     ];
@@ -152,7 +152,7 @@ in {
       openssh.authorizedKeys.keyFiles = cfg.relay.tunneller.keyFiles;
     };
 
-    system.activationScripts = let
+    system.activationScripts = mkIf cfg.enable (let
       # Referencing the path directly, causes the file to be copied to the nix store.
       # By converting the path to a string with toString, we can avoid the file being copied.
       key_path = if cfg.copy_private_key_to_store
@@ -178,7 +178,7 @@ in {
         '';
         deps = [ "specialfs" "users" ];
       };
-    };
+    });
 
     systemd.services = let
       make_tunnel_service = conf: {
