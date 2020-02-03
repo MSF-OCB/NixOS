@@ -51,14 +51,6 @@ with lib;
     };
 
     system.activationScripts = {
-      tunnel_key_permissions = ''
-        for FILE in "/etc/nixos/local/id_tunnel" "/etc/nixos/local/id_tunnel.pub"; do
-          if [ -f ''${FILE} ]; then
-            chown root:root ''${FILE}
-            chmod 0400 ''${FILE}
-          fi
-        done
-      '';
       settings_link = let
         hostname = config.networking.hostName;
         settings_path = "/etc/nixos/settings.nix";
