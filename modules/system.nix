@@ -16,7 +16,6 @@ with lib;
   options = {
     settings.system.nix_channel = mkOption {
       type = types.str;
-      default = "19.09";
     };
   };
 
