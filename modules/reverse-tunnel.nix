@@ -124,6 +124,8 @@ in {
       }
       {
         assertion = cfg.enable -> builtins.pathExists cfg.private_key;
+        # Referencing the path directly, causes the file to be copied to the nix store.
+        # By converting the path to a string with toString, we can avoid the file being copied.
         message   = "The reverse tunnel key file at ${toString cfg.private_key} does not exist.";
       }
     ];
