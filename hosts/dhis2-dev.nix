@@ -31,11 +31,6 @@
   imports = [
     ../modules/docker-registry.nix
   ];
-  
-  environment.systemPackages = with pkgs; [
-    ansible
-    rsync
-  ];
 
   networking = {
     hostName = "dhis2-dev";
