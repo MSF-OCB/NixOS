@@ -82,6 +82,11 @@ with lib;
     # No fonts needed on a headless system
     fonts.fontconfig.enable = mkForce false;
 
+    # Given that our systems are headless, emergency mode is useless.
+    # We prefer the system to attempt to continue booting so 
+    # that we can hopefully still access it remotely.
+    systemd.enableEmergencyMode = false;
+
     programs = {
       bash.enableCompletion = true;
 
