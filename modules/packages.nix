@@ -43,6 +43,8 @@
     p7zip
     nix-info
     nix-bundle
+    # We need python3 to be able to control the machine using Ansible
+    python3
   ];
 
 }
