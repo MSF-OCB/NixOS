@@ -50,32 +50,36 @@ with lib;
       };
     };
 
-    system = {
-      activationScripts = {
-        settings_link = let
-          hostname = config.networking.hostName;
-          settings_path = "/etc/nixos/settings.nix";
-        in ''
-          if [ $(realpath ${settings_path}) != "/etc/nixos/hosts/${hostname}.nix" ]; then
-            ln --force --symbolic hosts/${hostname}.nix ${settings_path}
-          fi
+    system.activationScripts = {
+      settings_link = let
+        hostname = config.networking.hostName;
+        settings_path = "/etc/nixos/settings.nix";
+      in ''
+        if [ $(realpath ${settings_path}) != "/etc/nixos/hosts/${hostname}.nix" ]; then
+          ln --force --symbolic hosts/${hostname}.nix ${settings_path}
+        fi
+      '';
+      nix_channel_msf = {
+        text = ''
+          # We override the root nix channel with the one defined by settings.system.nix_channel
+          echo "https://nixos.org/channels/nixos-${config.settings.system.nix_channel} nixos" > "/root/.nix-channels"
         '';
-        nix_channel_msf = {
-          text = ''
-            # We override the root nix channel with the one defined by settings.system.nix_channel
-            echo "https://nixos.org/channels/nixos-${config.settings.system.nix_channel} nixos" > "/root/.nix-channels"
-          '';
-          # We overwrite the value set by the default NixOS activation snippet, that snippet should have run first
-          # so that the additional initialisation has been performed.
-          # See /run/current-system/activate for the currently defined snippets.
-          deps = [ "nix" ];
-        };
+        # We overwrite the value set by the default NixOS activation snippet, that snippet should have run first
+        # so that the additional initialisation has been performed.
+        # See /run/current-system/activate for the currently defined snippets.
+        deps = [ "nix" ];
       };
-      userActivationScripts = {
-        cleanup_nixenv = ''
-          ${pkgs.nix}/bin/nix-env -e '.*'
-        '';
-      };
+    };
+
+    systemd.user.services.cleanup_nixenv = {
+      enable = true;
+      description = "Clean up nix-env";
+      unitConfig.ConditionUser = "!@system";
+      serviceConfig.Type = "oneshot";
+      script = ''
+        ${pkgs.nix}/bin/nix-env -e '.*'
+      '';
+      wantedBy = [ "default.target" ];
     };
 
     # No fonts needed on a headless system
