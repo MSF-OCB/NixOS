@@ -6,10 +6,11 @@ set -e
 
 function wait_for_devices() {
   arr=("$@")
+  devs="${arr[@]}"
   all_found=false
-  for countdown in $( seq 60 -1 0 ) ; do
+  for countdown in $( seq 60 -1 0 ); do
     missing=false
-    for dev in "${arr[@]}"; do
+    for dev in devs; do
       if [ ! -b ${dev} ]; then
         missing=true
         echo "waiting for ${dev}... ($countdown)"
@@ -18,6 +19,9 @@ function wait_for_devices() {
     if ${missing}; then
       partprobe
       sleep 1
+      for dev in devs; do
+        udevadm settle --exit-if-exists=${dev}
+      done
     else
       all_found=true
       break;
