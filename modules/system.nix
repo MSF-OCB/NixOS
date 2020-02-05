@@ -42,7 +42,7 @@ with lib;
         fi
       '';
       shellAliases = {
-        nix-env=''printf "The nix-env command has been disabled. Please use nix-run or nix-shell instead." 2> /dev/null'';
+        nix-env = ''printf "The nix-env command has been disabled. Please use nix-run or nix-shell instead." 2> /dev/null'';
         vi = "vim";
         # Have bash resolve aliases with sudo (https://askubuntu.com/questions/22037/aliases-not-available-when-using-sudo)
         sudo = "sudo ";
