@@ -41,9 +41,8 @@
     bind
     dmidecode
     p7zip
-    python3
     nix-info
-    nox
+    nix-bundle
   ];
 
 }

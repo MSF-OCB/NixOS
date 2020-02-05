@@ -38,10 +38,11 @@ with lib;
       # See https://nixos.org/nix/manual/#ssec-values for documentation on escaping ${
       shellInit = ''
         if [ "''${TERM}" != "screen" ] || [ -z "''${TMUX}" ]; then
-          alias nixos-rebuild='printf "Please run nixos-rebuild only from within a tmux session.\c" 2> /dev/null'
+          alias nixos-rebuild='printf "Please run nixos-rebuild only from within a tmux session." 2> /dev/null'
         fi
       '';
       shellAliases = {
+        nix-env=''printf "The nix-env command has been disabled. Please use nix-run or nix-shell instead." 2> /dev/null'';
         vi = "vim";
         # Have bash resolve aliases with sudo (https://askubuntu.com/questions/22037/aliases-not-available-when-using-sudo)
         sudo = "sudo ";
