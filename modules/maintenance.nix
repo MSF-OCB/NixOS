@@ -63,6 +63,20 @@ let cfg = config.system.autoUpgrade; in
     '');
   };
 
+  systemd.services.cleanup_auto_roots = {
+    description = "Automatically clean up nix auto roots";
+    before      = [ "nix-gc.service" ];
+    requiredBy  = [ "nix-gc.service" ];
+    script = ''
+      find /nix/var/nix/gcroots/auto/ -type l -mtime +30 | while read fname; do
+        target=$(readlink ''${fname})
+        if [ -L ''${target} ]; then
+          unlink ''${target}
+        fi
+      done
+    '';
+  };
+
   nix = {
     autoOptimiseStore = true;
     gc = {
