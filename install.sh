@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-NIXOS_RELEASE="19-09"
-
 # To install, run:
 # curl -L https://github.com/msf-ocb/nixos/raw/master/install.sh | sudo bash -s <disk device> <host name> [<root partition size (GB)>]
 
@@ -144,8 +142,6 @@ if [ ${CREATE_DATA_PART} = true ]; then
   chown root:root /mnt/keyfile
   chmod 0600 /mnt/keyfile
 fi
-
-nixos-enter --root /mnt/ -c "sudo nix-channel --add https://nixos.org/channels/nixos-${NIXOS_RELEASE} nixos"
 
 echo -e "\nNixOS installation finished, please reboot using \"sudo systemctl reboot\""
 
