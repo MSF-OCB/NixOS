@@ -12,6 +12,7 @@
 
 let
   cfg = config.settings.boot;
+  modes = { legacy = "legacy"; uefi = "uefi"; none = "none"; };
 in
 
 with lib;
@@ -20,7 +21,7 @@ with lib;
   options = {
     settings.boot = {
       mode = mkOption {
-        type = types.enum [ "legacy" "uefi" "none" ];
+        type = types.enum [ modes.legacy modes.uefi modes.none ];
         description = ''
           Boot in either legacy or UEFI mode.
         '';
@@ -51,41 +52,33 @@ with lib;
 
     loader = let
       mode = cfg.mode;
-      is_none = (mode == "none");
       grub_common = {
         enable = true;
         version = 2;
         memtest86.enable = true;
       };
-    in mkIf (!is_none) (
-      if mode == "legacy"
-      then {
+    in mkIf (mode != modes.none) (mkMerge [
+      (mkIf (mode == modes.legacy) {
         grub = grub_common // {
           efiSupport = false;
           device = cfg.device;
         };
-      }
-      else if mode == "uefi"
-      then {
+      })
+      (mkIf (mode == modes.uefi) {
         grub = grub_common // {
           efiSupport = true;
           efiInstallAsRemovable = true;
           device = "nodev";
         };
         efi.efiSysMountPoint = "/boot/efi";
-      }
-      # This branch is needed because the expr given to mkIf seems to be evaluated eagerly
-      else if is_none
-      then {}
-      else
-        throw "The settings.boot.mode parameter should be set to either \"legacy\", \"uefi\" or \"none\""
-    );
+      })
+    ]);
 
     kernelParams = [
       # Overwrite free'd memory
       #"page_poison=1"
 
-      # Disable legacy virtual syscalls
+      # Disable legacy virtual syscalls, this can cause issues with older Docker images
       #"vsyscall=none"
 
       # Disable hibernation (allows replacing the running kernel)
@@ -108,7 +101,6 @@ with lib;
       # Raise ASLR entropy
       "vm.mmap_rnd_bits" = 32;
     };
-
   };
 }
 
