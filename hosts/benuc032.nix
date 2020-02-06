@@ -30,10 +30,4 @@
       };
     };
   };
-
-  environment.systemPackages = with pkgs; [
-    ansible
-    rsync
-  ];
-
 }
