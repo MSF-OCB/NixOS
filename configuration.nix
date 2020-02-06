@@ -21,21 +21,21 @@ with lib;
   imports = [
     ./hardware-configuration.nix
     ./settings.nix
+    ./modules/auto_shutdown.nix
     ./modules/boot.nix
-    ./modules/system.nix
-    ./modules/global_settings.nix
-    ./modules/packages.nix
-    ./modules/sshd.nix
-    ./modules/reverse-tunnel.nix
-    ./modules/maintenance.nix
-    ./modules/users.nix
-    ./modules/ocb_users.nix
     ./modules/crypto.nix
     ./modules/docker.nix
+    ./modules/global_settings.nix
+    ./modules/maintenance.nix
+    ./modules/ocb_users.nix
+    ./modules/packages.nix
     ./modules/prometheus.nix
-    ./modules/auto_shutdown.nix
-    ./modules/vmware.nix
+    ./modules/reverse-tunnel.nix
+    ./modules/sshd.nix
+    ./modules/system.nix
+    ./modules/users.nix
     ./modules/virtualbox.nix
+    ./modules/vmware.nix
   ];
 
   # We need to force to override the definition in the default AWS config.
