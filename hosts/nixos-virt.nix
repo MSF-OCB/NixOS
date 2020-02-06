@@ -16,11 +16,9 @@
     boot.mode = "uefi";
     reverse_tunnel.enable = false;
     crypto.enable = true;
+    docker.enable = true;
+    virtualbox.enable = true;
   };
-
-  imports = [
-    ../modules/virtualbox-guest.nix
-  ];
 
 }
 
