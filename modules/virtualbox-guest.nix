@@ -8,12 +8,24 @@
 #                                                                      #
 ########################################################################
 
-{
+{ config, lib, ...}:
 
-  virtualisation.virtualbox.guest = {
-    enable = true;
-    x11 = false;
+let
+  cfg = config.settings.virtualbox;
+in
+
+with lib;
+
+{
+  options.settings.virtualbox = {
+    enable = mkEnableOption "the VirtualBox guest services";
   };
 
+  config = mkIf cfg.enable {
+    virtualisation.virtualbox.guest = {
+      enable = true;
+      x11 = false;
+    };
+  };
 }
 

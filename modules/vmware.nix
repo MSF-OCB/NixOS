@@ -32,7 +32,7 @@ with lib;
       headless = true;
     };
 
-    services.timesyncd.servers = mkIf (! cfg.inDMZ) [ "172.16.0.101" ];
+    services.timesyncd.servers = mkIf (!cfg.inDMZ) [ "172.16.0.101" ];
 
     networking.nameservers = if cfg.inDMZ
                              then [ "9.9.9.9" "149.112.112.112" ]
