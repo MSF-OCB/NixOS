@@ -21,7 +21,7 @@ with lib;
   options = {
     settings.boot = {
       mode = mkOption {
-        type = types.enum [ modes.legacy modes.uefi modes.none ];
+        type = types.enum (attrValues modes);
         description = ''
           Boot in either legacy or UEFI mode.
         '';
