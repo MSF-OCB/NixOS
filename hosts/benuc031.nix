@@ -17,16 +17,6 @@
     reverse_tunnel.enable = true;
     crypto.enable = true;
     docker.enable = true;
-    
-    users.users = {
-      "msf-kunduz-ehealthsupport" = {
-        enable      = true;
-        sshAllowed  = true;
-        hasShell    = true;
-        canTunnel   = true;
-        extraGroups = [ "docker" ];
-      };
-    };
   };
 }
 
