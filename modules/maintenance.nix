@@ -12,9 +12,10 @@
 
 with lib;
 
-let cfg = config.system.autoUpgrade; in
-
-{
+let 
+  cfg = config.system.autoUpgrade;
+  rebootWindow = { lower = "01:00"; upper = "05:00"; };
+in {
 
   # We run the upgrade service once at night and once during the day, to catch the situation
   # where the server is turned off every evening.
@@ -31,12 +32,9 @@ let cfg = config.system.autoUpgrade; in
     };
     script = let
       nixos-rebuild = "${config.system.build.nixos-rebuild}/bin/nixos-rebuild";
-      # TODO: add times as module option,
-      # Adjust the upstream calculation of the flags and include the upgradeFlag
       flags = [ "--no-build-output" ] ++
         optionals (cfg.channel != null) [ "-I" "nixpkgs=${cfg.channel}/nixexprs.tar.xz" ];
-      upgradeFlag = optional (cfg.channel == null) "--upgrade";
-      times    = { lower = "01:00"; upper = "05:00"; };
+      upgradeFlag  = optional (cfg.channel == null) "--upgrade";
       date     = "/run/current-system/sw/bin/date";
       readlink = "/run/current-system/sw/bin/readlink";
       shutdown = "/run/current-system/sw/bin/shutdown";
@@ -44,15 +42,13 @@ let cfg = config.system.autoUpgrade; in
       ${nixos-rebuild} boot ${toString (flags ++ upgradeFlag)}
       booted="$(${readlink} /run/booted-system/{initrd,kernel,kernel-modules})"
       built="$(${readlink} /nix/var/nix/profiles/system/{initrd,kernel,kernel-modules})"
-      ${optionalString (times != null) ''
-        lower="$(${date} --date="$(${date} --date='today' +%Y-%m-%d) ${times.lower}" +%s)";
-        upper="$(${date} --date="$(${date} --date='today' +%Y-%m-%d) ${times.upper}" +%s)";
-      ''}
+      ${optionalString (rebootWindow != null) ''current_time="$(${date} +%H:%M)"''}
 
       if [ "$booted" = "$built" ]; then
         ${nixos-rebuild} switch ${toString flags}
-      ${optionalString (times != null) ''
-        elif ([ "$(${date} +%s)" -gt "''${upper}" ] || [ "$(${date} +%s)" -lt "''${lower}" ]); then
+      ${optionalString (rebootWindow != null) ''
+        elif [[ "''${current_time}" < "${rebootWindow.lower}" ]] || \
+             [[ "''${current_time}" > "${rebootWindow.upper}" ]]; then
           echo "Outside of configured reboot window, skipping."
       ''}
       else
