@@ -45,7 +45,7 @@ with lib;
       enableOnBoot = true;
       extraOptions = concatStringsSep " " (
         # Do not break currently running non-encrypted set-ups.
-        (lists.optional config.settings.crypto.enable "--data-root  \"/opt/docker\"") ++
+        (lists.optional config.settings.crypto.enable ''--data-root  "/opt/docker"'') ++
         # Docker internal IP addressing
         # Ranges used: 172.28.0.0/16, 172.29.0.0/16
         #
@@ -61,10 +61,10 @@ with lib;
         # 172.29.0.0/16 in /24 blocks
         #   -> 2^8 (256) networks 172.29.0.0/24 -> 172.29.255.0/24
         [
-          "--bip \"172.28.0.1/18\""
-          "--default-address-pool \"base=172.28.64.0/18,size=24\""
-          "--default-address-pool \"base=172.28.128.0/17,size=24\""
-          "--default-address-pool \"base=172.29.0.0/16,size=24\""
+          ''--bip "172.28.0.1/18"''
+          ''--default-address-pool "base=172.28.64.0/18,size=24"''
+          ''--default-address-pool "base=172.28.128.0/17,size=24"''
+          ''--default-address-pool "base=172.29.0.0/16,size=24"''
         ]
       );
     };
