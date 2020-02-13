@@ -45,61 +45,67 @@ with lib;
     };
   };
 
-  config.boot = {
-    growPartition = true;
-    cleanTmpDir   = true;
-    tmpOnTmpfs    = true;
+  config = {
+    
+    # memtest86-efi has an unfree licence... 
+    nixpkgs.config.allowUnfree = (cfg.mode == modes.uefi);
 
-    loader = let
-      mode = cfg.mode;
-      grub_common = {
-        enable = true;
-        version = 2;
-        memtest86.enable = true;
+    boot = {
+      growPartition = true;
+      cleanTmpDir   = true;
+      tmpOnTmpfs    = true;
+  
+      loader = let
+        mode = cfg.mode;
+        grub_common = {
+          enable = true;
+          version = 2;
+          memtest86.enable = true;
+        };
+      in mkIf (mode != modes.none) (mkMerge [
+        (mkIf (mode == modes.legacy) {
+          grub = grub_common // {
+            efiSupport = false;
+            device = cfg.device;
+          };
+        })
+        (mkIf (mode == modes.uefi) {
+          grub = grub_common // {
+            efiSupport = true;
+            efiInstallAsRemovable = true;
+            device = "nodev";
+          };
+          efi.efiSysMountPoint = "/boot/efi";
+        })
+      ]);
+  
+      kernelParams = [
+        # Overwrite free'd memory
+        #"page_poison=1"
+  
+        # Disable legacy virtual syscalls, this can cause issues with older Docker images
+        #"vsyscall=none"
+  
+        # Disable hibernation (allows replacing the running kernel)
+        "nohibernate"
+      ];
+  
+      kernel.sysctl = {
+        # Prevent replacing the running kernel image w/o reboot
+        "kernel.kexec_load_disabled" = true;
+  
+        # Reboot after 10 min following a kernel panic
+        "kernel.panic" = "10";
+  
+        # Disable bpf() JIT (to eliminate spray attacks)
+        #"net.core.bpf_jit_enable" = mkDefault false;
+  
+        # ... or at least apply some hardening to it
+        "net.core.bpf_jit_harden" = true;
+  
+        # Raise ASLR entropy
+        "vm.mmap_rnd_bits" = 32;
       };
-    in mkIf (mode != modes.none) (mkMerge [
-      (mkIf (mode == modes.legacy) {
-        grub = grub_common // {
-          efiSupport = false;
-          device = cfg.device;
-        };
-      })
-      (mkIf (mode == modes.uefi) {
-        grub = grub_common // {
-          efiSupport = true;
-          efiInstallAsRemovable = true;
-          device = "nodev";
-        };
-        efi.efiSysMountPoint = "/boot/efi";
-      })
-    ]);
-
-    kernelParams = [
-      # Overwrite free'd memory
-      #"page_poison=1"
-
-      # Disable legacy virtual syscalls, this can cause issues with older Docker images
-      #"vsyscall=none"
-
-      # Disable hibernation (allows replacing the running kernel)
-      "nohibernate"
-    ];
-
-    kernel.sysctl = {
-      # Prevent replacing the running kernel image w/o reboot
-      "kernel.kexec_load_disabled" = true;
-
-      # Reboot after 10 min following a kernel panic
-      "kernel.panic" = "10";
-
-      # Disable bpf() JIT (to eliminate spray attacks)
-      #"net.core.bpf_jit_enable" = mkDefault false;
-
-      # ... or at least apply some hardening to it
-      "net.core.bpf_jit_harden" = true;
-
-      # Raise ASLR entropy
-      "vm.mmap_rnd_bits" = 32;
     };
   };
 }

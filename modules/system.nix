@@ -168,7 +168,7 @@ with lib;
       cpu.intel.updateMicrocode = true;
       cpu.amd.updateMicrocode   = true;
     };
-
+  
     documentation = {
       man.enable  = true;
       doc.enable  = false;
