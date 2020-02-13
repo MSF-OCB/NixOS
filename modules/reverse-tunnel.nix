@@ -65,13 +65,13 @@ in {
       enable = mkEnableOption "the reverse tunnel services";
 
       private_key = mkOption {
-        default = ../local/id_tunnel;
         type = types.path;
+        default = ../local/id_tunnel;
       };
 
       copy_private_key_to_store = mkOption {
-        default = false;
         type = types.bool;
+        default = false;
       };
 
       tunnels = mkOption {

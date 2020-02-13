@@ -12,7 +12,6 @@
 
 let
   cfg = config.settings.boot;
-  modes = { legacy = "legacy"; uefi = "uefi"; none = "none"; };
 in
 
 with lib;
@@ -21,26 +20,32 @@ with lib;
   options = {
     settings.boot = {
       mode = mkOption {
-        type = types.enum (attrValues modes);
+        type = types.enum (attrValues cfg.modes);
         description = ''
           Boot in either legacy or UEFI mode.
         '';
       };
 
       device = mkOption {
-        default = "nodev";
         type = types.str;
+        default = "nodev";
         description = ''
           The device to install GRUB to in legacy mode.
         '';
       };
 
       separate_partition = mkOption {
-        default = true;
         type = types.bool;
+        default = true;
         description = ''
           Whether /boot is a separate partition.
         '';
+      };
+
+      modes = mkOption {
+        type = with types; attrsOf str;
+        default = { legacy = "legacy"; uefi = "uefi"; none = "none"; };
+        readOnly = true;
       };
     };
   };
@@ -48,7 +53,7 @@ with lib;
   config = {
     
     # memtest86-efi has an unfree licence... 
-    nixpkgs.config.allowUnfree = (cfg.mode == modes.uefi);
+    nixpkgs.config.allowUnfree = (cfg.mode == cfg.modes.uefi);
 
     boot = {
       growPartition = true;
@@ -62,14 +67,14 @@ with lib;
           version = 2;
           memtest86.enable = true;
         };
-      in mkIf (mode != modes.none) (mkMerge [
-        (mkIf (mode == modes.legacy) {
+      in mkIf (mode != cfg.modes.none) (mkMerge [
+        (mkIf (mode == cfg.modes.legacy) {
           grub = grub_common // {
             efiSupport = false;
             device = cfg.device;
           };
         })
-        (mkIf (mode == modes.uefi) {
+        (mkIf (mode == cfg.modes.uefi) {
           grub = grub_common // {
             efiSupport = true;
             efiInstallAsRemovable = true;
