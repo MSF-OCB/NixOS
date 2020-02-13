@@ -114,12 +114,12 @@ in {
       };
 
       ip_tunnel_port_prefix = mkOption {
-        type = types.ints.between 0 9;
+        type = types.ints.between 0 5;
         default = 1;
       };
 
       prometheus_tunnel_port_prefix = mkOption {
-        type = types.ints.between 0 9;
+        type = types.ints.between 0 5;
         default = 3;
       };
 
