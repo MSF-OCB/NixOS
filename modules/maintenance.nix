@@ -14,8 +14,10 @@ with lib;
 
 let 
   cfg = config.system.autoUpgrade;
-  rebootWindow = { lower = "01:00"; upper = "05:00"; };
 in {
+
+  # https://github.com/NixOS/nixpkgs/pull/77622
+  imports = [ ./nixos-upgrade.nix ];
 
   # We run the upgrade service once at night and once during the day, to catch the situation
   # where the server is turned off every evening.
@@ -23,54 +25,28 @@ in {
   system.autoUpgrade = {
     enable = true;
     allowReboot = true;
+    rebootWindow = { lower = "01:00"; upper = "05:00"; };
     dates = "Mon 03,12:20";
   };
 
-  systemd.services.nixos-upgrade = {
-    serviceConfig = {
+  systemd.services = {
+    nixos-upgrade.serviceConfig = {
       TimeoutStartSec = "2 days";
     };
-    script = let
-      nixos-rebuild = "${config.system.build.nixos-rebuild}/bin/nixos-rebuild";
-      flags = [ "--no-build-output" ] ++
-        optionals (cfg.channel != null) [ "-I" "nixpkgs=${cfg.channel}/nixexprs.tar.xz" ];
-      upgradeFlag  = optional (cfg.channel == null) "--upgrade";
-      date     = "/run/current-system/sw/bin/date";
-      readlink = "/run/current-system/sw/bin/readlink";
-      shutdown = "/run/current-system/sw/bin/shutdown";
-    in mkForce (if cfg.allowReboot then ''
-      ${nixos-rebuild} boot ${toString (flags ++ upgradeFlag)}
-      booted="$(${readlink} /run/booted-system/{initrd,kernel,kernel-modules})"
-      built="$(${readlink} /nix/var/nix/profiles/system/{initrd,kernel,kernel-modules})"
-      ${optionalString (rebootWindow != null) ''current_time="$(${date} +%H:%M)"''}
 
-      if [ "$booted" = "$built" ]; then
-        ${nixos-rebuild} switch ${toString flags}
-      ${optionalString (rebootWindow != null) ''
-        elif [[ "''${current_time}" < "${rebootWindow.lower}" ]] || \
-             [[ "''${current_time}" > "${rebootWindow.upper}" ]]; then
-          echo "Outside of configured reboot window, skipping."
-      ''}
-      else
-        ${shutdown} -r +1
-      fi
-    '' else ''
-      ${nixos-rebuild} switch ${toString (flags ++ upgradeFlag)}
-    '');
-  };
-
-  systemd.services.cleanup_auto_roots = {
-    description = "Automatically clean up nix auto roots";
-    before      = [ "nix-gc.service" ];
-    requiredBy  = [ "nix-gc.service" ];
-    script = ''
-      find /nix/var/nix/gcroots/auto/ -type l -mtime +30 | while read fname; do
-        target=$(readlink ''${fname})
-        if [ -L ''${target} ]; then
-          unlink ''${target}
-        fi
-      done
-    '';
+    cleanup_auto_roots = {
+      description = "Automatically clean up nix auto roots";
+      before      = [ "nix-gc.service" ];
+      requiredBy  = [ "nix-gc.service" ];
+      script = ''
+        find /nix/var/nix/gcroots/auto/ -type l -mtime +30 | while read fname; do
+          target=$(readlink ''${fname})
+          if [ -L ''${target} ]; then
+            unlink ''${target}
+          fi
+        done
+      '';
+    };
   };
 
   nix = {
@@ -81,6 +57,5 @@ in {
       options = "--delete-older-than 30d";
     };
   };
-
 }
 
