@@ -23,9 +23,7 @@ let
 
       remote_forward_port = mkOption {
         type = types.ints.between 0 9999;
-        description = ''
-          The port on the relay servers.
-        '';
+        description = "The port used for this server on the relay servers.";
       };
 
       public_key = mkOption {
@@ -64,14 +62,46 @@ in {
     settings.reverse_tunnel = {
       enable = mkEnableOption "the reverse tunnel services";
 
-      private_key = mkOption {
+      private_key_source = mkOption {
         type = types.path;
         default = ../local/id_tunnel;
+        description = ''
+          The location of the private key file used to establish the reverse tunnels.
+        '';
+      };
+
+      private_key_source_default = mkOption {
+        type = types.str;
+        default = "/etc/nixos/local/id_tunnel";
+        readOnly = true;
+        description = ''
+          Hard-coded value of the default location of the private key file,
+          used in case the location specified at build time is not available
+          at activation time, e.g. when the build was done from within the
+          installer with / mounted on /mnt.
+          This value is only used in the activation script.
+        '';
+      };
+
+      private_key = mkOption {
+        type = types.str;
+        default = "/run/id_tunnel";
+        readOnly = true;
+        description = ''
+          Location to load the private key file for the reverse tunnels from.
+        '';
       };
 
       copy_private_key_to_store = mkOption {
         type = types.bool;
         default = false;
+        description = ''
+          Whether the private key for the tunnels should be copied to
+          the nix store and loaded from there. This should only be used
+          when the location where the key is stored, will not be available
+          during activation time, e.g. when building an ISO image.
+          CAUTION: this means that the private key will be world-readable!
+        '';
       };
 
       tunnels = mkOption {
@@ -113,7 +143,6 @@ in {
   };
 
   config = let
-    id_tunnel_path = "/run/id_tunnel";
     add_port_prefix = prefix: base_port: toString (10000 * prefix + base_port);
   in mkIf (cfg.enable || cfg.relay.enable) {
 
@@ -123,10 +152,10 @@ in {
         message   = "The reverse tunnel service is enabled but this host's host name is not present in the tunnel config (global_settings.nix).";
       }
       {
-        assertion = cfg.enable -> builtins.pathExists cfg.private_key;
+        assertion = cfg.enable -> builtins.pathExists cfg.private_key_source;
         # Referencing the path directly, causes the file to be copied to the nix store.
         # By converting the path to a string with toString, we can avoid the file being copied.
-        message   = "The reverse tunnel key file at ${toString cfg.private_key} does not exist.";
+        message   = "The reverse tunnel key file at ${toString cfg.private_key_source} does not exist.";
       }
     ];
 
@@ -157,15 +186,18 @@ in {
     system.activationScripts = mkIf cfg.enable (let
       # Referencing the path directly, causes the file to be copied to the nix store.
       # By converting the path to a string with toString, we can avoid the file being copied.
-      key_path = if cfg.copy_private_key_to_store
-                 then "${cfg.private_key}"
-                 else "${toString cfg.private_key}";
+      private_key_path = if cfg.copy_private_key_to_store
+                         then "${cfg.private_key_source}"
+                         else "${toString cfg.private_key_source}";
     in {
       tunnel_key_permissions = {
         # Use toString, we do not want to change permissions
         # of files in the nix store, only of the source files, if present.
-        text = ''
-          for FILE in "${toString cfg.private_key}" "${toString cfg.private_key}.pub"; do
+        text = let
+          base_files = [ private_key_path cfg.private_key_source_default];
+          files = concatStringsSep " " (unique (concatMap (f: [ f "${f}.pub" ]) base_files));
+        in ''
+          for FILE in ${files}; do
             if [ -f ''${FILE} ]; then
               chown root:root ''${FILE}
               chmod 0400 ''${FILE}
@@ -175,8 +207,16 @@ in {
         deps = [ "users" ];
       };
       copy_tunnel_key = {
-        text = ''
-          install -o tunnel -g root -m 0400 ${key_path} ${id_tunnel_path}
+        text = let
+          install = source: ''install -o tunnel -g root -m 0400 "${source}" "${cfg.private_key}"'';
+        in ''
+          if [ -f "${private_key_path}" ]; then
+            ${install private_key_path}
+          elif [ -f "${cfg.private_key_source_default}" ]; then
+            ${install cfg.private_key_source_default}
+          else
+            exit 1;
+          fi
         '';
         deps = [ "specialfs" "users" ];
       };
@@ -222,7 +262,7 @@ in {
               -o "ControlMaster=no" \
               -R ${tunnel_port}:localhost:22 \
               -R ${prometheus_port}:localhost:9100 \
-              -i ${id_tunnel_path} \
+              -i ${cfg.private_key} \
               -p ''${port} \
               tunnel@${conf.host}
           done
