@@ -24,6 +24,7 @@
 
   networking = {
     hostName = "benuc013";
+    nameservers = [ "9.9.9.9" "149.112.112.112" ];
     interfaces.enp0s31f6 = {
       useDHCP = false;
       ipv4.addresses = [ { address = "10.210.210.13"; prefixLength = 24; } ];
