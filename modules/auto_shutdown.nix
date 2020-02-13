@@ -12,8 +12,9 @@
 
 with lib;
 
-{
-
+let
+  cfg = config.settings.autoShutdown;
+in {
   options.settings.autoShutdown = {
     enable = mkOption {
       type = types.bool;
@@ -26,9 +27,7 @@ with lib;
     };
   };
 
-  config = let
-    cfg = config.settings.autoShutdown;
-  in mkIf cfg.enable {
+  config = mkIf cfg.enable {
     systemd.services.auto_shutdown = {
       description = "Automatically shut down the server at a fixed time.";
       restartIfChanged = false;
