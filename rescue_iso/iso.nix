@@ -25,7 +25,7 @@ with lib;
 
   settings.reverse_tunnel = {
     enable = true;
-    private_key = ./iso_key/id_tunnel;
+    private_key_source = ./iso_key/id_tunnel;
     copy_private_key_to_store = true;
   };
 
