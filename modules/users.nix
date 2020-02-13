@@ -72,6 +72,7 @@ in {
       ssh-group = mkOption {
         type = types.str;
         default = "ssh-users";
+        readOnly = true;
         description = ''
           Group to tag users who are allowed log in via SSH
           (either for shell or for tunnel access).
@@ -81,6 +82,7 @@ in {
       fwd-tunnel-group = mkOption {
         type = types.str;
         default = "ssh-fwd-tun-users";
+        readOnly = true;
       };
 
     };
