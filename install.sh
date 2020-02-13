@@ -19,7 +19,7 @@ function wait_for_devices() {
     if ${missing}; then
       partprobe
       sleep 1
-      for dev in devs; do
+      for dev in ${devs}; do
         udevadm settle --exit-if-exists=${dev}
       done
     else
