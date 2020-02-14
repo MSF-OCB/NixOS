@@ -23,6 +23,16 @@
     reverse_tunnel.enable = true;
     crypto.enable = true;
     docker.enable = true;
+    
+    users.users = {	
+      "gauthier" = {	
+        enable      = true;	
+        sshAllowed  = true;	
+        hasShell    = true;	
+        canTunnel   = true;	
+        extraGroups = [ "docker" ];	
+      };	
+    };    
   };
 
   systemd = with lib; {
