@@ -41,14 +41,14 @@ with lib;
   # We need to force to override the definition in the default AWS config.
   fileSystems = mkForce {
     "/" = {
-      device = "/dev/disk/by-label/nixos_root";
-      fsType = "ext4";
+      device  = "/dev/disk/by-label/nixos_root";
+      fsType  = "ext4";
       options = [ "defaults" "noatime" "acl" ];
       autoResize = true;
     };
     "/boot" = mkIf config.settings.boot.separate_partition {
-      device = "/dev/disk/by-label/nixos_boot";
-      fsType = "ext4";
+      device  = "/dev/disk/by-label/nixos_boot";
+      fsType  = "ext4";
       options = [ "defaults" "noatime" "nosuid" "nodev" "noexec" ];
       autoResize = true;
     };
@@ -73,6 +73,5 @@ with lib;
   # servers. You should change this only after NixOS release notes say you
   # should.
   system.stateVersion = "18.03"; # Did you read the comment?
-
 }
 

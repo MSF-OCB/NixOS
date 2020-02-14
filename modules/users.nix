@@ -15,9 +15,7 @@ with lib;
 let
 
   userOpts = { name, config, ... }: {
-
     options = {
-
       name = mkOption {
         type = types.str;
       };
@@ -51,9 +49,7 @@ let
         type    = types.bool;
         default = false;
       };
-
     };
-
     config = {
       name = mkDefault name;
     };
@@ -62,7 +58,6 @@ let
 in {
 
   options = {
-
     settings.users = {
       users = mkOption {
         type    = with types; attrsOf (submodule userOpts);
@@ -70,8 +65,8 @@ in {
       };
 
       ssh-group = mkOption {
-        type = types.str;
-        default = "ssh-users";
+        type     = types.str;
+        default  = "ssh-users";
         readOnly = true;
         description = ''
           Group to tag users who are allowed log in via SSH
@@ -80,13 +75,11 @@ in {
       };
 
       fwd-tunnel-group = mkOption {
-        type = types.str;
-        default = "ssh-fwd-tun-users";
+        type     = types.str;
+        default  = "ssh-fwd-tun-users";
         readOnly = true;
       };
-
     };
-
   };
 
   config = let
@@ -119,6 +112,5 @@ in {
       mapAttrsToList (name: _: toKeyPath name)
         (filterAttrs (_: user: user.canTunnel) config.settings.users.users);
   };
-
 }
 

@@ -16,7 +16,7 @@ with lib;
 
   options = {
     settings.docker.enable = mkOption {
-      type = types.bool;
+      type    = types.bool;
       default = false;
     };
   };
