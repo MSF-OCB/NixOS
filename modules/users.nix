@@ -20,10 +20,7 @@ let
         type = types.str;
       };
 
-      enable = mkOption {
-        type    = types.bool;
-        default = false;
-      };
+      enable = mkEnableOption "the user";
 
       sshAllowed = mkOption {
         type    = types.bool;

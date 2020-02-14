@@ -16,10 +16,7 @@ let
   cfg = config.settings.autoShutdown;
 in {
   options.settings.autoShutdown = {
-    enable = mkOption {
-      type    = types.bool;
-      default = false;
-    };
+    enable = mkEnableOption "the auto-shutdown service";
 
     startAt = mkOption {
       type    = with types; either str (listOf str);
