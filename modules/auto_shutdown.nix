@@ -17,18 +17,19 @@ let
 in {
   options.settings.autoShutdown = {
     enable = mkOption {
-      type = types.bool;
+      type    = types.bool;
       default = false;
     };
 
     startAt = mkOption {
-      type  = with types; either str (listOf str);
+      type    = with types; either str (listOf str);
       default = [];
     };
   };
 
   config = mkIf cfg.enable {
     systemd.services.auto_shutdown = {
+      enable = true;
       description = "Automatically shut down the server at a fixed time.";
       restartIfChanged = false;
       unitConfig.X-StopOnRemoval = false;

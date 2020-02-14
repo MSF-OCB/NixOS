@@ -17,20 +17,12 @@ in {
 
   options = {
     settings.crypto = {
-      enable = mkOption {
-        default = false;
-        type = types.bool;
-        description = ''
-          Whether to mount the encrypted data partition.
-        '';
-      };
+      enable = mkEnableOption "the service to mount the encrypted data partition";
 
       device = mkOption {
+        type    = types.str;
         default = "/dev/LVMVolGroup/nixos_data";
-        type = types.str;
-        description = ''
-          The device to mount.
-        '';
+        description = "The device to mount.";
       };
     };
   };
@@ -65,7 +57,6 @@ in {
         dependent_services = (optional config.virtualisation.docker.enable "docker.service") ++
                              (optional config.services.dockerRegistry.enable "docker-registry.service");
       in [
-
         {
           enable = true;
           what   = "/dev/disk/by-label/nixos_data";
@@ -78,7 +69,6 @@ in {
           before     = dependent_services;
           requiredBy = dependent_services;
         }
-
         {
           enable   = true;
           what     = "/opt/.home";
@@ -89,7 +79,6 @@ in {
           requires = [ "opt.mount" ];
           wantedBy = [ "multi-user.target" ];
         }
-
       ];
     };
   };

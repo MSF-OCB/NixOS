@@ -63,7 +63,7 @@ in {
       enable = mkEnableOption "the reverse tunnel services";
 
       private_key_source = mkOption {
-        type = types.path;
+        type    = types.path;
         default = ../local/id_tunnel;
         description = ''
           The location of the private key file used to establish the reverse tunnels.
@@ -71,8 +71,8 @@ in {
       };
 
       private_key_source_default = mkOption {
-        type = types.str;
-        default = "/etc/nixos/local/id_tunnel";
+        type     = types.str;
+        default  = "/etc/nixos/local/id_tunnel";
         readOnly = true;
         description = ''
           Hard-coded value of the default location of the private key file,
@@ -84,8 +84,8 @@ in {
       };
 
       private_key = mkOption {
-        type = types.str;
-        default = "/run/id_tunnel";
+        type     = types.str;
+        default  = "/run/id_tunnel";
         readOnly = true;
         description = ''
           Location to load the private key file for the reverse tunnels from.
@@ -93,7 +93,7 @@ in {
       };
 
       copy_private_key_to_store = mkOption {
-        type = types.bool;
+        type    = types.bool;
         default = false;
         description = ''
           Whether the private key for the tunnels should be copied to
@@ -114,12 +114,12 @@ in {
       };
 
       ip_tunnel_port_prefix = mkOption {
-        type = types.ints.between 0 5;
+        type    = types.ints.between 0 5;
         default = 1;
       };
 
       prometheus_tunnel_port_prefix = mkOption {
-        type = types.ints.between 0 5;
+        type    = types.ints.between 0 5;
         default = 3;
       };
 
@@ -127,13 +127,13 @@ in {
         enable = mkEnableOption "the relay server functionality";
 
         ports = mkOption {
+          type    = with types; listOf (ints.between 0 65535);
           default = [ 22 80 443 ];
-          type = with types; listOf (ints.between 0 65535);
         };
 
         tunneller.keyFiles = mkOption {
+          type    = with types; listOf path;
           default = [ ];
-          type = with types; listOf path;
           description = ''
             The list of key files which are allowed to access the tunneller user to create tunnels.
           '';

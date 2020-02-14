@@ -21,30 +21,24 @@ with lib;
     settings.boot = {
       mode = mkOption {
         type = types.enum (attrValues cfg.modes);
-        description = ''
-          Boot in either legacy or UEFI mode.
-        '';
+        description = "Boot in either legacy or UEFI mode.";
       };
 
       device = mkOption {
-        type = types.str;
+        type    = types.str;
         default = "nodev";
-        description = ''
-          The device to install GRUB to in legacy mode.
-        '';
+        description = "The device to install GRUB to in legacy mode.";
       };
 
       separate_partition = mkOption {
-        type = types.bool;
+        type    = types.bool;
         default = true;
-        description = ''
-          Whether /boot is a separate partition.
-        '';
+        description = "Whether /boot is a separate partition.";
       };
 
       modes = mkOption {
-        type = with types; attrsOf str;
-        default = { legacy = "legacy"; uefi = "uefi"; none = "none"; };
+        type     = with types; attrsOf str;
+        default  = { legacy = "legacy"; uefi = "uefi"; none = "none"; };
         readOnly = true;
       };
     };
@@ -63,7 +57,7 @@ with lib;
       loader = let
         mode = cfg.mode;
         grub_common = {
-          enable = true;
+          enable  = true;
           version = 2;
           memtest86.enable = true;
         };

@@ -21,14 +21,14 @@ with lib;
     enable = mkEnableOption "the VMWare guest services";
 
     inDMZ = mkOption {
-      type = types.bool;
+      type    = types.bool;
       default = false;
     };
   };
 
   config = mkIf cfg.enable {
     virtualisation.vmware.guest = {
-      enable = true;
+      enable   = true;
       headless = true;
     };
 
