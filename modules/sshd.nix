@@ -21,12 +21,12 @@ with lib;
   options = {
     settings = {
       fail2ban.enable = mkOption {
+        type    = types.bool;
         default = !config.settings.sshguard.enable;
-        type = types.bool;
       };
       sshguard.enable = mkOption {
+        type    = types.bool;
         default = true;
-        type = types.bool;
       };
     };
   };

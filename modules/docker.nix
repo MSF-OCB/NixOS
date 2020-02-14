@@ -15,10 +15,7 @@ with lib;
 {
 
   options = {
-    settings.docker.enable = mkOption {
-      type    = types.bool;
-      default = false;
-    };
+    settings.docker.enable = mkEnableOption "the Docker service";
   };
 
   config = mkIf config.settings.docker.enable {
