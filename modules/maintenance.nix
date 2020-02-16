@@ -26,7 +26,8 @@ in {
     enable = true;
     allowReboot = true;
     rebootWindow = { lower = "01:00"; upper = "05:00"; };
-    dates = "Mon 03,12:20";
+    # Run the service at 02:00 during the night and at 12:00 during the day
+    dates = "Mon 02,12:00";
   };
 
   systemd.services = {
