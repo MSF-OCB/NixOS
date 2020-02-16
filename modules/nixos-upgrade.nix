@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
@@ -37,9 +37,9 @@ in {
       script = let
         nixos-rebuild = "${config.system.build.nixos-rebuild}/bin/nixos-rebuild";
         upgradeFlag  = optional (cfg.channel == null) "--upgrade";
-        date     = "/run/current-system/sw/bin/date";
-        readlink = "/run/current-system/sw/bin/readlink";
-        shutdown = "/run/current-system/sw/bin/shutdown";
+        date     = "${pkgs.coreutils}/bin/date";
+        readlink = "${pkgs.coreutils}/bin/readlink";
+        shutdown = "${pkgs.systemd}/bin/shutdown";
       in mkForce (if cfg.allowReboot then ''
         ${nixos-rebuild} boot ${toString (flags ++ upgradeFlag)}
 
