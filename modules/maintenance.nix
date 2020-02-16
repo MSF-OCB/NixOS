@@ -57,10 +57,6 @@ in {
       dates = "Tue 03:00";
       options = "--delete-older-than 30d";
     };
-    optimise = {
-      automatic = true;
-      dates = "Tue 04:00";
-    };
   };
 }
 
