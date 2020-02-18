@@ -17,7 +17,7 @@ function wait_for_devices() {
       fi
     done
     if ${missing}; then
-      partprobe
+      kpartx -a ${DEVICE}
       sleep 1
       for dev in ${devs}; do
         udevadm settle --exit-if-exists=${dev}
