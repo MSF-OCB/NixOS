@@ -160,10 +160,10 @@ in {
     ];
 
     users.extraUsers.tunnel = let
-      prefixes = [ 0 cfg.ip_tunnel_port_prefix cfg.prometheus_tunnel_port_prefix
-                   (cfg.ip_tunnel_port_prefix + cfg.prometheus_tunnel_port_prefix) ];
+      prefixes        = [ 0 cfg.ip_tunnel_port_prefix cfg.prometheus_tunnel_port_prefix
+                          (cfg.ip_tunnel_port_prefix + cfg.prometheus_tunnel_port_prefix) ];
       make_limitation = base_port: prefix: "permitlisten=\"${add_port_prefix prefix base_port}\"";
-      make_port_limitations = tunnel:
+      make_key_config = tunnel:
         "${concatMapStringsSep "," (make_limitation tunnel.remote_forward_port) prefixes} ${tunnel.public_key} tunnel@${tunnel.name}";
     in {
       isNormalUser = false;
@@ -171,7 +171,7 @@ in {
       shell        = pkgs.nologin;
       extraGroups  = mkIf cfg.relay.enable [ config.settings.users.ssh-group ];
       openssh.authorizedKeys.keys = mkIf cfg.relay.enable (
-        naturalSort (mapAttrsToList (_: tunnel: make_port_limitations tunnel) cfg.tunnels));
+        naturalSort (mapAttrsToList (_: tunnel: make_key_config tunnel) cfg.tunnels));
     };
 
     users.extraUsers.tunneller = mkIf cfg.relay.enable {
