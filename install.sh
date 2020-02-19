@@ -96,8 +96,7 @@ mkdir -p /mnt/boot/efi
 mount /dev/disk/by-label/EFI /mnt/boot/efi
 
 rm -rf /mnt/etc/
-nix-env -iA nixos.git
-git clone https://github.com/msf-ocb/nixos.git /mnt/etc/nixos/
+nix-shell -p git --run "git clone https://github.com/msf-ocb/nixos.git /mnt/etc/nixos/"
 nixos-generate-config --root /mnt --no-filesystems
 
 if [ ${CREATE_DATA_PART} = true ]; then
