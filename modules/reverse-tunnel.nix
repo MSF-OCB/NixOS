@@ -169,7 +169,7 @@ in {
       isNormalUser = false;
       isSystemUser = true;
       shell        = pkgs.nologin;
-      extraGroups  = mkIf cfg.relay.enable [ config.settings.users.ssh-group ];
+      extraGroups  = mkIf cfg.relay.enable [ config.settings.users.ssh-group config.settings.users.rev-tunnel-group ];
       openssh.authorizedKeys.keys = mkIf cfg.relay.enable (
         naturalSort (mapAttrsToList (_: tunnel: make_key_config tunnel) cfg.tunnels));
     };

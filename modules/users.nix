@@ -13,6 +13,7 @@
 with lib;
 
 let
+  cfg = config.settings.users;
 
   userOpts = { name, config, ... }: {
     options = {
@@ -76,12 +77,16 @@ in {
         default  = "ssh-fwd-tun-users";
         readOnly = true;
       };
+
+      rev-tunnel-group = mkOption {
+        type     = types.str;
+        default  = "ssh-rev-tun-users";
+        readOnly = true;
+      };
     };
   };
 
   config = let
-    ssh-group = config.settings.users.ssh-group;
-    fwd-tunnel-group = config.settings.users.fwd-tunnel-group;
     toKeyPath = name: ../keys + ("/" + name);
   in {
     users = {
@@ -90,24 +95,25 @@ in {
       # !! This line is very important !!
       # Without it, the ssh-users group is not created
       # and no-one has SSH access to the system!
-      groups."${ssh-group}"        = { };
-      groups."${fwd-tunnel-group}" = { };
+      groups."${cfg.ssh-group}"        = { };
+      groups."${cfg.fwd-tunnel-group}" = { };
+      groups."${cfg.rev-tunnel-group}" = { };
 
       users = mapAttrs (name: user: {
         name         = name;
         isNormalUser = user.hasShell;
         isSystemUser = user.isSystemUser;
         extraGroups  = user.extraGroups ++
-                       (optional (user.sshAllowed || user.canTunnel) ssh-group) ++
-                       (optional user.canTunnel fwd-tunnel-group);
+                       (optional (user.sshAllowed || user.canTunnel) cfg.ssh-group) ++
+                       (optional user.canTunnel cfg.fwd-tunnel-group);
         shell        = mkIf (!user.hasShell) pkgs.nologin;
         openssh.authorizedKeys.keyFiles = [ (toKeyPath name) ];
-      }) (filterAttrs (_: user: user.enable) config.settings.users.users);
+      }) (filterAttrs (_: user: user.enable) cfg.users);
     };
 
     settings.reverse_tunnel.relay.tunneller.keyFiles =
       mapAttrsToList (name: _: toKeyPath name)
-        (filterAttrs (_: user: user.canTunnel) config.settings.users.users);
+        (filterAttrs (_: user: user.canTunnel) cfg.users);
   };
 }
 
