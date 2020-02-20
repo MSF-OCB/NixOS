@@ -63,8 +63,12 @@ with lib;
     useDHCP = true;
     dhcpcd = {
       persistent = true;
+      # Per the manpage, interfaces matching these but also
+      # matching a pattern in denyInterfaces, are still denied
+      allowInterfaces = [ "en*" "wl*" ];
       # See: https://wiki.archlinux.org/index.php/Dhcpcd#dhcpcd_and_systemd_network_interfaces
-      denyInterfaces = [ "eth*" "wlan*" ];
+      # We also ignore veth interfaces and the docker bridge, these are managed by Docker
+      denyInterfaces  = [ "eth*" "wlan*" "veth*" "docker*" ];
     };
   };
 
