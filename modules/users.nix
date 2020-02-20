@@ -62,6 +62,12 @@ in {
         default = [];
       };
 
+      shell-user-group = mkOption {
+        type     = types.str;
+        default  = "shell-users";
+        readOnly = true;
+      };
+
       ssh-group = mkOption {
         type     = types.str;
         default  = "ssh-users";
@@ -98,6 +104,7 @@ in {
       groups."${cfg.ssh-group}"        = { };
       groups."${cfg.fwd-tunnel-group}" = { };
       groups."${cfg.rev-tunnel-group}" = { };
+      groups."${cfg.shell-user-group}" = { };
 
       users = mapAttrs (name: user: {
         name         = name;
@@ -105,7 +112,8 @@ in {
         isSystemUser = user.isSystemUser;
         extraGroups  = user.extraGroups ++
                        (optional (user.sshAllowed || user.canTunnel) cfg.ssh-group) ++
-                       (optional user.canTunnel cfg.fwd-tunnel-group);
+                       (optional user.canTunnel cfg.fwd-tunnel-group) ++
+                       (optional user.hasShell  cfg.shell-user-group);
         shell        = mkIf (!user.hasShell) pkgs.nologin;
         openssh.authorizedKeys.keyFiles = [ (toKeyPath name) ];
       }) (filterAttrs (_: user: user.enable) cfg.users);

@@ -74,7 +74,10 @@ with lib;
     systemd.user.services.cleanup_nixenv = {
       enable = true;
       description = "Clean up nix-env";
-      unitConfig.ConditionUser = "!@system";
+      unitConfig = {
+        ConditionUser  = "!@system";
+        ConditionGroup = config.settings.users.shell-user-group;
+      };
       serviceConfig.Type = "oneshot";
       script = ''
         ${pkgs.nix}/bin/nix-env -e '.*'
