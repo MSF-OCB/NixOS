@@ -19,7 +19,7 @@
     docker.enable = true;
     
     autoShutdown = {
-      enable = true;
+      enable = false;
       startAt = "20:00";
     };
     
