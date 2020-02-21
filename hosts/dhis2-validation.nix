@@ -27,7 +27,7 @@
 
   networking = {
     hostName = "dhis2-validation";
-    interfaces.ens32 = {
+    interfaces.ens160 = {
       useDHCP = false;
       ipv4.addresses = [ { address = "192.168.50.54"; prefixLength = 24; } ];
     };
