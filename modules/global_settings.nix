@@ -211,6 +211,10 @@ with lib;
         remote_forward_port = 7080;
         public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINsm64gHHwzyJ4FbQ+bWtLdEO7Kp5GIC5xXVg24cHMWQ";
       };
+      nas_lab = {
+        remote_forward_port = 7090;
+        public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOwCAHbUQeSnMnAPYV5LzHo89c0JxAo9h5ymlRO0n9Ph";
+      };
       rescue_iso = {
         remote_forward_port = 8000;
         public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDPkVmtj3Jkh/8tLJP+tE0/t3GMWJj6mVQ/PfkF7wIL6";
