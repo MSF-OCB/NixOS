@@ -18,16 +18,15 @@
     reverse_tunnel.enable = true;
     crypto.enable = true;
     docker.enable = true;
-  };
-
-  networking = {
-    hostName = "benuc013";
-    nameservers = [ "9.9.9.9" "149.112.112.112" ];
-    interfaces.enp0s31f6 = {
-      useDHCP = false;
-      ipv4.addresses = [ { address = "10.210.210.13"; prefixLength = 24; } ];
+    network = {
+      host_name = "benuc013";
+      ifaces.enp0s31f6.static = {
+        address = "10.210.210.13";
+        prefix_length = 24;
+        gateway = "10.210.210.254";
+      };
+      nameservers = [ "9.9.9.9" "149.112.112.112" ];
     };
-    defaultGateway.address = "10.210.210.254";
   };
-
 }
+

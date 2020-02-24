@@ -27,6 +27,7 @@ with lib;
     ./modules/docker.nix
     ./modules/global_settings.nix
     ./modules/maintenance.nix
+    ./modules/network.nix
     ./modules/ocb_users.nix
     ./modules/packages.nix
     ./modules/prometheus.nix
@@ -55,20 +56,6 @@ with lib;
     "/boot/efi" = mkIf (config.settings.boot.mode == "uefi") {
       device = "/dev/disk/by-label/EFI";
       fsType = "vfat";
-    };
-  };
-
-  networking = {
-    # All non-manually configured interfaces are configured by DHCP.
-    useDHCP = true;
-    dhcpcd = {
-      persistent = true;
-      # Per the manpage, interfaces matching these but also
-      # matching a pattern in denyInterfaces, are still denied
-      allowInterfaces = [ "en*" "wl*" ];
-      # See: https://wiki.archlinux.org/index.php/Dhcpcd#dhcpcd_and_systemd_network_interfaces
-      # We also ignore veth interfaces and the docker bridge, these are managed by Docker
-      denyInterfaces  = [ "eth*" "wlan*" "veth*" "docker*" ];
     };
   };
 
