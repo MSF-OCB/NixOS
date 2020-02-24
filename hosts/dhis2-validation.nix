@@ -19,19 +19,19 @@
     reverse_tunnel.enable = true;
     vmware.enable = true;
     docker.enable = true;
+    network = {
+      host_name = "benuc013";
+      static_ifaces.ens160 = {
+        address = "192.168.50.54";
+        prefix_length = 24;
+        gateway = "192.168.50.1";
+        fallback = false;
+      };
+    };
     users.users = {
       yusuph.enable = true;
       didier.enable = true;
     };
-  };
-
-  networking = {
-    hostName = "dhis2-validation";
-    interfaces.ens160 = {
-      useDHCP = false;
-      ipv4.addresses = [ { address = "192.168.50.54"; prefixLength = 24; } ];
-    };
-    defaultGateway.address = "192.168.50.1";
   };
 }
 
