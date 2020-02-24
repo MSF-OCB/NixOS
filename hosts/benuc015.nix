@@ -9,10 +9,10 @@
 ########################################################################
 
 {
-  networking.hostName = "benuc015";
   time.timeZone = "Africa/Nord-Kivu";
 
   settings = {
+    network.host_name = "benuc015";
     boot.mode = "uefi";
     reverse_tunnel.enable = true;
     crypto.enable = true;

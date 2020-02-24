@@ -10,10 +10,10 @@
 
 {
 
-  networking.hostName = "sshrelay2";
   time.timeZone = "Europe/Brussels";
 
   settings = {
+    network.host_name = "sshrelay2";
     boot.separate_partition = false;
     reverse_tunnel.relay.enable = true;
   };
