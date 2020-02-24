@@ -8,15 +8,13 @@
 #                                                                      #
 ########################################################################
 
-{ pkgs, ... }:
-
 {
-  networking.hostName = "benuc002";
   time.timeZone = "Europe/Brussels";
 
   settings = {
     boot.mode = "uefi";
     reverse_tunnel.enable = true;
+    network.host_name = "benuc002";
     crypto.enable = true;
     docker.enable = true;
   };

@@ -23,16 +23,15 @@
     };
     vmware.enable = true;
     docker.enable = true;
-  };
-
-  networking = {
-    hostName = "nixos-dev";
-    interfaces.ens32 = {
-      useDHCP = false;
-      ipv4.addresses = [ { address = "172.16.0.75"; prefixLength = 16; } ];
+    network = {
+      host_name = "benuc013";
+      static_ifaces.ens32 = {
+        address = "172.16.0.75";
+        prefix_length = 16;
+        gateway = "172.16.0.100";
+        fallback = false;
+      };
     };
-    defaultGateway.address = "172.16.0.100";
   };
-
 }
 

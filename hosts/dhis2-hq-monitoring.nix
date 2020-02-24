@@ -19,15 +19,15 @@
     reverse_tunnel.enable = true;
     vmware.enable = true;
     docker.enable = true;
-  };
-
-  networking = {
-    hostName = "dhis2-hq-monitoring";
-    interfaces.ens32 = {
-      useDHCP = false;
-      ipv4.addresses = [ { address = "192.168.50.53"; prefixLength = 24; } ];
+    network = {
+      host_name = "benuc013";
+      static_ifaces.ens32 = {
+        address = "192.168.50.53";
+        prefix_length = 24;
+        gateway = "192.168.50.1";
+        fallback = false;
+      };
     };
-    defaultGateway.address = "192.168.50.1";
   };
 }
 

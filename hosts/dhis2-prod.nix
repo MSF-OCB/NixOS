@@ -20,18 +20,18 @@
     vmware.enable = true;
     crypto.enable = false;
     docker.enable = true;
+    network = {
+      host_name = "benuc013";
+      static_ifaces.ens32 = {
+        address = "192.168.50.52";
+        prefix_length = 24;
+        gateway = "192.168.50.1";
+        fallback = false;
+      };
+    };
     users.users = {
       yusuph.enable = true;
     };
-  };
-
-  networking = {
-    hostName = "dhis2-prod";
-    interfaces.ens32 = {
-      useDHCP = false;
-      ipv4.addresses = [ { address = "192.168.50.52"; prefixLength = 24; } ];
-    };
-    defaultGateway.address = "192.168.50.1";
   };
 }
 
