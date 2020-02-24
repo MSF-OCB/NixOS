@@ -8,8 +8,6 @@
 #                                                                      #
 ########################################################################
 
-{ pkgs, ...}:
-
 {
   networking.hostName = "benuc032";
   time.timeZone = "Asia/Kabul";
@@ -21,3 +19,4 @@
     docker.enable = true;
   };
 }
+

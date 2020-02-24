@@ -8,10 +8,7 @@
 #                                                                      #
 ########################################################################
 
-{ pkgs, ...}:
-
 {
-
   networking.hostName = "aws_staging";
   time.timeZone = "Europe/Paris";
 
@@ -23,6 +20,5 @@
   imports = [
     ../modules/aws.nix
   ];
-
 }
 
