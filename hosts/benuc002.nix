@@ -8,8 +8,6 @@
 #                                                                      #
 ########################################################################
 
-{ pkgs, ... }:
-
 {
   networking.hostName = "benuc002";
   time.timeZone = "Europe/Brussels";
