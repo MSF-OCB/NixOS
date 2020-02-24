@@ -17,27 +17,50 @@ let
 
   ifaceOpts = { name, ... }: {
     options = {
-      name = mkOption {
+      enable = mkOption {
+        type    = types.bool;
+        default = true;
+      };
+
+      iface = mkOption {
+        type = types.str;
+        description = ''
+          Interface name, defaults to the name of this entry in the attribute set.
+        '';
+      };
+
+      fallback = mkOption {
+        type    = types.bool;
+        default = true;
+        description = ''
+          Select this static config only as a fallback in case DHCP fails.
+          No DHCP request will be send out when this option is set to false!
+        '';
+      };
+
+      address = mkOption {
         type = types.str;
       };
 
-      static = {
-        address = mkOption {
-          type = types.str;
-        };
+      prefix_length = mkOption {
+        type = types.ints.between 0 32;
+      };
 
-        prefix_length = mkOption {
-          type = types.ints.between 0 32;
-        };
-
-        gateway = mkOption {
-          type = types.str;
-        };
+      gateway = mkOption {
+        type = types.str;
+      };
+      
+      nameservers = mkOption {
+        type    = with types; listOf str;
+        default = [];
+        description = ''
+          DNS servers which will be configured only when this static configuration is selected.
+        '';
       };
     };
 
     config = {
-      name = mkDefault name;
+      iface = mkDefault name;
     };
   };
 in {
@@ -47,16 +70,16 @@ in {
         type = types.str;
       };
 
-      ifaces = mkOption {
-        type    = with types; nullOr (attrsOf (submodule ifaceOpts));
-        default = null;
+      static_ifaces = mkOption {
+        type    = with types; attrsOf (submodule ifaceOpts);
+        default = {};
       };
 
       nameservers = mkOption {
         type    = with types; listOf str;
         default = [];
+        description = "Globally defined DNS servers, in addition to those obtained by DHCP.";
       };
-
     };
   };
 
@@ -73,18 +96,24 @@ in {
         # See: https://wiki.archlinux.org/index.php/Dhcpcd#dhcpcd_and_systemd_network_interfaces
         # We also ignore veth interfaces and the docker bridge, these are managed by Docker
         denyInterfaces  = [ "eth*" "wlan*" "veth*" "docker*" ];
-        extraConfig = concatStringsSep "\n\n" (
-          mapAttrsToList (iface: conf: ''
-            # define static profile
-            profile static_${iface}
-            static ip_address=${conf.static.address}/${toString conf.static.prefix_length}
-            static routers=${conf.static.gateway}
+        extraConfig = let
+          format_name_servers = concatStringsSep " ";
+          make_config = iface: conf: if conf.fallback then ''
+                                       profile static_${iface}
+                                       static ip_address=${conf.address}/${toString conf.prefix_length}
+                                       static routers=${conf.gateway}
+                                       static domain_name_servers=${format_name_servers conf.nameservers}
 
-            # fallback to static profile on ${iface}
-            interface ${iface}
-            fallback static_${iface}
-          '') cfg.ifaces
-        );
+                                       # fallback to static profile on ${iface}
+                                       interface ${iface}
+                                       fallback static_${iface}
+                                     '' else ''
+                                       interface ${iface}
+                                       static ip_address=${conf.address}/${toString conf.prefix_length} 
+                                       static routers=${conf.gateway}
+                                       static domain_name_servers=${format_name_servers conf.nameservers}
+                                     '';
+        in concatStringsSep "\n\n" (mapAttrsToList make_config (filterAttrs (_: conf: conf.enable) cfg.static_ifaces));
       };
       nameservers = cfg.nameservers;
     };
