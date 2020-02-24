@@ -22,8 +22,8 @@ with lib;
   services.timesyncd.servers = config.networking.timeServers;
   
   networking.dhcpcd = {
-    denyInterfaces  = mkForce [ veth* docker* ];
-    allowInterfaces = mkForce [ en* eth* ];
+    denyInterfaces  = mkForce [ "veth*" "docker*" ];
+    allowInterfaces = mkForce [ "en*" "eth*" ];
   };
 }
 
