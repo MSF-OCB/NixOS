@@ -9,10 +9,10 @@
 ########################################################################
 
 {
-  networking.hostName = "benuc025";
   time.timeZone = "Africa/Freetown";
 
   settings = {
+    network.host_name = "benuc025";
     boot = {
       mode = "legacy";
       device = "/dev/disk/by-id/wwn-0x502b2a201d1c1b1a";

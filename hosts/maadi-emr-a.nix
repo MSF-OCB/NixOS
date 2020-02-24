@@ -10,10 +10,10 @@
 
 {
 
-  networking.hostName = "maadi-emr-a";
   time.timeZone = "Africa/Cairo";
 
   settings = {
+    network.host_name = "maadi-emr-a";
     boot = {
       mode = "legacy";
       device = "/dev/disk/by-id/wwn-0x5000c50093627fae";

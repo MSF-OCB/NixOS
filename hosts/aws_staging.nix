@@ -12,10 +12,10 @@
 
 {
 
-  networking.hostName = "aws_staging";
   time.timeZone = "Europe/Paris";
 
   settings = {
+    network.host_name = "aws_staging";
     reverse_tunnel.enable = true;
     docker.enable = true;
   };

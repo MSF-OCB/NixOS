@@ -12,10 +12,10 @@
 
 {
 
-  networking.hostName = "chk-emr-a";
   time.timeZone = "Africa/Kinshasa";
 
   settings = {
+    network.host_name = "chk-emr-a";
     boot = {
       mode = "legacy";
       device = "/dev/disk/by-id/wwn-0x5000c500935b35ec";
