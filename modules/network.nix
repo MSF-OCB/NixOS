@@ -62,7 +62,7 @@ in {
 
   config = {
     networking = {
-      hostName = cfg.hostName;
+      hostName = cfg.host_name;
       # All non-manually configured interfaces are configured by DHCP.
       useDHCP = true;
       dhcpcd = {
