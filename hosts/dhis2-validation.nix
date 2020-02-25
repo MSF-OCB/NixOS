@@ -20,7 +20,7 @@
     vmware.enable = true;
     docker.enable = true;
     network = {
-      host_name = "benuc013";
+      host_name = "dhis2-validation";
       static_ifaces.ens160 = {
         address = "192.168.50.54";
         prefix_length = 24;

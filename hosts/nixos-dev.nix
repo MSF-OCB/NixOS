@@ -21,7 +21,7 @@
     vmware.enable = true;
     docker.enable = true;
     network = {
-      host_name = "benuc013";
+      host_name = "nixos-dev";
       static_ifaces.ens32 = {
         address = "172.16.0.75";
         prefix_length = 16;
