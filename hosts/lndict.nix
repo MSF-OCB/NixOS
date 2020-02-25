@@ -21,7 +21,7 @@
     vmware.enable = true;
     docker.enable = true;
     network = {
-      host_name = "sshrelay1";
+      host_name = "lndict";
       static_ifaces.ens160 = {
         address = "192.168.50.157";
         prefix_length = 24;
