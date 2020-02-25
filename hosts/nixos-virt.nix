@@ -9,10 +9,10 @@
 
 {
 
-  networking.hostName = "nixos-virt";
   time.timeZone = "Europe/Brussels";
 
   settings = {
+    network.host_name = "nixos-virt";
     boot.mode = "uefi";
     reverse_tunnel.enable = false;
     crypto.enable = true;

@@ -20,6 +20,15 @@
     vmware.enable = true;
     crypto.enable = true;
     docker.enable = true;
+    network = {
+      host_name = "dhis2-dev";
+      static_ifaces.ens32 = {
+        address = "192.168.50.37";
+        prefix_length = 24;
+        gateway = "192.168.50.1";
+        fallback = false;
+      };
+    };
     users.users = {
       xavier.enable = true;
       yusuph.enable = true;
@@ -29,14 +38,5 @@
   imports = [
     ../modules/docker-registry.nix
   ];
-
-  networking = {
-    hostName = "dhis2-dev";
-    interfaces.ens32 = {
-      useDHCP = false;
-      ipv4.addresses = [ { address = "192.168.50.37"; prefixLength = 24; } ];
-    };
-    defaultGateway.address = "192.168.50.1";
-  };
 }
 
