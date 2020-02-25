@@ -10,10 +10,10 @@
 
 {
 
-  networking.hostName = "benuc014";
   time.timeZone = "America/Port-au-Prince";
 
   settings = {
+    network.host_name = "benuc014";
     boot = {
       mode = "legacy";
       device = "/dev/disk/by-id/wwn-0x502b2a201d1c1b1a";

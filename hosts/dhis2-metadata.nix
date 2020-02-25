@@ -19,18 +19,18 @@
     reverse_tunnel.enable = true;
     vmware.enable = true;
     docker.enable = true;
+    network = {
+      host_name = "dhis2-metadata";
+      static_ifaces.ens32 = {
+        address = "192.168.50.38";
+        prefix_length = 24;
+        gateway = "192.168.50.1";
+        fallback = false;
+      };
+    };
     users.users = {
       yusuph.enable = true;
     };
-  };
-
-  networking = {
-    hostName = "dhis2-metadata";
-    interfaces.ens32 = {
-      useDHCP = false;
-      ipv4.addresses = [ { address = "192.168.50.38"; prefixLength = 24; } ];
-    };
-    defaultGateway.address = "192.168.50.1";
   };
 }
 

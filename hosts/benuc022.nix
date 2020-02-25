@@ -10,10 +10,10 @@
 
 {
 
-  networking.hostName = "benuc022";
   time.timeZone = "Africa/Cairo";
 
   settings = {
+    network.host_name = "benuc022";
     boot = {
       mode = "legacy";
       device = "/dev/disk/by-id/ata-DGM28-A28D81BCBQC-27_20180223AA1724144410";

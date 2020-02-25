@@ -11,10 +11,10 @@
 { config, lib, ... }:
 
 {
-  networking.hostName = "benuc036";
   time.timeZone = "Africa/Kinshasa";
 
   settings = {
+    network.host_name = "benuc036";
     boot.mode = "uefi";
     reverse_tunnel.enable = true;
     crypto.enable = true;

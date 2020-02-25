@@ -22,15 +22,15 @@
       inDMZ = true;
     };
     reverse_tunnel.relay.enable = true;
-  };
-
-  networking = {
-    hostName = "sshrelay1";
-    interfaces.ens160 = {
-      useDHCP = false;
-      ipv4.addresses = [ { address = "192.168.50.143"; prefixLength = 24; } ];
+    network = {
+      host_name = "sshrelay1";
+      static_ifaces.ens160 = {
+        address = "192.168.50.143";
+        prefix_length = 24;
+        gateway = "192.168.50.1";
+        fallback = false;
+      };
     };
-    defaultGateway.address = "192.168.50.1";
   };
 }
 
