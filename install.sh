@@ -35,7 +35,7 @@ function wait_for_devices() {
 
 DEVICE="$1"
 TARGET_HOSTNAME="$2"
-ROOT_SIZE="${3:-30}"
+ROOT_SIZE="${3:-25}"
 
 if [ -z ${CREATE_DATA_PART} ]; then
   CREATE_DATA_PART=true
