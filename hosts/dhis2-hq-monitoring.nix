@@ -20,7 +20,7 @@
     vmware.enable = true;
     docker.enable = true;
     network = {
-      host_name = "benuc013";
+      host_name = "dhis2-hq-monitoring";
       static_ifaces.ens32 = {
         address = "192.168.50.53";
         prefix_length = 24;

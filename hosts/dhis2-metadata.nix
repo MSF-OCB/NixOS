@@ -20,7 +20,7 @@
     vmware.enable = true;
     docker.enable = true;
     network = {
-      host_name = "benuc013";
+      host_name = "dhis2-metadata";
       static_ifaces.ens32 = {
         address = "192.168.50.38";
         prefix_length = 24;
