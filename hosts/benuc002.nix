@@ -12,9 +12,9 @@
   time.timeZone = "Europe/Brussels";
 
   settings = {
+    network.host_name = "benuc002";
     boot.mode = "uefi";
     reverse_tunnel.enable = true;
-    network.host_name = "benuc002";
     crypto.enable = true;
     docker.enable = true;
   };
