@@ -22,7 +22,7 @@
     docker.enable = true;
     network = {
       host_name = "nixos-dev";
-      static_ifaces.ens32 = {
+      static_ifaces.ens160 = {
         address = "172.16.0.75";
         prefix_length = 16;
         gateway = "172.16.0.100";
