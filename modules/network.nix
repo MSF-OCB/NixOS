@@ -85,7 +85,7 @@ in {
 
   config = {
     networking = {
-      hostName = cfg.host_name;
+      hostName = mkForce cfg.host_name;
       # All non-manually configured interfaces are configured by DHCP.
       useDHCP = true;
       dhcpcd = {
