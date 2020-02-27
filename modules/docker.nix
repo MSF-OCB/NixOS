@@ -42,7 +42,7 @@ with lib;
       enableOnBoot = true;
       extraOptions = concatStringsSep " " (
         # Do not break currently running non-encrypted set-ups.
-        (lists.optional config.settings.crypto.enable ''--data-root  "/opt/docker"'') ++
+        (optional config.settings.crypto.enable ''--data-root  "/opt/docker"'') ++
         # Docker internal IP addressing
         # Ranges used: 172.28.0.0/16, 172.29.0.0/16
         #
