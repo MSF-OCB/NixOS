@@ -33,6 +33,8 @@ function wait_for_devices() {
   fi
 }
 
+CONFIG_REPO="https://github.com/msf-ocb/nixos.git"
+
 DEVICE="$1"
 TARGET_HOSTNAME="$2"
 ROOT_SIZE="${3:-25}"
@@ -57,51 +59,56 @@ if [ "${ROOT_SIZE}" -gt $(($(blockdev --getsize64 "${DEVICE}")/1024/1024/1024 - 
   exit 1
 fi
 
-MP=$(mountpoint -q /mnt/; echo $?) || true
+MP=$(mountpoint --quiet /mnt/; echo $?) || true
 if [ "${MP}" -eq 0 ]; then
   echo "/mnt/ is mounted, unmount first!"
   exit 1
 fi
 
 cryptsetup close nixos_data_decrypted || true
-vgremove -f LVMVolGroup || true
+vgremove --force LVMVolGroup || true
 pvremove /dev/disk/by-partlabel/nixos_lvm || true
 
-sgdisk -og "${DEVICE}"
-sgdisk -n 1:2048:+512M -c 1:"efi" -t 1:ef00 "${DEVICE}"
-sgdisk -n 2:0:+512M -c 2:"nixos_boot" -t 2:8300 "${DEVICE}"
-sgdisk -n 3:0:0 -c 3:"nixos_lvm" -t 3:8e00 "${DEVICE}"
-sgdisk -p "${DEVICE}"
+# Using zeroes for the start and end sectors, selects the default values, i.e.:
+#   the next unallocated sector for the start value
+#   the last sector of the device for the end value
+sgdisk --clear --mbrtogpt "${DEVICE}"
+sgdisk --new=1:2048:+512M --change-name=1:"efi"        --typecode=1:ef00 "${DEVICE}"
+sgdisk --new=2:0:+512M    --change-name=2:"nixos_boot" --typecode=2:8300 "${DEVICE}"
+sgdisk --new=3:0:0        --change-name=3:"nixos_lvm"  --typecode=3:8e00 "${DEVICE}"
+sgdisk --print "${DEVICE}"
 
 wait_for_devices "/dev/disk/by-partlabel/efi" "/dev/disk/by-partlabel/nixos_boot" "/dev/disk/by-partlabel/nixos_lvm"
 
 pvcreate /dev/disk/by-partlabel/nixos_lvm
 vgcreate LVMVolGroup /dev/disk/by-partlabel/nixos_lvm
 
-lvcreate --yes -L "${ROOT_SIZE}"GB -n nixos_root LVMVolGroup
+lvcreate --yes --size "${ROOT_SIZE}"GB --name nixos_root LVMVolGroup
 wait_for_devices "/dev/LVMVolGroup/nixos_root"
 
-wipefs -a /dev/disk/by-partlabel/efi
+wipefs --all /dev/disk/by-partlabel/efi
 mkfs.vfat -n EFI -F32 /dev/disk/by-partlabel/efi
-wipefs -a /dev/disk/by-partlabel/nixos_boot
+wipefs --all /dev/disk/by-partlabel/nixos_boot
 mkfs.ext4 -e remount-ro -L nixos_boot /dev/disk/by-partlabel/nixos_boot
 mkfs.ext4 -e remount-ro -L nixos_root /dev/LVMVolGroup/nixos_root
 
 wait_for_devices "/dev/disk/by-label/EFI" "/dev/disk/by-label/nixos_boot" "/dev/disk/by-label/nixos_root"
 
 mount /dev/disk/by-label/nixos_root /mnt
-mkdir -p /mnt/boot
+mkdir --parents /mnt/boot
 mount /dev/disk/by-label/nixos_boot /mnt/boot
-mkdir -p /mnt/boot/efi
+mkdir --parents /mnt/boot/efi
 mount /dev/disk/by-label/EFI /mnt/boot/efi
 
-rm -rf /mnt/etc/
-nix-shell -p git --run "git clone https://github.com/msf-ocb/nixos.git /mnt/etc/nixos/"
+rm --recursive --force /mnt/etc/
+nix-shell --packages git --run "git clone ${CONFIG_REPO} /mnt/etc/nixos/"
 nixos-generate-config --root /mnt --no-filesystems
+ln --symbolic hosts/"${TARGET_HOSTNAME}".nix /mnt/etc/nixos/settings.nix
+ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${TARGET_HOSTNAME}" -f /mnt/etc/nixos/local/id_tunnel
 
 if [ ${CREATE_DATA_PART} = true ]; then
   # Do this only after generating the hardware config
-  lvcreate --yes -l 100%FREE -n nixos_data LVMVolGroup
+  lvcreate --yes --extents 100%FREE --name nixos_data LVMVolGroup
   wait_for_devices "/dev/LVMVolGroup/nixos_data"
 
   dd bs=512 count=4 if=/dev/urandom of=/tmp/keyfile
@@ -123,16 +130,12 @@ if [ ${CREATE_DATA_PART} = true ]; then
 
   wait_for_devices "/dev/disk/by-label/nixos_data"
 
-  mkdir -p /mnt/opt
+  mkdir --parents /mnt/opt
   mount /dev/disk/by-label/nixos_data /mnt/opt
-  mkdir -p /mnt/home
-  mkdir -p /mnt/opt/.home
-  mount -o bind /mnt/opt/.home /mnt/home
+  mkdir --parents /mnt/home
+  mkdir --parents /mnt/opt/.home
+  mount --bind /mnt/opt/.home /mnt/home
 fi
-
-ln -s hosts/"${TARGET_HOSTNAME}".nix /mnt/etc/nixos/settings.nix
-
-ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${TARGET_HOSTNAME}" -f /mnt/etc/nixos/local/id_tunnel
 
 nixos-install --no-root-passwd --max-jobs 4
 
