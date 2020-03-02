@@ -21,7 +21,7 @@
     docker.enable = true;
     network = {
       host_name = "dhis2-metadata";
-      static_ifaces.ens32 = {
+      static_ifaces.ens160 = {
         address = "192.168.50.38";
         prefix_length = 24;
         gateway = "192.168.50.1";
