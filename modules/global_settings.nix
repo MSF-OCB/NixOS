@@ -215,6 +215,10 @@ with lib;
         remote_forward_port = 7090;
         public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOwCAHbUQeSnMnAPYV5LzHo89c0JxAo9h5ymlRO0n9Ph";
       };
+      docker-dmz-1 = {
+        remote_forward_port = 7100;
+        public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICGJiqyc8QDf1Yr0bb1bUJVLAqw1bMSZhkQyWasMpTtr";
+      };    
       rescue_iso = {
         remote_forward_port = 8000;
         public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDPkVmtj3Jkh/8tLJP+tE0/t3GMWJj6mVQ/PfkF7wIL6";
