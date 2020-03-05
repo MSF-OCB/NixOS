@@ -15,7 +15,10 @@
     boot.mode = "uefi";
     reverse_tunnel.enable = false;
     crypto.enable = true;
-    vmware.enable = true;
+    vmware = {
+      enable = true;
+      inDMZ = true;
+    };
     docker.enable = true;
     network = {
       host_name = "docker-dmz-1";
