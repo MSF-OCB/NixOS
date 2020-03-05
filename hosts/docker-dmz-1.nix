@@ -13,7 +13,7 @@
 
   settings = {
     boot.mode = "uefi";
-    reverse_tunnel.enable = true;
+    reverse_tunnel.enable = false;
     crypto.enable = true;
     vmware.enable = true;
     docker.enable = true;
