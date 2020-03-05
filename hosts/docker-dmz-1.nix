@@ -13,7 +13,7 @@
 
   settings = {
     boot.mode = "uefi";
-    reverse_tunnel.enable = false;
+    reverse_tunnel.enable = true;
     crypto.enable = true;
     vmware = {
       enable = true;
