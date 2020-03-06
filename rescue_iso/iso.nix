@@ -23,7 +23,7 @@ with lib;
   systemd.services.sshd.wantedBy = mkOverride 10 [ "multi-user.target" ];
 
   settings = {
-    network.host_name = "rescue_iso";
+    network.host_name = "rescue-iso";
     reverse_tunnel = {
       enable = true;
       private_key_source = ./iso_key/id_tunnel;
