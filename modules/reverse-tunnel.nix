@@ -11,6 +11,7 @@
 { config, pkgs, lib, ... }:
 
 with lib;
+with (import ../msf_lib.nix { inherit lib; });
 
 let
   cfg = config.settings.reverse_tunnel;
@@ -18,7 +19,7 @@ let
   tunnelOpts = { name, ... }: {
     options = {
       name = mkOption {
-        type = types.str;
+        type = msf_lib.host_name_type;
       };
 
       remote_forward_port = mkOption {

@@ -11,6 +11,7 @@
 { config, lib, ...}:
 
 with lib;
+with (import ../msf_lib.nix { inherit lib; });
 
 let
   cfg = config.settings.network;
@@ -67,7 +68,7 @@ in {
   options = {
     settings.network = {
       host_name = mkOption {
-        type = types.str;
+        type = msf_lib.host_name_type;
       };
 
       static_ifaces = mkOption {
