@@ -7,14 +7,14 @@ with lib;
   imports = [
     <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix>
     <nixpkgs/nixos/modules/installer/cd-dvd/channel.nix>
-    ../modules/system.nix
-    ../modules/network.nix
     ../modules/global_settings.nix
-    ../modules/packages.nix
-    ../modules/sshd.nix
-    ../modules/reverse-tunnel.nix
-    ../modules/users.nix
+    ../modules/network.nix
     ../modules/ocb_users.nix
+    ../modules/packages.nix
+    ../modules/reverse-tunnel.nix
+    ../modules/sshd.nix
+    ../modules/system.nix
+    ../modules/users.nix
   ];
 
   # The live disc overrides SSHd's wantedBy property to an empty value
