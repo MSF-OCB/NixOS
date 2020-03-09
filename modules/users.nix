@@ -93,7 +93,7 @@ in {
   };
 
   config = let
-    toKeyPath = name: ../keys + ("/" + name);
+    toKeyPath = name: ../org-spec/keys + ("/" + name);
   in {
     users = {
       mutableUsers = false;
