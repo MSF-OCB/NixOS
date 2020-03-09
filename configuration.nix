@@ -57,7 +57,12 @@ with lib;
       hostname = config.networking.hostName;
       settings_path = "/etc/nixos/settings.nix";
     in ''
-      if [ $(realpath ${settings_path}) != "/etc/nixos/org-spec/hosts/${hostname}.nix" ]; then
+      if [ -f ${settings_path} ] && [ ! -L ${settings_path} ]; then
+        rm --force ${settings_path}
+      fi
+      if [ ! -f ${settings_path} ] || \
+         [ "$(dirname $(readlink ${settings_path}))" = "hosts" ] || \
+         [ "$(realpath ${settings_path})" != "/etc/nixos/org-spec/hosts/${hostname}.nix" ]; then
         ln --force --symbolic /etc/nixos/org-spec/hosts/${hostname}.nix ${settings_path}
       fi
     '';
