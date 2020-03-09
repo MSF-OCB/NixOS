@@ -1,4 +1,5 @@
 settings.nix
 hardware-configuration.nix
 result
+*.swp
 
