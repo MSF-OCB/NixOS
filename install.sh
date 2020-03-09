@@ -103,7 +103,7 @@ mount /dev/disk/by-label/EFI /mnt/boot/efi
 rm --recursive --force /mnt/etc/
 nix-shell --packages git --run "git clone ${CONFIG_REPO} /mnt/etc/nixos/"
 nixos-generate-config --root /mnt --no-filesystems
-ln --symbolic hosts/"${TARGET_HOSTNAME}".nix /mnt/etc/nixos/settings.nix
+ln --symbolic org-spec/hosts/"${TARGET_HOSTNAME}".nix /mnt/etc/nixos/settings.nix
 ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${TARGET_HOSTNAME}" -f /mnt/etc/nixos/local/id_tunnel
 
 if [ ${CREATE_DATA_PART} = true ]; then
