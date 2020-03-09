@@ -25,6 +25,8 @@ with lib;
     #   * followed by an upper or lower case ascii character or a digit
     host_name_type =
       types.strMatching "^[[:upper:][:lower:]][-[:upper:][:lower:][:digit:]]*[[:upper:][:lower:][:digit:]]$";
+
+    importIfExists = path: optional (builtins.pathExists path) path;
   };
 
 }

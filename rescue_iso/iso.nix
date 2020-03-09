@@ -7,14 +7,7 @@ with lib;
   imports = [
     <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix>
     <nixpkgs/nixos/modules/installer/cd-dvd/channel.nix>
-    ../modules/global_settings.nix
-    ../modules/network.nix
-    ../modules/ocb_users.nix
-    ../modules/packages.nix
-    ../modules/reverse-tunnel.nix
-    ../modules/sshd.nix
-    ../modules/system.nix
-    ../modules/users.nix
+    ../modules/imports.nix
   ];
 
   # The live disc overrides SSHd's wantedBy property to an empty value
@@ -26,15 +19,15 @@ with lib;
     network.host_name = "rescue-iso";
     reverse_tunnel = {
       enable = true;
-      private_key_source = ./iso_key/id_tunnel;
+      private_key_source = ../local/id_tunnel_iso;
       copy_private_key_to_store = true;
     };
   };
 
   services.mingetty.helpLine = mkForce "";
 
-  documentation.enable = mkOverride 10 false;
-  documentation.nixos.enable = mkOverride 10 false;
+  documentation.enable            = mkOverride 10 false;
+  documentation.nixos.enable      = mkOverride 10 false;
   services.nixosManual.showManual = mkOverride 10 false;
 
   isoImage = {

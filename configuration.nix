@@ -19,22 +19,15 @@ with lib;
 {
 
   imports = [
+    ./modules/imports.nix
     ./hardware-configuration.nix
     ./settings.nix
     ./modules/auto_shutdown.nix
     ./modules/boot.nix
     ./modules/crypto.nix
     ./modules/docker.nix
-    ./modules/global_settings.nix
     ./modules/maintenance.nix
-    ./modules/network.nix
-    ./modules/ocb_users.nix
-    ./modules/packages.nix
     ./modules/prometheus.nix
-    ./modules/reverse-tunnel.nix
-    ./modules/sshd.nix
-    ./modules/system.nix
-    ./modules/users.nix
     ./modules/virtualbox.nix
     ./modules/vmware.nix
   ];
@@ -57,6 +50,17 @@ with lib;
       device = "/dev/disk/by-label/EFI";
       fsType = "vfat";
     };
+  };
+
+  system.activationScripts = {
+    settings_link = let
+      hostname = config.networking.hostName;
+      settings_path = "/etc/nixos/settings.nix";
+    in ''
+      if [ $(realpath ${settings_path}) != "/etc/nixos/org-spec/hosts/${hostname}.nix" ]; then
+        ln --force --symbolic /etc/nixos/org-spec/hosts/${hostname}.nix ${settings_path}
+      fi
+    '';
   };
 
   # This value determines the NixOS release with which your system is to be
