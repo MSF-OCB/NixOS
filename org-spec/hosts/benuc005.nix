@@ -13,10 +13,7 @@
 
   settings = {
     network.host_name = "benuc005";
-    boot = {
-      mode = "legacy";                                                                                                                            │···························
-      device = "/dev/disk/by-id/ata-TS128GSSD420I_D675520211";
-    };
+    boot.mode = "uefi";
     reverse_tunnel.enable = true;
     crypto.enable = false;
     docker.enable = true;
