@@ -13,10 +13,7 @@
 
   settings = {
     network.host_name = "benuc005";
-    boot = {
-      mode = "legacy";
-      device = "/dev/sda";
-    };
+    boot.mode = "uefi";
     reverse_tunnel.enable = true;
     crypto.enable = true;
     docker.enable = true;
