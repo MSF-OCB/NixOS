@@ -32,7 +32,7 @@
       };
       benuc005 = {
         remote_forward_port = 6005;
-        public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJxt18koEBA5UH3vHTOob6fSJpMMH5ZwXnAFs0qc03DU";
+        public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFBZYkWxsw65JIMWQh305cSN7T0MAxh6STvnGZS398Yr";
       };
       benuc006 = {
         remote_forward_port = 6006;
