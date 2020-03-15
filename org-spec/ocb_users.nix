@@ -27,20 +27,19 @@
 
   in {
 
-    marco    = admin;
     mohammad = admin;
     ramses   = admin;
     thierry  = admin;
     xavier   = admin;
     yves     = admin;
 
+    marco    = tunnelOnly;
     damien   = tunnelOnly;
     didier   = tunnelOnly;
     dirk     = tunnelOnly;
     godfried = tunnelOnly;
     joana    = tunnelOnly;
     kathy    = tunnelOnly;
-    pasquale = tunnelOnly;
     vini     = tunnelOnly;
     yusuph   = tunnelOnly // {
       hasShell = true;
