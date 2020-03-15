@@ -9,15 +9,25 @@
 ########################################################################
 
 {
-  time.timeZone = "Europe/Brussels";
+  time.timeZone = "Africa/Bujumbura";
 
   settings = {
     network.host_name = "benuc005";
-    boot.mode = "uefi";
+    boot = {
+      mode = "legacy";
+      device = "/dev/sda";
+    };
     reverse_tunnel.enable = true;
     crypto.enable = true;
     docker.enable = true;
   };
+
+  # Select internationalisation properties.
+   i18n = {
+     consoleFont = "Lat2-Terminus16";
+     consoleKeyMap = "be-latin1";
+     defaultLocale = "en_US.UTF-8";
+   };
 
 }
 
