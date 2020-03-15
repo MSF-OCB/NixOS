@@ -25,7 +25,7 @@
   };
 
   imports = [
-    ../modules/kobofix.nix
+    ../../modules/kobofix.nix
   ];
 
 }
