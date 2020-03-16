@@ -53,6 +53,14 @@ if [ $EUID -ne 0 ]; then
   exit 1
 fi
 
+if [ ! -d "/sys/firmware/efi" ]; then
+  echo "ERROR: this installer only works on systems booted using UEFI firmware but we are currently in legacy mode."
+  echo "Please check:"
+  echo "  1. That your BIOS is configured to boot using UEFI only."
+  echo "  2. That the hard disk that you booted from (usb key or hard drive) is using the GPT format and has a valid ESP."
+  exit 1
+fi
+
 if [ "${ROOT_SIZE}" -gt $(($(blockdev --getsize64 "${DEVICE}")/1024/1024/1024 - 2)) ]; then
   echo "Root size bigger than the provided device, please specify a smaller root size."
   echo "Usage: install.sh <disk device> <host name> [<root partition size (GB)>]"
