@@ -26,11 +26,8 @@
     docker.enable = true;
     
     users.users = {
-      "gauthier" = {
-        enable      = true;
-        sshAllowed  = true;
-        hasShell    = true;
-        extraGroups = [ "docker" ];
+      "salima" = {
+        enable = true;
       };
     };    
   };
