@@ -18,6 +18,10 @@
       device = "/dev/disk/by-id/wwn-0x502b2a201d1c1b1a";
     };
     reverse_tunnel.enable = true;
+    crypto = {
+      enable = true;
+      device = "/safe.img";
+    };     
     docker.enable = true;
     users.users = {
       yusuph.enable   = true;
