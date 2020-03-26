@@ -24,7 +24,15 @@
       device = "/safe.img";
     };
     docker.enable = true;
+    
+    users.users = {
+      "gauthier" = {
+        enable      = true;
+        sshAllowed  = true;
+        hasShell    = true;
+        extraGroups = [ "docker" ];
+      };
+    };    
   };
-
 }
 
