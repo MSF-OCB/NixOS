@@ -24,6 +24,12 @@
       device = "/safe.img";
     };
     docker.enable = true;
+    
+    users.users = {
+      "salima" = {
+        enable = true;
+      };
+    };    
   };
 
 }
