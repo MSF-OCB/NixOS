@@ -41,7 +41,7 @@
     joana    = tunnelOnly;
     kathy    = tunnelOnly;
     vini     = tunnelOnly;
-    salima    = tunnelOnly;
+    salima   = tunnelOnly;
     yusuph   = tunnelOnly // {
       hasShell = true;
       extraGroups = [ "docker" ];
