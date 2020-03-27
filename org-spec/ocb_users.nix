@@ -33,6 +33,7 @@
     xavier   = admin;
     yves     = admin;
 
+    unifield = tunnelOnly;
     marco    = tunnelOnly;
     damien   = tunnelOnly;
     didier   = tunnelOnly;
