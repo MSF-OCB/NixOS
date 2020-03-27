@@ -22,6 +22,9 @@
       device = "/safe.img";
     };
     docker.enable = true;
+    users.users = {
+      unifield.enable   = true;
+    };
   };
 
   imports = [
