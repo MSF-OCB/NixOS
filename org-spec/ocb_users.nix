@@ -34,6 +34,9 @@
     yves     = admin;
 
     unifield = tunnelOnly;
+    uf_sl_baama = tunnelOnly;
+    uf_ke_embu = tunnelOnly;
+    uf_sl_kenema = tunnelOnly;
     marco    = tunnelOnly;
     damien   = tunnelOnly;
     didier   = tunnelOnly;
