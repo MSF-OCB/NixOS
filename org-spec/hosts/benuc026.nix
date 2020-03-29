@@ -33,7 +33,7 @@
       pasquale.enable  = true;
       godfried.enable = true;
       vini.enable = true;
-      uf_sl_kenema = true;
+      uf_sl_kenema.enable = true;
     };
   };
 
