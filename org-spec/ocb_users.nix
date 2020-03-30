@@ -33,10 +33,16 @@
     xavier   = admin;
     yves     = admin;
 
+# unifield user = legacy user for Pakistan UF
     unifield = tunnelOnly;
     uf_sl_baama = tunnelOnly;
     uf_ke_embu = tunnelOnly;
     uf_sl_kenema = tunnelOnly;
+    uf_cd_puc = tunnelOnly;
+    uf_cd_masisi = tunnelOnly;
+    uf_mz_maputo = tunnelOnly;
+    uf_mz_beira = tunnelOnly;
+    
     marco    = tunnelOnly;
     damien   = tunnelOnly;
     didier   = tunnelOnly;

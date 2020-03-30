@@ -17,6 +17,9 @@
     reverse_tunnel.enable = true;
     crypto.enable = false;
     docker.enable = false;
+    users.users = {
+    uf_mz_beira.enable = true;
+    };
   };
 }
 
