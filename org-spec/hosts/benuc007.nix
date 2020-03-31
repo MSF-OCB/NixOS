@@ -15,8 +15,8 @@
     network.host_name = "benuc007";
     boot.mode = "uefi";
     reverse_tunnel.enable = true;
-    crypto.enable = false;
-    docker.enable = false;
+    crypto.enable = true;
+    docker.enable = true;
     users.users = {
       uf_mz_beira.enable = true;
     };
