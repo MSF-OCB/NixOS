@@ -29,7 +29,6 @@
       didier.enable   = true;
       joana.enable    = true;
       kathy.enable    = true;
-      pasquale.enable = true;
       godfried.enable = true;
       vini.enable     = true;
       uf_sl_baama.enable = true;

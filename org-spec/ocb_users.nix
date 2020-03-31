@@ -7,9 +7,11 @@
 # LOCAL EDITS WILL BE OVERWRITTEN.                                     #
 #                                                                      #
 ########################################################################
+{ lib, ... }:
+
+with lib;
 
 {
-
   settings.users.users = let
 
     admin = {
@@ -20,6 +22,7 @@
       extraGroups = [ "wheel" "docker" ];
     };
     tunnelOnly = {
+      enable     = mkDefault false;
       sshAllowed = true;
       hasShell   = false;
       canTunnel  = true;
@@ -33,27 +36,28 @@
     xavier   = admin;
     yves     = admin;
 
-# unifield user = legacy user for Pakistan UF
-    unifield = tunnelOnly;
-    uf_sl_baama = tunnelOnly;
-    uf_ke_embu = tunnelOnly;
+    # unifield user is a legacy user for Pakistan UF,
+    # we cannot easily change the username anymore
+    unifield     = tunnelOnly;
+    uf_sl_baama  = tunnelOnly;
+    uf_ke_embu   = tunnelOnly;
     uf_sl_kenema = tunnelOnly;
-    uf_cd_puc = tunnelOnly;
+    uf_cd_puc    = tunnelOnly;
     uf_cd_masisi = tunnelOnly;
     uf_mz_maputo = tunnelOnly;
-    uf_mz_beira = tunnelOnly;
+    uf_mz_beira  = tunnelOnly;
     
-    marco    = tunnelOnly;
     damien   = tunnelOnly;
     didier   = tunnelOnly;
     dirk     = tunnelOnly;
     godfried = tunnelOnly;
     joana    = tunnelOnly;
     kathy    = tunnelOnly;
+    marco    = tunnelOnly;
     vini     = tunnelOnly;
     salima   = tunnelOnly;
     yusuph   = tunnelOnly // {
-      hasShell = true;
+      hasShell    = true;
       extraGroups = [ "docker" ];
     };
 
@@ -73,6 +77,5 @@
       hashedPassword = "!";
     };
   };
-
 }
 

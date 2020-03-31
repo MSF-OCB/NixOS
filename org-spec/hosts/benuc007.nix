@@ -18,7 +18,7 @@
     crypto.enable = false;
     docker.enable = false;
     users.users = {
-    uf_mz_beira.enable = true;
+      uf_mz_beira.enable = true;
     };
   };
 }

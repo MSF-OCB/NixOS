@@ -22,12 +22,11 @@
       startAt = "22:00";
     };
     users.users = {
-      yusuph.enable = true;
-      damien.enable = true;
-      didier.enable = true;
-      pasquale.enable  = true;
+      yusuph.enable   = true;
+      damien.enable   = true;
+      didier.enable   = true;
       godfried.enable = true;
-      vini.enable = true;
+      vini.enable     = true;
     };
   };
 }

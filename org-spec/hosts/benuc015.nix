@@ -24,12 +24,11 @@
     };
     
     users.users = {
-      yusuph.enable = true;
-      damien.enable = true;
-      didier.enable = true;
-      pasquale.enable  = true;
+      yusuph.enable   = true;
+      damien.enable   = true;
+      didier.enable   = true;
       godfried.enable = true;
-      vini.enable = true;
+      vini.enable     = true;
       uf_cd_masisi.enable = true;
     };
   };

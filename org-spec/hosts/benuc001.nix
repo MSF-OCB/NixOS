@@ -24,7 +24,7 @@
     };
     docker.enable = true;
     users.users = {
-    uf_mz_maputo.enable = true;
+      uf_mz_maputo.enable = true;
     };
   };
 }
