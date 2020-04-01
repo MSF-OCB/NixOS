@@ -1,4 +1,6 @@
-#!/usr/bin/env bash
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash -p git
+
 set -e
 
 # To install, run:
@@ -201,7 +203,7 @@ if [ "${USE_UEFI}" = true ]; then
 fi
 
 rm --recursive --force /mnt/etc/
-nix-shell --packages git --run "git clone ${CONFIG_REPO} /mnt/etc/nixos/"
+git clone ${CONFIG_REPO} /mnt/etc/nixos/
 nixos-generate-config --root /mnt --no-filesystems
 ln --symbolic org-spec/hosts/"${TARGET_HOSTNAME}".nix /mnt/etc/nixos/settings.nix
 ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${TARGET_HOSTNAME}" -f /mnt/etc/nixos/local/id_tunnel
