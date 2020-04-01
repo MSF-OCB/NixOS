@@ -176,11 +176,12 @@ type=8e
 EOF
 fi
 
-pvcreate /dev/disk/by-partlabel/nixos_lvm
 if [ "${USE_UEFI}" = true ]; then
+  pvcreate /dev/disk/by-partlabel/nixos_lvm
   vgcreate LVMVolGroup /dev/disk/by-partlabel/nixos_lvm
 else
-  vgcreate LVMVolGroup /dev/disk/by-partlabel/"${DEVICE}2"
+  pvcreate /dev/"${DEVICE}2"
+  vgcreate LVMVolGroup /dev/"${DEVICE}2"
 fi
 
 lvcreate --yes --size "${ROOT_SIZE}"GB --name nixos_root LVMVolGroup
