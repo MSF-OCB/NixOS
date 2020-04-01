@@ -8,6 +8,9 @@ function wait_for_devices() {
   arr=("$@")
   devs="${arr[@]}"
   all_found=false
+  for dev in ${devs}; do
+    udevadm settle --exit-if-exists=${dev}
+  done
   for countdown in $( seq 60 -1 0 ); do
     missing=false
     for dev in ${devs}; do
@@ -184,6 +187,7 @@ else
   LVM_PART="${DEVICE}2"
 fi
 
+wait_for_devices "/dev/disk/by-partlabel/nixos_lvm"
 pvcreate "${LVM_PART}"
 wait_for_devices "/dev/disk/by-partlabel/nixos_lvm"
 vgcreate LVMVolGroup "${LVM_PART}"
