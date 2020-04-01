@@ -62,7 +62,7 @@ in {
       cleanup_auto_roots = {
         description   = "Automatically clean up nix auto roots";
         before        = [ "nix-gc.service" ];
-        requiredBy    = [ "nix-gc.service" ];
+        wantedBy      = [ "nix-gc.service" ];
         serviceConfig = {
           Type = "oneshot";
         };
