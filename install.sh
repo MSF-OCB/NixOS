@@ -2,7 +2,7 @@
 set -e
 
 # To install, run:
-# curl -L https://github.com/msf-ocb/nixos/raw/master/install.sh | sudo bash -s <disk device> <host name> [<root partition size (GB)>]
+# curl -L https://github.com/msf-ocb/nixos/raw/master/install.sh | sudo bash -s -- -d <disk device> -h <host name>
 
 function wait_for_devices() {
   arr=("$@")
@@ -33,22 +33,97 @@ function wait_for_devices() {
   fi
 }
 
+function exit_usage() {
+  echo -e "\nUsage:\n"
+  echo -e "  install.sh -d <install device> -h <target hostname> [-r <root partition size>] [-l] [-D]\n"
+  echo    "    -l triggers legacy installation mode instead of UEFI"
+  echo    "    -D causes the creation of an encrypted data partition to be skipped"
+  exit 1
+}
+
+function exit_missing_arg() {
+  echo "Error: -${1} requires an argument"
+  exit_usage
+}
+
 CONFIG_REPO="https://github.com/msf-ocb/nixos.git"
 
-DEVICE="$1"
-TARGET_HOSTNAME="$2"
-ROOT_SIZE="${3:-25}"
+while getopts ':d:h:r:lD' flag; do
+  case "${flag}" in
+    d  )
+      if [[ "${OPTARG}" =~ ^-. ]]; then
+        OPTIND=$OPTIND-1
+      else
+        DEVICE="${OPTARG}"
+      fi
+      if [[ -z "${DEVICE}" ]]; then
+        exit_missing_arg "${flag}"
+      fi
+      ;;
+    h  )
+      if [[ "${OPTARG}" =~ ^-. ]]; then
+        OPTIND=$OPTIND-1
+      else
+        TARGET_HOSTNAME="${OPTARG}"
+      fi
+      if [[ -z "${TARGET_HOSTNAME}" ]]; then
+        exit_missing_arg "${flag}"
+      fi
+      ;;
+    r  )
+      if [[ "${OPTARG}" =~ ^-. ]]; then
+        OPTIND=$OPTIND-1
+      else
+        ROOT_SIZE="${OPTARG}"
+      fi
+      if [[ -z "${ROOT_SIZE}" ]]; then
+        exit_missing_arg "${flag}"
+      fi
+      ;;
+    l  )
+      USE_UEFI=false
+      ;;
+    D  )
+      CREATE_DATA_PART=false
+      ;;
+    :  )
+      exit_missing_arg "${OPTARG}"
+      ;;
+    \? )
+      echo "Invalid option: -$OPTARG"
+      exit_usage
+      ;;
+    *  )
+      exit_usage
+      ;;
+  esac
+done
+
+ROOT_SIZE="${ROOT_SIZE:-25}"
 USE_UEFI="${USE_UEFI:=true}"
 CREATE_DATA_PART="${CREATE_DATA_PART:=true}"
 
-if [ -z "${DEVICE}" ] || [ -z "${TARGET_HOSTNAME}" ]; then
-  echo "Usage: install.sh <disk device> <host name> [<root partition size (GB)>]"
+if [ $EUID -ne 0 ]; then
+  echo "Error this script should be run using sudo or as the root user"
   exit 1
 fi
 
-if [ $EUID -ne 0 ]; then
-  echo "This script should be run using sudo or as the root user"
-  exit 1
+if [ -z "${DEVICE}" ] || [ -z "${TARGET_HOSTNAME}" ]; then
+  if [ -z "${DEVICE}" ]; then
+    echo "Error: no installation device specified"
+  elif [ -z "${TARGET_HOSTNAME}" ]; then
+    echo "Error: no target hostname specified"
+  fi
+  exit_usage
+fi
+
+if [[ ! ${ROOT_SIZE} =~ ^[0-9]+$ ]]; then
+  "Error: invalid root size specified (${ROOT_SIZE})"
+  exit_usage
+fi
+if [ "${ROOT_SIZE}" -gt $(($(blockdev --getsize64 "${DEVICE}")/1024/1024/1024 - 2)) ]; then
+  echo "Error: root size bigger than the provided device, please specify a smaller root size."
+  exit_usage
 fi
 
 if [ "${USE_UEFI}" = true ] && [ ! -d "/sys/firmware/efi" ]; then
@@ -57,12 +132,6 @@ if [ "${USE_UEFI}" = true ] && [ ! -d "/sys/firmware/efi" ]; then
   echo "  1. That your BIOS is configured to boot using UEFI only."
   echo "  2. That the hard disk that you booted from (usb key or hard drive) is using the GPT format and has a valid ESP."
   echo "And reboot the system in UEFI mode. Alternatively you can run this installer in legacy mode."
-  exit 1
-fi
-
-if [ "${ROOT_SIZE}" -gt $(($(blockdev --getsize64 "${DEVICE}")/1024/1024/1024 - 2)) ]; then
-  echo "Root size bigger than the provided device, please specify a smaller root size."
-  echo "Usage: install.sh <disk device> <host name> [<root partition size (GB)>]"
   exit 1
 fi
 
