@@ -38,10 +38,8 @@ CONFIG_REPO="https://github.com/msf-ocb/nixos.git"
 DEVICE="$1"
 TARGET_HOSTNAME="$2"
 ROOT_SIZE="${3:-25}"
-
-if [ -z ${CREATE_DATA_PART} ]; then
-  CREATE_DATA_PART=true
-fi
+USE_UEFI="${USE_UEFI:=true}"
+CREATE_DATA_PART="${CREATE_DATA_PART:=true}"
 
 if [ -z "${DEVICE}" ] || [ -z "${TARGET_HOSTNAME}" ]; then
   echo "Usage: install.sh <disk device> <host name> [<root partition size (GB)>]"
@@ -53,11 +51,12 @@ if [ $EUID -ne 0 ]; then
   exit 1
 fi
 
-if [ ! -d "/sys/firmware/efi" ]; then
-  echo "ERROR: this installer only works on systems booted using UEFI firmware but we are currently in legacy mode."
+if [ "${USE_UEFI}" = true ] && [ ! -d "/sys/firmware/efi" ]; then
+  echo "ERROR: installing in UEFI mode but we are currently booted in legacy mode."
   echo "Please check:"
   echo "  1. That your BIOS is configured to boot using UEFI only."
   echo "  2. That the hard disk that you booted from (usb key or hard drive) is using the GPT format and has a valid ESP."
+  echo "And reboot the system in UEFI mode. Alternatively you can run this installer in legacy mode."
   exit 1
 fi
 
@@ -77,16 +76,33 @@ cryptsetup close nixos_data_decrypted || true
 vgremove --force LVMVolGroup || true
 pvremove /dev/disk/by-partlabel/nixos_lvm || true
 
-# Using zeroes for the start and end sectors, selects the default values, i.e.:
-#   the next unallocated sector for the start value
-#   the last sector of the device for the end value
-sgdisk --clear --mbrtogpt "${DEVICE}"
-sgdisk --new=1:2048:+512M --change-name=1:"efi"        --typecode=1:ef00 "${DEVICE}"
-sgdisk --new=2:0:+512M    --change-name=2:"nixos_boot" --typecode=2:8300 "${DEVICE}"
-sgdisk --new=3:0:0        --change-name=3:"nixos_lvm"  --typecode=3:8e00 "${DEVICE}"
-sgdisk --print "${DEVICE}"
+if [ "${USE_UEFI}" = true ]; then
+  # Using zeroes for the start and end sectors, selects the default values, i.e.:
+  #   the next unallocated sector for the start value
+  #   the last sector of the device for the end value
+  sgdisk --clear --mbrtogpt "${DEVICE}"
+  sgdisk --new=1:2048:+512M --change-name=1:"efi"        --typecode=1:ef00 "${DEVICE}"
+  sgdisk --new=2:0:+512M    --change-name=2:"nixos_boot" --typecode=2:8300 "${DEVICE}"
+  sgdisk --new=3:0:0        --change-name=3:"nixos_lvm"  --typecode=3:8e00 "${DEVICE}"
+  sgdisk --print "${DEVICE}"
 
-wait_for_devices "/dev/disk/by-partlabel/efi" "/dev/disk/by-partlabel/nixos_boot" "/dev/disk/by-partlabel/nixos_lvm"
+  wait_for_devices "/dev/disk/by-partlabel/efi" "/dev/disk/by-partlabel/nixos_boot" "/dev/disk/by-partlabel/nixos_lvm"
+else
+  sfdisk --wipe            always \
+         --wipe-partitions always \
+         "${DEVICE}" \
+         <<EOF
+         label: dos
+         unit:  sectors
+
+         # Boot partition
+         type=83, start=2048, size=512MiB, bootable
+
+         # LVM partition, from first unallocated sector to end of disk
+         # These start and size values are the defaults when nothing is specified
+         type=8e
+         EOF
+fi
 
 pvcreate /dev/disk/by-partlabel/nixos_lvm
 vgcreate LVMVolGroup /dev/disk/by-partlabel/nixos_lvm
