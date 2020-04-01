@@ -16,7 +16,7 @@ function wait_for_devices() {
         echo "waiting for ${dev}... ($countdown)"
       fi
     done
-    if ${missing}; then
+    if [ "${missing}" = true ]; then
       partprobe ${DEVICE}
       sleep 1
       for dev in ${devs}; do
@@ -27,7 +27,7 @@ function wait_for_devices() {
       break;
     fi
   done
-  if ! ${all_found}; then
+  if [ "${all_found} != true ]; then
     echo "Time-out waiting for devices."
     exit 1
   fi
@@ -114,7 +114,7 @@ nixos-generate-config --root /mnt --no-filesystems
 ln --symbolic org-spec/hosts/"${TARGET_HOSTNAME}".nix /mnt/etc/nixos/settings.nix
 ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${TARGET_HOSTNAME}" -f /mnt/etc/nixos/local/id_tunnel
 
-if [ ${CREATE_DATA_PART} = true ]; then
+if [ "${CREATE_DATA_PART}" = true ]; then
   # Do this only after generating the hardware config
   lvcreate --yes --extents 100%FREE --name nixos_data LVMVolGroup
   wait_for_devices "/dev/LVMVolGroup/nixos_data"
@@ -147,7 +147,7 @@ fi
 
 nixos-install --no-root-passwd --max-jobs 4
 
-if [ ${CREATE_DATA_PART} = true ]; then
+if [ "${CREATE_DATA_PART}" = true ]; then
   umount /mnt/home
   umount /mnt/opt
   cryptsetup close nixos_data_decrypted
