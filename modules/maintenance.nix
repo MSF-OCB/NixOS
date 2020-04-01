@@ -35,6 +35,19 @@ in {
       TimeoutStartSec = "2 days";
     };
 
+    nixos_sync_config = {
+      description   = "Automatically sync the config with the upstream repository.";
+      before        = [ "nixos-upgrade.service" ];
+      wantedBy      = [ "nixos-upgrade.service" ];
+      serviceConfig = {
+        Type = "oneshot";
+      };
+      script        = ''
+        ${pkgs.git}/bin/git -C /etc/nixos fetch origin
+        ${pkgs.git}/bin/git -C /etc/nixos reset --hard HEAD
+      '';
+    };
+
     cleanup_auto_roots = {
       description   = "Automatically clean up nix auto roots";
       before        = [ "nix-gc.service" ];
