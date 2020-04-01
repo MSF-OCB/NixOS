@@ -179,19 +179,26 @@ vgcreate LVMVolGroup /dev/disk/by-partlabel/nixos_lvm
 lvcreate --yes --size "${ROOT_SIZE}"GB --name nixos_root LVMVolGroup
 wait_for_devices "/dev/LVMVolGroup/nixos_root"
 
-wipefs --all /dev/disk/by-partlabel/efi
-mkfs.vfat -n EFI -F32 /dev/disk/by-partlabel/efi
+if [ "${USE_UEFI}" = true ]; then
+  wipefs --all /dev/disk/by-partlabel/efi
+  mkfs.vfat -n EFI -F32 /dev/disk/by-partlabel/efi
+fi
 wipefs --all /dev/disk/by-partlabel/nixos_boot
 mkfs.ext4 -e remount-ro -L nixos_boot /dev/disk/by-partlabel/nixos_boot
 mkfs.ext4 -e remount-ro -L nixos_root /dev/LVMVolGroup/nixos_root
 
-wait_for_devices "/dev/disk/by-label/EFI" "/dev/disk/by-label/nixos_boot" "/dev/disk/by-label/nixos_root"
+if [ "${USE_UEFI}" = true ]; then
+  wait_for_devices "/dev/disk/by-label/EFI"
+fi
+wait_for_devices "/dev/disk/by-label/nixos_boot" "/dev/disk/by-label/nixos_root"
 
 mount /dev/disk/by-label/nixos_root /mnt
 mkdir --parents /mnt/boot
 mount /dev/disk/by-label/nixos_boot /mnt/boot
-mkdir --parents /mnt/boot/efi
-mount /dev/disk/by-label/EFI /mnt/boot/efi
+if [ "${USE_UEFI}" = true ]; then
+  mkdir --parents /mnt/boot/efi
+  mount /dev/disk/by-label/EFI /mnt/boot/efi
+fi
 
 rm --recursive --force /mnt/etc/
 nix-shell --packages git --run "git clone ${CONFIG_REPO} /mnt/etc/nixos/"
