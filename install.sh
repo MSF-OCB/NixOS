@@ -176,7 +176,6 @@ type=8e
 EOF
 fi
 
-
 if [ "${USE_UEFI}" = true ]; then
   BOOT_PART="/dev/disk/by-partlabel/nixos_boot"
   LVM_PART="/dev/disk/by-partlabel/nixos_lvm"
@@ -186,6 +185,7 @@ else
 fi
 
 pvcreate "${LVM_PART}"
+wait_for_devices "/dev/disk/by-partlabel/nixos_lvm"
 vgcreate LVMVolGroup "${LVM_PART}"
 lvcreate --yes --size "${ROOT_SIZE}"GB --name nixos_root LVMVolGroup
 wait_for_devices "/dev/LVMVolGroup/nixos_root"
