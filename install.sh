@@ -91,17 +91,17 @@ else
   sfdisk --wipe            always \
          --wipe-partitions always \
          "${DEVICE}" \
-         <<EOF
-         label: dos
-         unit:  sectors
+<<EOF
+label: dos
+unit:  sectors
 
-         # Boot partition
-         type=83, start=2048, size=512MiB, bootable
+# Boot partition
+type=83, start=2048, size=512MiB, bootable
 
-         # LVM partition, from first unallocated sector to end of disk
-         # These start and size values are the defaults when nothing is specified
-         type=8e
-         EOF
+# LVM partition, from first unallocated sector to end of disk
+# These start and size values are the defaults when nothing is specified
+type=8e
+EOF
 fi
 
 pvcreate /dev/disk/by-partlabel/nixos_lvm
