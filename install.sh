@@ -176,14 +176,17 @@ type=8e
 EOF
 fi
 
+
 if [ "${USE_UEFI}" = true ]; then
-  pvcreate /dev/disk/by-partlabel/nixos_lvm
-  vgcreate LVMVolGroup /dev/disk/by-partlabel/nixos_lvm
+  BOOT_PART="/dev/disk/by-partlabel/nixos_boot"
+  LVM_PART="/dev/disk/by-partlabel/nixos_lvm"
 else
-  pvcreate "${DEVICE}2"
-  vgcreate LVMVolGroup "${DEVICE}2"
+  BOOT_PART="${DEVICE}1"
+  LVM_PART="${DEVICE}2"
 fi
 
+pvcreate "${LVM_PART}"
+vgcreate LVMVolGroup "${LVM_PART}"
 lvcreate --yes --size "${ROOT_SIZE}"GB --name nixos_root LVMVolGroup
 wait_for_devices "/dev/LVMVolGroup/nixos_root"
 
@@ -191,8 +194,8 @@ if [ "${USE_UEFI}" = true ]; then
   wipefs --all /dev/disk/by-partlabel/efi
   mkfs.vfat -n EFI -F32 /dev/disk/by-partlabel/efi
 fi
-wipefs --all /dev/disk/by-partlabel/nixos_boot
-mkfs.ext4 -e remount-ro -L nixos_boot /dev/disk/by-partlabel/nixos_boot
+wipefs --all "${BOOT_PART}"
+mkfs.ext4 -e remount-ro -L nixos_boot "${BOOT_PART}"
 mkfs.ext4 -e remount-ro -L nixos_root /dev/LVMVolGroup/nixos_root
 
 if [ "${USE_UEFI}" = true ]; then
