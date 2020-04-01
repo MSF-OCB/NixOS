@@ -27,7 +27,7 @@ function wait_for_devices() {
       break;
     fi
   done
-  if [ "${all_found} != true ]; then
+  if [ "${all_found}" != true ]; then
     echo "Time-out waiting for devices."
     exit 1
   fi
