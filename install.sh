@@ -143,7 +143,10 @@ fi
 
 cryptsetup close nixos_data_decrypted || true
 vgremove --force LVMVolGroup || true
+# If the existing partition table is GPT, we use the partlabel
 pvremove /dev/disk/by-partlabel/nixos_lvm || true
+# If the existing partition table is MBR, we need to use direct addressing
+pvremove /dev/"${DEVICE}2" || true
 
 if [ "${USE_UEFI}" = true ]; then
   # Using zeroes for the start and end sectors, selects the default values, i.e.:
@@ -174,7 +177,11 @@ EOF
 fi
 
 pvcreate /dev/disk/by-partlabel/nixos_lvm
-vgcreate LVMVolGroup /dev/disk/by-partlabel/nixos_lvm
+if [ "${USE_UEFI}" = true ]; then
+  vgcreate LVMVolGroup /dev/disk/by-partlabel/nixos_lvm
+else
+  vgcreate LVMVolGroup /dev/disk/by-partlabel/"${DEVICE}2"
+fi
 
 lvcreate --yes --size "${ROOT_SIZE}"GB --name nixos_root LVMVolGroup
 wait_for_devices "/dev/LVMVolGroup/nixos_root"
