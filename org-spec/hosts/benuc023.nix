@@ -9,7 +9,6 @@
 ########################################################################
 
 {
-
   time.timeZone = "America/Port-au-Prince";
 
   settings = {
@@ -30,11 +29,9 @@
       didier.enable   = true;
       joana.enable    = true;
       kathy.enable    = true;
-      pasquale.enable  = true;
       godfried.enable = true;
       vini.enable     = true;
     };
   };
-
 }
 
