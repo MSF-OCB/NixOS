@@ -239,8 +239,9 @@ in {
           AUTOSSH_MAXSTART = "10";
         };
         serviceConfig = {
-          User = "tunnel";
-          Restart = "always";
+          User       = "tunnel";
+          Type       = "simple";
+          Restart    = "always";
           RestartSec = "10min";
         };
         script = let
