@@ -138,11 +138,7 @@ if [ "${USE_UEFI}" = true ] && [ ! -d "/sys/firmware/efi" ]; then
   exit 1
 fi
 
-MP=$(mountpoint --quiet /mnt/; echo $?) || true
-if [ "${MP}" -eq 0 ]; then
-  echo "/mnt/ is mounted, unmount first!"
-  exit 1
-fi
+umount -R /mnt/
 
 cryptsetup close nixos_data_decrypted || true
 vgremove --force LVMVolGroup || true
