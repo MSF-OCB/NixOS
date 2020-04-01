@@ -23,11 +23,11 @@ in {
   # where the server is turned off every evening.
   # When the service is being run during the day, we will be outside of the reboot window.
   system.autoUpgrade = {
-    enable = true;
-    allowReboot = true;
+    enable       = true;
+    allowReboot  = true;
     rebootWindow = { lower = "01:00"; upper = "05:00"; };
     # Run the service at 02:00 during the night and at 12:00 during the day
-    dates = "Mon 02,12:00";
+    dates        = "Mon 02,12:00";
   };
 
   systemd.services = {
@@ -36,10 +36,13 @@ in {
     };
 
     cleanup_auto_roots = {
-      description = "Automatically clean up nix auto roots";
-      before      = [ "nix-gc.service" ];
-      requiredBy  = [ "nix-gc.service" ];
-      script = ''
+      description   = "Automatically clean up nix auto roots";
+      before        = [ "nix-gc.service" ];
+      requiredBy    = [ "nix-gc.service" ];
+      serviceConfig = {
+        Type = "oneshot";
+      };
+      script        = ''
         find /nix/var/nix/gcroots/auto/ -type l -mtime +30 | while read fname; do
           target=$(readlink ''${fname})
           if [ -L ''${target} ]; then
@@ -54,8 +57,8 @@ in {
     autoOptimiseStore = true;
     gc = {
       automatic = true;
-      dates = "Tue 03:00";
-      options = "--delete-older-than 30d";
+      dates     = "Tue 03:00";
+      options   = "--delete-older-than 30d";
     };
   };
 }
