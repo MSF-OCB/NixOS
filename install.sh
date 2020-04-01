@@ -146,7 +146,7 @@ vgremove --force LVMVolGroup || true
 # If the existing partition table is GPT, we use the partlabel
 pvremove /dev/disk/by-partlabel/nixos_lvm || true
 # If the existing partition table is MBR, we need to use direct addressing
-pvremove /dev/"${DEVICE}2" || true
+pvremove "${DEVICE}2" || true
 
 if [ "${USE_UEFI}" = true ]; then
   # Using zeroes for the start and end sectors, selects the default values, i.e.:
@@ -180,8 +180,8 @@ if [ "${USE_UEFI}" = true ]; then
   pvcreate /dev/disk/by-partlabel/nixos_lvm
   vgcreate LVMVolGroup /dev/disk/by-partlabel/nixos_lvm
 else
-  pvcreate /dev/"${DEVICE}2"
-  vgcreate LVMVolGroup /dev/"${DEVICE}2"
+  pvcreate "${DEVICE}2"
+  vgcreate LVMVolGroup "${DEVICE}2"
 fi
 
 lvcreate --yes --size "${ROOT_SIZE}"GB --name nixos_root LVMVolGroup
