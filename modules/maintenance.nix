@@ -13,49 +13,77 @@
 with lib;
 
 let 
-  cfg = config.system.autoUpgrade;
+  cfg = config.settings.maintenance;
 in {
 
   # https://github.com/NixOS/nixpkgs/pull/77622
   imports = [ ./nixos-upgrade.nix ];
 
-  # We run the upgrade service once at night and once during the day, to catch the situation
-  # where the server is turned off every evening.
-  # When the service is being run during the day, we will be outside of the reboot window.
-  system.autoUpgrade = {
-    enable = true;
-    allowReboot = true;
-    rebootWindow = { lower = "01:00"; upper = "05:00"; };
-    # Run the service at 02:00 during the night and at 12:00 during the day
-    dates = "Mon 02,12:00";
-  };
-
-  systemd.services = {
-    nixos-upgrade.serviceConfig = {
-      TimeoutStartSec = "2 days";
-    };
-
-    cleanup_auto_roots = {
-      description = "Automatically clean up nix auto roots";
-      before      = [ "nix-gc.service" ];
-      requiredBy  = [ "nix-gc.service" ];
-      script = ''
-        find /nix/var/nix/gcroots/auto/ -type l -mtime +30 | while read fname; do
-          target=$(readlink ''${fname})
-          if [ -L ''${target} ]; then
-            unlink ''${target}
-          fi
-        done
+  options = {
+    settings.maintenance.sync_config.enable = mkOption {
+      type        = types.bool;
+      default     = true;
+      description = ''
+        Whether to pull the config from the master branch at github before running the upgrade service.
       '';
     };
   };
 
-  nix = {
-    autoOptimiseStore = true;
-    gc = {
-      automatic = true;
-      dates = "Tue 03:00";
-      options = "--delete-older-than 30d";
+  config = {
+    # We run the upgrade service once at night and once during the day, to catch the situation
+    # where the server is turned off every evening.
+    # When the service is being run during the day, we will be outside of the reboot window.
+    system.autoUpgrade = {
+      enable       = true;
+      allowReboot  = true;
+      rebootWindow = { lower = "01:00"; upper = "05:00"; };
+      # Run the service at 02:00 during the night and at 12:00 during the day
+      dates        = "Mon 02,12:00";
+    };
+
+    systemd.services = {
+      nixos-upgrade.serviceConfig = {
+        TimeoutStartSec = "2 days";
+      };
+
+      nixos_sync_config = mkIf cfg.sync_config.enable {
+        description   = "Automatically sync the config with the upstream repository.";
+        before        = [ "nixos-upgrade.service" ];
+        wantedBy      = [ "nixos-upgrade.service" ];
+        serviceConfig = {
+          Type = "oneshot";
+        };
+        script        = ''
+          ${pkgs.git}/bin/git -C /etc/nixos fetch origin
+          ${pkgs.git}/bin/git -C /etc/nixos reset --hard HEAD
+        '';
+      };
+
+      cleanup_auto_roots = {
+        description   = "Automatically clean up nix auto roots";
+        before        = [ "nix-gc.service" ];
+        wantedBy      = [ "nix-gc.service" ];
+        serviceConfig = {
+          Type = "oneshot";
+        };
+        script        = ''
+          find /nix/var/nix/gcroots/auto/ -type l -mtime +30 | while read fname; do
+            target=$(readlink ''${fname})
+            if [ -L ''${target} ]; then
+              unlink ''${target}
+            fi
+          done
+        '';
+      };
+    };
+
+    nix = {
+      autoOptimiseStore = true;
+      gc = {
+        automatic = true;
+        dates     = "Tue 03:00";
+        options   = "--delete-older-than 30d";
+      };
     };
   };
 }

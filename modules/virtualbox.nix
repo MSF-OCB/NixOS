@@ -26,6 +26,9 @@ with lib;
       enable = true;
       x11 = false;
     };
+
+    # https://github.com/NixOS/nixpkgs/issues/76980
+    boot.initrd.availableKernelModules = [ "virtio_scsi" ];
   };
 }
 
