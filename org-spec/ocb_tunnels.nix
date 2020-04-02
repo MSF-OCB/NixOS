@@ -158,6 +158,10 @@
         remote_forward_port = 7000;
         public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN7bD80cOfb9YEGDSwOk6KmkF/IQsDtPe4tRdL9MUfws";
       };
+      bevm001 = {
+        remote_forward_port = 9001;
+        public_key = "";
+      };
       bevm002 = {
         remote_forward_port = 9002;
         public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAyvA6grKqwe8qkR2B08I3eyJ96yxjXZtTj/i7Fyfv4z";
