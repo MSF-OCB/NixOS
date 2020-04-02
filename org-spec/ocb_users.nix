@@ -31,7 +31,7 @@ with lib;
       canTunnel  = true;
     };
     # Users who are tunnel-only but can tunnel to all NixOS servers
-    tunnelOnlyAllServers = tunnelOnly // { enabled = true; };
+    tunnelOnlyAllServers = tunnelOnly // { enable = true; };
 
   in {
 
