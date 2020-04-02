@@ -168,7 +168,7 @@
       };
       bevm003 = {
         remote_forward_port = 9003;
-        public_key = "";
+        public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN04wfoNBSMgmiYqRz75ctBT05xs0nY0HrElvQRtif0r";
       };
       MumbaiActive = {
         remote_forward_port = 7020;
