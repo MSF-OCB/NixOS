@@ -48,6 +48,7 @@ with lib;
     uf_mz_beira  = tunnelOnly;
     
     damien   = tunnelOnly;
+    deepak   = tunnelOnly;
     didier   = tunnelOnly;
     dirk     = tunnelOnly;
     godfried = tunnelOnly;
