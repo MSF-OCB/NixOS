@@ -46,6 +46,9 @@ with lib;
     uf_cd_masisi = tunnelOnly;
     uf_mz_maputo = tunnelOnly;
     uf_mz_beira  = tunnelOnly;
+    uf_cd_goma  = tunnelOnly;
+    uf_bd_coxcoord  = tunnelOnly;
+    uf_cd_kinshasacoord  = tunnelOnly;
 
 
     nicolas  = tunnelOnly;

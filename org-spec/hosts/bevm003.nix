@@ -8,6 +8,9 @@
     reverse_tunnel.enable = true;
     crypto.enable = false;
     docker.enable = false;
+    users.users = {
+      uf_cd_kinshasacoord.enable = true;
+    };
   };
 }
 
