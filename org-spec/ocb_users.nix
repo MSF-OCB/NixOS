@@ -50,6 +50,7 @@ with lib;
 
     nicolas  = tunnelOnly;
     damien   = tunnelOnly;
+    deepak   = tunnelOnly;
     didier   = tunnelOnly;
     dirk     = tunnelOnly;
     godfried = tunnelOnly;

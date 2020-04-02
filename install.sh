@@ -8,6 +8,9 @@ function wait_for_devices() {
   arr=("$@")
   devs="${arr[@]}"
   all_found=false
+  for dev in ${devs}; do
+    udevadm settle --exit-if-exists=${dev}
+  done
   for countdown in $( seq 60 -1 0 ); do
     missing=false
     for dev in ${devs}; do
@@ -35,7 +38,7 @@ function wait_for_devices() {
 
 function exit_usage() {
   echo -e "\nUsage:\n"
-  echo -e "  install.sh -d <install device> -h <target hostname> [-r <root partition size>] [-l] [-D]\n"
+  echo -e "  install.sh -d <install device> -h <target hostname> [-r <root partition size (GB)>] [-l] [-D]\n"
   echo    "    -l triggers legacy installation mode instead of UEFI"
   echo    "    -D causes the creation of an encrypted data partition to be skipped"
   exit 1
@@ -137,8 +140,7 @@ fi
 
 MP=$(mountpoint --quiet /mnt/; echo $?) || true
 if [ "${MP}" -eq 0 ]; then
-  echo "/mnt/ is mounted, unmount first!"
-  exit 1
+  umount -R /mnt/
 fi
 
 cryptsetup close nixos_data_decrypted || true
@@ -176,7 +178,6 @@ type=8e
 EOF
 fi
 
-
 if [ "${USE_UEFI}" = true ]; then
   BOOT_PART="/dev/disk/by-partlabel/nixos_boot"
   LVM_PART="/dev/disk/by-partlabel/nixos_lvm"
@@ -185,7 +186,9 @@ else
   LVM_PART="${DEVICE}2"
 fi
 
+wait_for_devices "/dev/disk/by-partlabel/nixos_lvm"
 pvcreate "${LVM_PART}"
+wait_for_devices "/dev/disk/by-partlabel/nixos_lvm"
 vgcreate LVMVolGroup "${LVM_PART}"
 lvcreate --yes --size "${ROOT_SIZE}"GB --name nixos_root LVMVolGroup
 wait_for_devices "/dev/LVMVolGroup/nixos_root"

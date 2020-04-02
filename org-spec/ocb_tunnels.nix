@@ -158,6 +158,18 @@
         remote_forward_port = 7000;
         public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN7bD80cOfb9YEGDSwOk6KmkF/IQsDtPe4tRdL9MUfws";
       };
+      bevm001 = {
+        remote_forward_port = 9001;
+        public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO2jw/FNwLsJBURo344HnlPKByXLnRw02J0Tjqu8l1ja";
+      };
+      bevm002 = {
+        remote_forward_port = 9002;
+        public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAyvA6grKqwe8qkR2B08I3eyJ96yxjXZtTj/i7Fyfv4z";
+      };
+      bevm003 = {
+        remote_forward_port = 9003;
+        public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN04wfoNBSMgmiYqRz75ctBT05xs0nY0HrElvQRtif0r";
+      };
       MumbaiActive = {
         remote_forward_port = 7020;
         public_key = "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAA2w/wBWWGS8aUkPsDO+zWOIVBsxCV9dF9QYWVDCJGmkvkBqbGJEl9DT1o+STp6mGhCsNp1IfCVcCWEI3LPQA8umwHySxDgKh9aYRjIW3I3w78c+HTcjxjUPGgQt4myo4m0QqurXBj2KDcyi/lpgop4PUhXtCByvdyxkGhsiW/oPpo5Og==";

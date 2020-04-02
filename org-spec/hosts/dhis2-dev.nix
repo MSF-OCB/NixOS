@@ -36,7 +36,7 @@
   };
 
   imports = [
-    ../modules/docker-registry.nix
+    ../../modules/docker-registry.nix
   ];
 }
 
