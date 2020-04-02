@@ -38,7 +38,7 @@ function wait_for_devices() {
 
 function exit_usage() {
   echo -e "\nUsage:\n"
-  echo -e "  install.sh -d <install device> -h <target hostname> [-r <root partition size>] [-l] [-D]\n"
+  echo -e "  install.sh -d <install device> -h <target hostname> [-r <root partition size (GB)>] [-l] [-D]\n"
   echo    "    -l triggers legacy installation mode instead of UEFI"
   echo    "    -D causes the creation of an encrypted data partition to be skipped"
   exit 1
