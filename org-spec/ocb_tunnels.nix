@@ -222,6 +222,10 @@
         remote_forward_port = 7100;
         public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICGJiqyc8QDf1Yr0bb1bUJVLAqw1bMSZhkQyWasMpTtr";
       };    
+      docker-dmz-2 = {
+        remote_forward_port = 7101;
+        public_key = "";
+      };    
       rescue-iso = {
         remote_forward_port = 8000;
         public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDPkVmtj3Jkh/8tLJP+tE0/t3GMWJj6mVQ/PfkF7wIL6";
