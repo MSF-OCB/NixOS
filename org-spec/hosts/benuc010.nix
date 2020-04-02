@@ -17,6 +17,9 @@
     reverse_tunnel.enable = true;
     crypto.enable = true;
     docker.enable = true;
+    users.users = {
+      nicolas.enable   = true;
+    };
   };
 }
 

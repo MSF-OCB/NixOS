@@ -46,7 +46,9 @@ with lib;
     uf_cd_masisi = tunnelOnly;
     uf_mz_maputo = tunnelOnly;
     uf_mz_beira  = tunnelOnly;
-    
+
+
+    nicolas  = tunnelOnly;
     damien   = tunnelOnly;
     didier   = tunnelOnly;
     dirk     = tunnelOnly;
