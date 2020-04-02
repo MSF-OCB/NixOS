@@ -54,8 +54,10 @@ in {
           Type = "oneshot";
         };
         script        = ''
-          ${pkgs.git}/bin/git -C /etc/nixos fetch origin
+          ${pkgs.git}/bin/git -C /etc/nixos fetch origin master
+          ${pkgs.git}/bin/git -C /etc/nixos checkout master
           ${pkgs.git}/bin/git -C /etc/nixos reset --hard HEAD
+          ${pkgs.git}/bin/git -C /etc/nixos pull
         '';
       };
 
