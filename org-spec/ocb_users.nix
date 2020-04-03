@@ -58,6 +58,7 @@ with lib;
     uf_mz_beira    = tunnelOnly;
     uf_mz_maputo   = tunnelOnly;
     uf_sl_baama    = tunnelOnly;
+    uf_sl_freetown = tunnelOnly;
     uf_sl_kenema   = tunnelOnly;
 
     # Karachi data encoder, to be migrated to std system for field user keys
