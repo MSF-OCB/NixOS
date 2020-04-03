@@ -19,7 +19,7 @@
     };
     reverse_tunnel.enable = true;
     crypto = {
-      enable = false;
+      enable = true;
       device = "/safe.img";
     };
     docker.enable = true;
