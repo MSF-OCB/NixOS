@@ -44,7 +44,7 @@ with lib;
     # Field support team
     #ali      = tunnelOnlyAllServers;
     deepak   = tunnelOnlyAllServers;
-    #paul     = tunnelOnlyAllServers;
+    paul     = tunnelOnlyAllServers;
 
     # unifield user is a legacy user for Pakistan UF,
     # we cannot easily change the username anymore
