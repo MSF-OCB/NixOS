@@ -19,6 +19,7 @@
     docker.enable = true;
     users.users = {
       uf_mz_beira.enable = true;
+      yusuph.enable = true;
     };
   };
 }
