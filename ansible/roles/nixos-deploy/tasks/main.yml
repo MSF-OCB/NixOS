@@ -1,0 +1,15 @@
+- name: Pull the NixOS config
+  git:
+    repo: https://github.com/MSF-OCB/NixOS.git
+    dest: /etc/nixos/
+    update: yes
+    version: "{{ nixos_git_branch|default('master') }}"
+  become: yes
+
+- name: Run nixos-rebuild
+  shell: "nixos-rebuild {{ nixos_rebuild_mode|default('switch') }} --no-build-output"
+  become: yes
+  async: 3600
+  poll: 10
+
+

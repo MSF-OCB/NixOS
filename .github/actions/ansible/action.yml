@@ -1,0 +1,6 @@
+name: 'Ansible'
+description: 'Runs an Ansible playbook' 
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+
