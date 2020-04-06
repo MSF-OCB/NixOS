@@ -42,7 +42,7 @@ with lib;
     yves     = admin;
 
     # Field support team
-    #ali      = tunnelOnlyAllServers;
+    ali      = tunnelOnlyAllServers;
     deepak   = tunnelOnlyAllServers;
     paul     = tunnelOnlyAllServers;
 
@@ -77,7 +77,6 @@ with lib;
       hasShell    = true;
       extraGroups = [ "docker" ];
     };
-
   };
 
   users.users = {
