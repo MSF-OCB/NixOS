@@ -13,7 +13,7 @@
 
   settings = {
     network.host_name = "benuc001";
-    boot= {
+    boot = {
       mode = "legacy";
       device = "/dev/disk/by-id/ata-Samsung_SSD_850_EVO_500GB_S2RBNX0HA07507L";
     };
