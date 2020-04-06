@@ -69,7 +69,7 @@ in {
           Type = "oneshot";
         };
         script        = ''
-          ${pkgs.nixos-rebuild}/bin/nixos-rebuild switch --no-build-output
+          ${config.system.build.nixos-rebuild}/bin/nixos-rebuild switch --no-build-output
         '';
       };
 
