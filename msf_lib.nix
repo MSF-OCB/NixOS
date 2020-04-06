@@ -17,7 +17,6 @@
 with lib;
 
 {
-
   msf_lib = {
     # A type for host names, host names consist of:
     #   * a first character which is an upper or lower case ascii character
@@ -27,7 +26,27 @@ with lib;
       types.strMatching "^[[:upper:][:lower:]][-[:upper:][:lower:][:digit:]]*[[:upper:][:lower:][:digit:]]$";
 
     importIfExists = path: optional (builtins.pathExists path) path;
-  };
 
+    user_roles = rec {
+      # Admin users have shell access, belong to the wheel group, and are enabled by default
+      admin = {
+        enable      = true;
+        sshAllowed  = true;
+        hasShell    = true;
+        canTunnel   = true;
+        extraGroups = [ "wheel" "docker" ];
+      };
+      # Users who can tunnel only
+      # These are not enabled by default and should be enabled on a by-server basis
+      tunnelOnly = {
+        enable     = mkDefault false;
+        sshAllowed = true;
+        hasShell   = false;
+        canTunnel  = true;
+      };
+      # Users who are tunnel-only but can tunnel to all NixOS servers
+      tunnelOnlyAllServers = tunnelOnly // { enable = true; };
+    };
+  };
 }
 
