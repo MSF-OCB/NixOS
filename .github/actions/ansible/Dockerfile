@@ -4,8 +4,8 @@ ENV ANSIBLE_HOST_KEY_CHECKING=False
 
 RUN apk add ansible gcc python3-dev libc-dev libffi-dev openssl-dev
 RUN pip3 install --upgrade paramiko
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod 0700 /entrypoint.sh
+COPY deploy.sh /deploy.sh
+RUN chmod 0700 /deploy.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/deploy.sh"]
 
