@@ -61,6 +61,18 @@ in {
         '';
       };
 
+      nixos_rebuild_config = {
+        description   = "Rebuild the NixOS config without doing an upgrade.";
+        after         = [ "nixos_sync_config.service" ];
+        wants         = [ "nixos_sync_config.service" ];
+        serviceConfig = {
+          Type = "oneshot";
+        };
+        script        = ''
+          ${pkgs.nixos-rebuild}/bin/nixos-rebuild switch --no-build-output
+        '';
+      };
+
       cleanup_auto_roots = {
         description   = "Automatically clean up nix auto roots";
         before        = [ "nix-gc.service" ];
