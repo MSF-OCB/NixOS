@@ -35,6 +35,9 @@ with lib;
 
   in {
 
+    # User used for automated access (eg. Ansible)
+    robot    = admin;
+
     mohammad = admin;
     ramses   = admin;
     thierry  = admin;
