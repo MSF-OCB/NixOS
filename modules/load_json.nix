@@ -25,7 +25,7 @@ with (import ../msf_lib.nix { inherit lib; });
         # Load the list at path in the given attribute set and convert it to
         # an attribute set with every list element as a key and the value
         # set to a given constant.
-        # Am attribute set like
+        # An attribute set like
         #   { per-host.benuc002.enable: [ "foo", "bar" ] }
         # will be transformed into an attribute set like
         #   { foo = const; bar = const; }
