@@ -10,10 +10,6 @@
 
 { config, lib, ...}:
 
-let
-  cfg = config.settings.boot;
-in
-
 with lib;
 with (import ../msf_lib.nix { inherit lib; });
 
