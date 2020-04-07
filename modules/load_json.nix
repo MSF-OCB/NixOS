@@ -30,7 +30,7 @@ with (import ../msf_lib.nix { inherit lib; });
         # will yield:
         #   { foo = const; bar = const; }
         listToAttrs_const = attrset: path: const: listToAttrs (map (name: nameValuePair name const)
-                                                              (attrByPath path [] attrset));
+                                                                   (attrByPath path [] attrset));
       in
         # recursiveUpdate merges the two resulting attribute sets recursively
         recursiveUpdate (listToAttrs_const json_data [ "users" "tunnel_only" ]                      msf_lib.user_roles.tunnelOnly)
