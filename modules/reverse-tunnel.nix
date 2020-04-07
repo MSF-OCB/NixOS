@@ -151,7 +151,7 @@ in {
     assertions = [
       {
         assertion = cfg.enable -> hasAttr config.networking.hostName cfg.tunnels;
-        message   = "The reverse tunnel service is enabled but this host's host name is not present in the tunnel config (global_settings.nix).";
+        message   = "The reverse tunnel service is enabled but this host's host name is not present in the tunnel config (org-spec/json/tunnels.json).";
       }
       {
         assertion = cfg.enable -> builtins.pathExists cfg.private_key_source;
