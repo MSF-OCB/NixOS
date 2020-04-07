@@ -25,9 +25,9 @@ with (import ../msf_lib.nix { inherit lib; });
         # Load the list at path in the given attribute set and convert it to
         # an attribute set with every list element as a key and the value
         # set to a given constant.
-        # An attribute set like
-        #   { per-host.benuc002.enable: [ "foo", "bar" ] }
-        # will be transformed into an attribute set like
+        # Example:
+        #   listToAttrs_const { per-host.benuc002.enable = [ "foo", "bar" ]; } [ "per-host" "benuc002" "enable" ] const
+        # will yield:
         #   { foo = const; bar = const; }
         listToAttrs_const = attrset: path: const: listToAttrs (map (name: nameValuePair name const)
                                                               (attrByPath path [] attrset));
