@@ -1,136 +1,138 @@
 {
-  "_comment_unifield": "The unifield user is a legacy user for Pakistan UF, we cannot easily change the username anymore",
-  "_comment_salima": "Karachi data encoder, to be migrated to std system for field user keys",
-  "tunnel_only": [
-    "damien",
-    "didier",
-    "dirk",
-    "godfried",
-    "joana",
-    "kathy",
-    "marco",
-    "nicolas",
-    "vini",
+  "users": {
+    "_comment_unifield": "The unifield user is a legacy user for Pakistan UF, we cannot easily change the username anymore",
+    "_comment_salima": "Karachi data encoder, to be migrated to std system for field user keys",
+    "tunnel_only": [
+      "damien",
+      "didier",
+      "dirk",
+      "godfried",
+      "joana",
+      "kathy",
+      "marco",
+      "nicolas",
+      "vini",
 
-    "unifield",
-    "salima",
-    "uf_bd_coxcoord",
-    "uf_cd_goma",
-    "uf_cd_kinshasacoord",
-    "uf_cd_masisi",
-    "uf_cd_puc",
-    "uf_ke_embu",
-    "uf_mz_beira",
-    "uf_mz_maputo",
-    "uf_sl_baama",
-    "uf_sl_freetown",
-    "uf_sl_kenema"
-  ],
+      "unifield",
+      "salima",
+      "uf_bd_coxcoord",
+      "uf_cd_goma",
+      "uf_cd_kinshasacoord",
+      "uf_cd_masisi",
+      "uf_cd_puc",
+      "uf_ke_embu",
+      "uf_mz_beira",
+      "uf_mz_maputo",
+      "uf_sl_baama",
+      "uf_sl_freetown",
+      "uf_sl_kenema"
+    ],
 
-  "per-host": {
-    "benuc001": {
-      "enable": [
-        "uf_mz_maputo"
-      ]
-    },
-    "benuc006": {
-      "enable": [
-        "unifield"
-      ]
-    },
-    "benuc007": {
-      "enable": [
-        "yusuph",
-        "uf_mz_beira"
-      ]
-    },
-    "benuc010": {
-      "enable": [
-        "nicolas"
-      ]
-    },
-    "benuc015": {
-      "enable": [
-        "uf_cd_masisi"
-      ]
-    },
-    "benuc020": {
-      "enable": [
-        "salima",
-        "unifield"
-      ]
-    },
-    "benuc021": {
-      "enable": [
-        "salima",
-        "unifield"
-      ]
-    },
-    "benuc025": {
-      "enable": [
-        "uf_sl_baama"
-      ]
-    },
-    "benuc026": {
-      "enable": [
-        "uf_sl_kenema"
-      ]
-    },
-    "benuc030": {
-      "enable": [
-        "uf_cd_puc"
-      ]
-    },
-    "benuc037": {
-      "enable": [
-        "uf_ke_embu"
-      ]
-    },
-    "bevm001": {
-      "enable": [
-        "uf_cd_goma"
-      ]
-    },
-    "bevm002": {
-      "enable": [
-        "uf_bd_coxcoord"
-      ]
-    },
-    "bevm003": {
-      "enable": [
-        "uf_cd_kinshasacoord"
-      ]
-    },
-    "bevm004": {
-      "enable": [
-        "uf_sl_freetown"
-      ]
-    },
-    "dhis2-dev": {
-      "enable": [
-        "yusuph"
-      ]
-    },
-    "dhis2-hq-remote": {
-      "enable": [
-        "yusuph"
-      ]
-    },
-    "dhis2-metadata": {
-      "enable": [
-        "yusuph"
-      ]
-    },
-    "dhis2-prod": {
-      "enable": [
-        "yusuph"
-      ]
-    },
-    "dhis2-validation": {
-      "enable": [
-        "didier",
-        "yusuph"
-      ]
+    "per-host": {
+      "benuc001": {
+        "enable": [
+          "uf_mz_maputo"
+        ]
+      },
+      "benuc006": {
+        "enable": [
+          "unifield"
+        ]
+      },
+      "benuc007": {
+        "enable": [
+          "yusuph",
+          "uf_mz_beira"
+        ]
+      },
+      "benuc010": {
+        "enable": [
+          "nicolas"
+        ]
+      },
+      "benuc015": {
+        "enable": [
+          "uf_cd_masisi"
+        ]
+      },
+      "benuc020": {
+        "enable": [
+          "salima",
+          "unifield"
+        ]
+      },
+      "benuc021": {
+        "enable": [
+          "salima",
+          "unifield"
+        ]
+      },
+      "benuc025": {
+        "enable": [
+          "uf_sl_baama"
+        ]
+      },
+      "benuc026": {
+        "enable": [
+          "uf_sl_kenema"
+        ]
+      },
+      "benuc030": {
+        "enable": [
+          "uf_cd_puc"
+        ]
+      },
+      "benuc037": {
+        "enable": [
+          "uf_ke_embu"
+        ]
+      },
+      "bevm001": {
+        "enable": [
+          "uf_cd_goma"
+        ]
+      },
+      "bevm002": {
+        "enable": [
+          "uf_bd_coxcoord"
+        ]
+      },
+      "bevm003": {
+        "enable": [
+          "uf_cd_kinshasacoord"
+        ]
+      },
+      "bevm004": {
+        "enable": [
+          "uf_sl_freetown"
+        ]
+      },
+      "dhis2-dev": {
+        "enable": [
+          "yusuph"
+        ]
+      },
+      "dhis2-hq-remote": {
+        "enable": [
+          "yusuph"
+        ]
+      },
+      "dhis2-metadata": {
+        "enable": [
+          "yusuph"
+        ]
+      },
+      "dhis2-prod": {
+        "enable": [
+          "yusuph"
+        ]
+      },
+      "dhis2-validation": {
+        "enable": [
+          "didier",
+          "yusuph"
+        ]
+      }
     }
   }
 }
