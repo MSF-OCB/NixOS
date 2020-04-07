@@ -28,10 +28,6 @@
         fallback = false;
       };
     };
-    users.users = {
-      yusuph.enable = true;
-      didier.enable = true;
-    };
   };
 }
 

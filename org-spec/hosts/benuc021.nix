@@ -9,7 +9,6 @@
 ########################################################################
 
 {
-
   time.timeZone = "Asia/Karachi";
 
   settings = {
@@ -24,16 +23,6 @@
       device = "/safe.img";
     };
     docker.enable = true;
-    users.users = {
-      unifield.enable   = true;
-    };
-    
-    users.users = {
-      "salima" = {
-        enable = true;
-      };
-    };    
   };
-
 }
 

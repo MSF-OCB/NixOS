@@ -17,10 +17,6 @@
     reverse_tunnel.enable = true;
     crypto.enable = true;
     docker.enable = true;
-    users.users = {
-      uf_mz_beira.enable = true;
-      yusuph.enable = true;
-    };
   };
 }
 

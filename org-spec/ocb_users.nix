@@ -10,29 +10,13 @@
 { lib, ... }:
 
 with lib;
+with (import ../msf_lib.nix { inherit lib; });
 
 {
   settings.users.users = let
-
-    # Admin users have shell access, belong to the wheel group, and are enabled by default
-    admin = {
-      enable      = true;
-      sshAllowed  = true;
-      hasShell    = true;
-      canTunnel   = true;
-      extraGroups = [ "wheel" "docker" ];
-    };
-    # Users who can tunnel only
-    # These are not enabled by default and should be enabled on a by-server basis
-    tunnelOnly = {
-      enable     = mkDefault false;
-      sshAllowed = true;
-      hasShell   = false;
-      canTunnel  = true;
-    };
-    # Users who are tunnel-only but can tunnel to all NixOS servers
-    tunnelOnlyAllServers = tunnelOnly // { enable = true; };
-
+    admin                = msf_lib.user_roles.admin;
+    tunnelOnly           = msf_lib.user_roles.tunnelOnly;
+    tunnelOnlyAllServers = msf_lib.user_roles.tunnelOnlyAllServers;
   in {
 
     # User used for automated access (eg. Ansible)
@@ -49,33 +33,6 @@ with lib;
     deepak   = tunnelOnlyAllServers;
     paul     = tunnelOnlyAllServers;
 
-    # unifield user is a legacy user for Pakistan UF,
-    # we cannot easily change the username anymore
-    unifield       = tunnelOnly;
-    uf_bd_coxcoord = tunnelOnly;
-    uf_cd_goma     = tunnelOnly;
-    uf_cd_kinshasacoord = tunnelOnly;
-    uf_cd_masisi   = tunnelOnly;
-    uf_cd_puc      = tunnelOnly;
-    uf_ke_embu     = tunnelOnly;
-    uf_mz_beira    = tunnelOnly;
-    uf_mz_maputo   = tunnelOnly;
-    uf_sl_baama    = tunnelOnly;
-    uf_sl_freetown = tunnelOnly;
-    uf_sl_kenema   = tunnelOnly;
-
-    # Karachi data encoder, to be migrated to std system for field user keys
-    salima   = tunnelOnly;
-
-    damien   = tunnelOnly;
-    didier   = tunnelOnly;
-    dirk     = tunnelOnly;
-    godfried = tunnelOnly;
-    joana    = tunnelOnly;
-    kathy    = tunnelOnly;
-    marco    = tunnelOnly;
-    nicolas  = tunnelOnly;
-    vini     = tunnelOnly;
     yusuph   = tunnelOnly // {
       hasShell    = true;
       extraGroups = [ "docker" ];
@@ -89,6 +46,12 @@ with lib;
       isNormalUser = true;
       extraGroups  = [ "wheel" ];
       openssh.authorizedKeys.keyFiles = mkForce [];
+      # nix-shell --packages python3 \
+      #           --command "python3 -c 'import crypt,getpass; \
+      #                                  print(crypt.crypt(getpass.getpass(), \
+      #                                                    crypt.mksalt(crypt.METHOD_SHA512)))'"
+      hashedPassword = mkDefault
+        "$6$FLtTyAhwtSyaTU1T$tnDBA5S5YeUF/UdO2KZtCVNieUlKGlL4iyGYtVKPI3Vfbyiu1BIH2j.BcScXPZbBbZ1P9PwKKh5B7lNoPr9o31";
     };
 
     # Lock the root user

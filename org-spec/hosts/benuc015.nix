@@ -29,7 +29,6 @@
       didier.enable   = true;
       godfried.enable = true;
       vini.enable     = true;
-      uf_cd_masisi.enable = true;
     };
   };
 }

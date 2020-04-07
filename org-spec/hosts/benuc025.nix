@@ -31,7 +31,6 @@
       kathy.enable    = true;
       godfried.enable = true;
       vini.enable     = true;
-      uf_sl_baama.enable = true;
     };
   };
 

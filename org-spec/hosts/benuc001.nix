@@ -23,9 +23,6 @@
       device = "/safe.img";
     };
     docker.enable = true;
-    users.users = {
-      uf_mz_maputo.enable = true;
-    };
   };
 }
 

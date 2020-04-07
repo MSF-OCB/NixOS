@@ -29,10 +29,6 @@
         fallback = false;
       };
     };
-    users.users = {
-      xavier.enable = true;
-      yusuph.enable = true;
-    };
   };
 
   imports = [

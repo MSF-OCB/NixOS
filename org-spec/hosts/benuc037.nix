@@ -26,8 +26,6 @@
       kathy.enable    = true;
       godfried.enable = true;
       vini.enable     = true;
-      uf_ke_embu.enable = true;
     };    
   };
-
 }

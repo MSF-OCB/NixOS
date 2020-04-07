@@ -28,9 +28,6 @@
         fallback = false;
       };
     };
-    users.users = {
-      yusuph.enable = true;
-    };
   };
 }
 
