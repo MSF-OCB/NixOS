@@ -88,7 +88,7 @@ in {
         serviceConfig = {
           Type = "oneshot";
         };
-        script        = ''
+        script = ''
           find /nix/var/nix/gcroots/auto/ -type l -mtime +30 | while read fname; do
             target=$(readlink ''${fname})
             if [ -L ''${target} ]; then
