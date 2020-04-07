@@ -45,7 +45,8 @@ with lib;
         canTunnel  = true;
       };
       # Users who are tunnel-only but can tunnel to all NixOS servers
-      tunnelOnlyAllServers = tunnelOnly // { enable = true; };
+      fieldSupport = tunnelOnly // { enable = true;
+                                     forceMonitorCommand = true; };
     };
   };
 }

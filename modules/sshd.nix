@@ -12,6 +12,7 @@
 
 let
   reverse_tunnel = config.settings.reverse_tunnel;
+  cfg_users = config.settings.users.users;
   cfg = config.settings.sshd;
 in
 
@@ -65,6 +66,14 @@ with lib;
 
           Match Group ${config.settings.users.fwd-tunnel-group},!wheel
             AllowTcpForwarding local
+
+        '' + optionalString reverse_tunnel.relay.enable ''
+          Match User ${concatStringsSep "," (attrNames (filterAttrs (_: user: user.enable && user.forceMonitorCommand) cfg_users))}
+            PermitTTY no
+            ForceCommand ${let name = "ssh_port_monitor_command";
+                           in pkgs.writeShellScriptBin name ''
+                             ${pkgs.iproute}/bin/ss -tunl6 | ${pkgs.coreutils}/bin/sort -n | ${pkgs.gnugrep}/bin/egrep "\[::1\]:[0-9]{4}[^0-9]"
+                           '' + "/bin/${name}"}
         '';
       };
 

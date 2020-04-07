@@ -14,9 +14,9 @@ with (import ../msf_lib.nix { inherit lib; });
 
 {
   settings.users.users = let
-    admin                = msf_lib.user_roles.admin;
-    tunnelOnly           = msf_lib.user_roles.tunnelOnly;
-    tunnelOnlyAllServers = msf_lib.user_roles.tunnelOnlyAllServers;
+    admin        = msf_lib.user_roles.admin;
+    tunnelOnly   = msf_lib.user_roles.tunnelOnly;
+    fieldSupport = msf_lib.user_roles.fieldSupport;
   in {
 
     # User used for automated access (eg. Ansible)
@@ -29,9 +29,9 @@ with (import ../msf_lib.nix { inherit lib; });
     yves     = admin;
 
     # Field support team
-    ali      = tunnelOnlyAllServers;
-    deepak   = tunnelOnlyAllServers;
-    paul     = tunnelOnlyAllServers;
+    ali      = fieldSupport;
+    deepak   = fieldSupport;
+    paul     = fieldSupport;
 
     yusuph   = tunnelOnly // {
       hasShell    = true;

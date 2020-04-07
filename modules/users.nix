@@ -14,6 +14,7 @@ with lib;
 
 let
   cfg = config.settings.users;
+  reverse_tunnel = config.settings.reverse_tunnel;
 
   userOpts = { name, config, ... }: {
     options = {
@@ -46,6 +47,14 @@ let
       canTunnel = mkOption {
         type    = types.bool;
         default = false;
+      };
+
+      forceMonitorCommand = mkOption {
+        type    = types.bool;
+        default = false;
+        description = ''
+          Set the port monitor command as the SSH forced command on the relays.
+        '';
       };
     };
     config = {
@@ -106,7 +115,9 @@ in {
       groups."${cfg.rev-tunnel-group}" = { };
       groups."${cfg.shell-user-group}" = { };
 
-      users = mapAttrs (name: user: {
+      users = let
+        hasShell = user: user.hasShell || (user.forceMonitorCommand && reverse_tunnel.relay.enable);
+      in mapAttrs (name: user: {
         name         = name;
         isNormalUser = user.hasShell;
         isSystemUser = user.isSystemUser;
@@ -114,7 +125,7 @@ in {
                        (optional (user.sshAllowed || user.canTunnel) cfg.ssh-group) ++
                        (optional user.canTunnel cfg.fwd-tunnel-group) ++
                        (optional user.hasShell  cfg.shell-user-group);
-        shell        = mkIf (!user.hasShell) pkgs.nologin;
+        shell        = if (hasShell user) then config.users.defaultUserShell else pkgs.nologin;
         openssh.authorizedKeys.keyFiles = [ (toKeyPath name) ];
       }) (filterAttrs (_: user: user.enable) cfg.users);
     };
