@@ -21,6 +21,7 @@ def args_parser():
   parser = argparse.ArgumentParser()
   parser.add_argument('--eventlog', type=str, required=True, dest='event_log')
   parser.add_argument('--keyfile',  type=str, required=True, dest='key_file')
+  parser.add_argument('--timeout',  type=int, required=True, dest='time_out')
   return parser
 
 def get_ports(commit_message):
@@ -42,7 +43,7 @@ def inventory_definition(tunnel_ports):
   return reduce(lambda d, p: { **d, f"tunnelled_{p}": { "ansible_port": p } },
                 tunnel_ports, dict())
 
-def inventory(tunnel_ports, key_file):
+def inventory(tunnel_ports, key_file, timeout):
   return {
     "all": {
       "children": {
@@ -56,7 +57,7 @@ def inventory(tunnel_ports, key_file):
           "hosts": inventory_definition(tunnel_ports),
           "vars": {
             "ansible_host": "localhost",
-            "ansible_ssh_common_args": f"-o 'ProxyCommand=ssh -W %h:%p -i {key_file} -p 22 -o ConnectTimeout=90 tunneller@sshrelay2.msf.be'"
+            "ansible_ssh_common_args": f"-o 'ProxyCommand=ssh -W %h:%p -i {key_file} -p 22 -o ConnectTimeout={time_out} tunneller@sshrelay2.msf.be'"
           }
         }
       },
@@ -70,7 +71,7 @@ def go():
   configure_yaml()
   args = args_parser().parse_args()
   #print(json.dumps(inventory(ports(args.event_log)), indent=2))
-  print(yaml.safe_dump(inventory(ports(args.event_log), args.key_file),
+  print(yaml.safe_dump(inventory(ports(args.event_log), args.key_file, args.time_out),
                        default_flow_style=False, width=120, indent=2))
 
 if __name__ == "__main__":
