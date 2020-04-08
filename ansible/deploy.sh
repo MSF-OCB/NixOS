@@ -14,6 +14,7 @@ python3 ansible/build_inventory.py --keyfile "${KEYFILE}" \
                                    --timeout "${CONNECTION_TIMEOUT}" \
                                    --eventlog "${GITHUB_EVENT_PATH}" > ansible/hosts.yml
 
+export ANSIBLE_SSH_RETRIES=5
 ansible-playbook --timeout="${CONNECTION_TIMEOUT}" \
                  --key-file "${KEYFILE}" \
                  --vault-password-file "${VAULTPASS}" \
