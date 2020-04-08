@@ -43,7 +43,7 @@ def inventory_definition(tunnel_ports):
   return reduce(lambda d, p: { **d, f"tunnelled_{p}": { "ansible_port": p } },
                 tunnel_ports, dict())
 
-def inventory(tunnel_ports, key_file, timeout):
+def inventory(tunnel_ports, key_file, time_out):
   return {
     "all": {
       "children": {
