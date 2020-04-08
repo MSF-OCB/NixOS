@@ -7,6 +7,7 @@ ansible-vault view --vault-password-file=/root/.vault_pass ansible/id_ec_robot.s
 chmod 0600 /root/.id_ec
 
 git log --format=%B --max-count=1 "${GITHUB_SHA}" | egrep --only-matching "(x-nixos:rebuild:relay_port:[1-9][0-9]*)"
+cat "${GITHUB_EVENT_PATH}"
 
 ansible-playbook --timeout=30 \
                  --key-file "/root/.id_ec" \
