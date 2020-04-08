@@ -20,6 +20,7 @@ def configure_yaml():
 def args_parser():
   parser = argparse.ArgumentParser()
   parser.add_argument('--eventlog', type=str, required=True, dest='event_log')
+  parser.add_argument('--keyfile',  type=str, required=True, dest='key_file')
   return parser
 
 def get_ports(commit_message):
@@ -31,15 +32,17 @@ def get_ports(commit_message):
 def ports(event_log):
   with open(event_log, 'r') as f:
     data = json.load(f)
-  return removeNone(flatmap(lambda c: get_ports(c["message"]), data["commits"]))
+  return removeNone(flatmap(lambda c: get_ports(c["message"]),
+                            data["commits"]))
 
 def removeNone(xs):
   return filter(lambda x: x, xs)
 
 def inventory_definition(tunnel_ports):
-  return reduce(lambda d, p: { **d, f"tunnelled_{p}": { "ansible_port": p } }, tunnel_ports, dict())
+  return reduce(lambda d, p: { **d, f"tunnelled_{p}": { "ansible_port": p } },
+                tunnel_ports, dict())
 
-def inventory(tunnel_ports):
+def inventory(tunnel_ports, key_file):
   return {
     "all": {
       "children": {
@@ -53,7 +56,7 @@ def inventory(tunnel_ports):
           "hosts": inventory_definition(tunnel_ports),
           "vars": {
             "ansible_host": "localhost",
-            "ansible_ssh_common_args": "-o 'ProxyCommand=ssh -W %h:%p -i /root/.id_ec -p 22 -o ConnectTimeout=90 tunneller@sshrelay2.msf.be'"
+            "ansible_ssh_common_args": f"-o 'ProxyCommand=ssh -W %h:%p -i {key_file} -p 22 -o ConnectTimeout=90 tunneller@sshrelay2.msf.be'"
           }
         }
       },
@@ -66,9 +69,9 @@ def inventory(tunnel_ports):
 def go():
   configure_yaml()
   args = args_parser().parse_args()
-
   #print(json.dumps(inventory(ports(args.event_log)), indent=2))
-  print(yaml.safe_dump(inventory(ports(args.event_log)), default_flow_style=False, width=120, indent=2))
+  print(yaml.safe_dump(inventory(ports(args.event_log), args.key_file),
+                       default_flow_style=False, width=120, indent=2))
 
 if __name__ == "__main__":
   go()
