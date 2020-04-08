@@ -4,7 +4,7 @@ umask 0077
 
 KEYFILE="/root/.id_ec"
 VAULTPASS="/root/.vault_pass"
-CONNECTION_TIMEOUT=90
+CONNECTION_TIMEOUT=120
 
 echo "${VAULT_PASS}" > "${VAULTPASS}"
 ansible-vault view --vault-password-file="${VAULTPASS}" ansible/id_ec_robot.secret > "${KEYFILE}"
