@@ -8,7 +8,7 @@ CONNECTION_TIMEOUT=90
 
 echo "${VAULT_PASS}" > "${VAULTPASS}"
 ansible-vault view --vault-password-file="${VAULTPASS}" ansible/id_ec_robot.secret > "${KEYFILE}"
-chmod 0600 "${KEYFILE}"
+chmod 0400 "${KEYFILE}"
 
 python3 ansible/build_inventory.py --keyfile "${KEYFILE}" \
                                    --timeout "${CONNECTION_TIMEOUT}" \
