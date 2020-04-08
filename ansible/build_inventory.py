@@ -6,6 +6,10 @@ import re
 import yaml
 
 from functools import reduce
+from itertools import chain
+
+def flatmap(f, items):
+  return chain.from_iterable(map(f, items))
 
 def configure_yaml():
   yaml.SafeDumper.add_representer(
@@ -18,18 +22,16 @@ def args_parser():
   parser.add_argument('--eventlog', type=str, required=True, dest='event_log')
   return parser
 
-def get_port(commit_message):
+def get_ports(commit_message):
   p = re.compile(r'\(x-nixos:rebuild:relay_port:([1-9][0-9]*)\)')
-  m = p.search(commit_message)
-  if m:
-    # Group 0 is the full matched expression, group 1 is the first subgroup
-    return m.group(1)
-  return None
+  ms = p.finditer(commit_message)
+  # Group 0 is the full matched expression, group 1 is the first subgroup
+  return map(lambda m: m.group(1), ms)
 
 def ports(event_log):
   with open(event_log, 'r') as f:
     data = json.load(f)
-  return removeNone(map(lambda c: get_port(c["message"]), data["commits"]))
+  return removeNone(flatmap(lambda c: get_ports(c["message"]), data["commits"]))
 
 def removeNone(xs):
   return filter(lambda x: x, xs)
@@ -65,6 +67,7 @@ def go():
   configure_yaml()
   args = args_parser().parse_args()
 
+  #print(json.dumps(inventory(ports(args.event_log)), indent=2))
   print(yaml.safe_dump(inventory(ports(args.event_log)), default_flow_style=False, width=120, indent=2))
 
 if __name__ == "__main__":
