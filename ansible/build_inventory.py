@@ -53,7 +53,7 @@ def inventory(tunnel_ports):
           "hosts": inventory_definition(tunnel_ports),
           "vars": {
             "ansible_host": "localhost",
-            "ansible_ssh_common_args": "-o 'ProxyCommand=ssh -W %h:%p -i /root/.id_ec -p 433 tunneller@sshrelay2.msf.be'"
+            "ansible_ssh_common_args": "-o 'ProxyCommand=ssh -W %h:%p -i /root/.id_ec -p 443 tunneller@sshrelay2.msf.be'"
           }
         }
       },
