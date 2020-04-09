@@ -14,9 +14,15 @@ with lib;
 
 {
   imports = [
-    ./ocb_tunnels.nix
     ./ocb_users.nix
   ];
-  settings.system.nix_channel = mkDefault "19.09";
+  
+  settings = {
+    system.nix_channel = mkDefault "19.09"; 
+    reverse_tunnel.relay_servers = {
+      sshrelay1.addresses = [ "sshrelay1.msf.be" "185.199.180.11" ];
+      sshrelay2.addresses = [ "sshrelay2.msf.be" "15.188.17.148"  ];
+    };
+  };
 }
 
