@@ -11,9 +11,6 @@
       "kathy",
       "marco",
       "nicolas",
-      "vini",
-
-      "unifield",
       "salima",
       "uf_bd_coxcoord",
       "uf_cd_goma",
@@ -25,9 +22,10 @@
       "uf_mz_maputo",
       "uf_sl_baama",
       "uf_sl_freetown",
-      "uf_sl_kenema"
+      "uf_sl_kenema",
+      "unifield",
+      "vini"
     ],
-
     "per-host": {
       "benuc001": {
         "enable": [
@@ -136,4 +134,3 @@
     }
   }
 }
-
