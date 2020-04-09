@@ -43,13 +43,8 @@ let
         type = types.str;
       };
 
-      host = mkOption {
-        type = types.str;
-      };
-
-      ip_tunnel = mkOption {
-        type    = types.bool;
-        default = false;
+      addresses = mkOption {
+        type = with types; listOf str;
       };
     };
 
@@ -115,11 +110,6 @@ in {
         default = {};
       };
 
-      ip_tunnel_port_prefix = mkOption {
-        type    = types.ints.between 0 5;
-        default = 1;
-      };
-
       prometheus_tunnel_port_prefix = mkOption {
         type    = types.ints.between 0 5;
         default = 3;
@@ -145,7 +135,7 @@ in {
   };
 
   config = let
-    add_port_prefix = prefix: base_port: toString (10000 * prefix + base_port);
+    add_port_prefix = prefix: base_port: 10000 * prefix + base_port;
   in mkIf (cfg.enable || cfg.relay.enable) {
 
     assertions = [
@@ -163,9 +153,8 @@ in {
 
     users.extraUsers = {
       tunnel = let
-        prefixes        = [ 0 cfg.ip_tunnel_port_prefix cfg.prometheus_tunnel_port_prefix
-                            (cfg.ip_tunnel_port_prefix + cfg.prometheus_tunnel_port_prefix) ];
-        make_limitation = base_port: prefix: "permitlisten=\"${add_port_prefix prefix base_port}\"";
+        prefixes        = [ 0 cfg.prometheus_tunnel_port_prefix ];
+        make_limitation = base_port: prefix: "permitlisten=\"${toString (add_port_prefix prefix base_port)}\"";
         make_key_config = tunnel:
           "${concatMapStringsSep "," (make_limitation tunnel.remote_forward_port) prefixes} ${tunnel.public_key} tunnel@${tunnel.name}";
       in {
@@ -245,31 +234,31 @@ in {
           RestartSec = "10min";
         };
         script = let
-          fwd_port = cfg.tunnels."${config.networking.hostName}".remote_forward_port;
-          port_prefix = if conf.ip_tunnel then cfg.ip_tunnel_port_prefix else 0;
-          tunnel_port = add_port_prefix port_prefix fwd_port;
-          prometheus_port = add_port_prefix (cfg.prometheus_tunnel_port_prefix + port_prefix) fwd_port;
+          tunnel_port = cfg.tunnels."${config.networking.hostName}".remote_forward_port;
+          prometheus_port = add_port_prefix cfg.prometheus_tunnel_port_prefix tunnel_port;
         in ''
-          for port in ${concatMapStringsSep " " toString cfg.relay.ports}; do
-            echo "Attempting to connect to ${conf.host} on port ''${port}"
-            ${pkgs.autossh}/bin/autossh \
-              -q -T -N \
-              -o "ExitOnForwardFailure=yes" \
-              -o "ServerAliveInterval=10" \
-              -o "ServerAliveCountMax=5" \
-              -o "ConnectTimeout=360" \
-              -o "UpdateHostKeys=yes" \
-              -o "StrictHostKeyChecking=no" \
-              -o "GlobalKnownHostsFile=/dev/null" \
-              -o "UserKnownHostsFile=/dev/null" \
-              -o "IdentitiesOnly=yes" \
-              -o "Compression=yes" \
-              -o "ControlMaster=no" \
-              -R ${tunnel_port}:localhost:22 \
-              -R ${prometheus_port}:localhost:9100 \
-              -i ${cfg.private_key} \
-              -p ''${port} \
-              tunnel@${conf.host}
+          for host in ${concatStringsSep " " conf.addresses}; do
+            for port in ${concatMapStringsSep " " toString cfg.relay.ports}; do
+              echo "Attempting to connect to ''${host} on port ''${port}"
+              ${pkgs.autossh}/bin/autossh \
+                -q -T -N \
+                -o "ExitOnForwardFailure=yes" \
+                -o "ServerAliveInterval=10" \
+                -o "ServerAliveCountMax=5" \
+                -o "ConnectTimeout=360" \
+                -o "UpdateHostKeys=yes" \
+                -o "StrictHostKeyChecking=no" \
+                -o "GlobalKnownHostsFile=/dev/null" \
+                -o "UserKnownHostsFile=/dev/null" \
+                -o "IdentitiesOnly=yes" \
+                -o "Compression=yes" \
+                -o "ControlMaster=no" \
+                -R ${toString tunnel_port}:localhost:22 \
+                -R ${toString prometheus_port}:localhost:9100 \
+                -i ${cfg.private_key} \
+                -p ''${port} \
+                tunnel@"''${host}"
+            done
           done
         '';
       };

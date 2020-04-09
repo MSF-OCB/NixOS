@@ -11,10 +11,8 @@
 {
   settings.reverse_tunnel = {
     relay_servers = {
-      sshrelay1.host = "sshrelay1.msf.be";
-      sshrelay2.host = "sshrelay2.msf.be";
-      sshrelay1-ip = { host = "185.199.180.11"; ip_tunnel = true; };
-      sshrelay2-ip = { host = "15.188.17.148";  ip_tunnel = true; };
+      sshrelay1.addresses = [ "sshrelay1.msf.be" "185.199.180.11" ];
+      sshrelay2.addresses = [ "sshrelay2.msf.be" "15.188.17.148"  ];
     };
   };
 }
