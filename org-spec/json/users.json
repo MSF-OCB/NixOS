@@ -11,11 +11,9 @@
       "kathy",
       "marco",
       "nicolas",
-      "vini",
-
-      "unifield",
       "salima",
       "uf_bd_coxcoord",
+      "uf_be_bruxelles",
       "uf_cd_goma",
       "uf_cd_kinshasacoord",
       "uf_cd_masisi",
@@ -25,9 +23,10 @@
       "uf_mz_maputo",
       "uf_sl_baama",
       "uf_sl_freetown",
-      "uf_sl_kenema"
+      "uf_sl_kenema",
+      "unifield",
+      "vini"
     ],
-
     "per-host": {
       "benuc001": {
         "enable": [
@@ -132,8 +131,12 @@
           "didier",
           "yusuph"
         ]
+      },
+      "benuc002": {
+        "enable": [
+          "uf_be_bruxelles"
+        ]
       }
     }
   }
 }
-
