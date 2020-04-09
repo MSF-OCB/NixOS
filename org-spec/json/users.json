@@ -13,7 +13,6 @@
       "nicolas",
       "salima",
       "uf_bd_coxcoord",
-      "uf_be_bruxelles",
       "uf_cd_goma",
       "uf_cd_kinshasacoord",
       "uf_cd_masisi",
@@ -130,11 +129,6 @@
         "enable": [
           "didier",
           "yusuph"
-        ]
-      },
-      "benuc002": {
-        "enable": [
-          "uf_be_bruxelles"
         ]
       }
     }
