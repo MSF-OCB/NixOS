@@ -241,7 +241,7 @@ in {
             for port in ${concatMapStringsSep " " toString cfg.relay.ports}; do
               echo "Attempting to connect to ''${host} on port ''${port}"
               ${pkgs.autossh}/bin/autossh \
-                -q -T -N \
+                -T -N \
                 -o "ExitOnForwardFailure=yes" \
                 -o "ServerAliveInterval=10" \
                 -o "ServerAliveCountMax=5" \
