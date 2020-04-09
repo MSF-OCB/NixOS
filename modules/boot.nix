@@ -73,6 +73,15 @@ with lib;
             efiSupport = true;
             efiInstallAsRemovable = true;
             device = "nodev";
+            extraEntries = ''
+              menuentry 'Firmware Setup' --class settings {
+                fwsetup
+                clear
+                echo ""
+                echo "If you see this message, your EFI system doesn't support this feature."
+                echo ""
+              }
+            '';
           };
           efi.efiSysMountPoint = "/boot/efi";
         })
