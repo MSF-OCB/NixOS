@@ -46,6 +46,10 @@ let
       addresses = mkOption {
         type = with types; listOf str;
       };
+
+      public_key = mkOption {
+        type = types.str;
+      };
     };
 
     config = {
@@ -176,6 +180,8 @@ in {
       };
     };
 
+    programs.ssh.knownHosts = mapAttrs (_: conf: { hostNames = conf.addresses; publicKey = conf.public_key; }) cfg.relay_servers;
+
     system.activationScripts = mkIf cfg.enable (let
       # Referencing the path directly, causes the file to be copied to the nix store.
       # By converting the path to a string with toString, we can avoid the file being copied.
@@ -246,9 +252,8 @@ in {
                 -o "ServerAliveInterval=10" \
                 -o "ServerAliveCountMax=5" \
                 -o "ConnectTimeout=360" \
-                -o "UpdateHostKeys=yes" \
-                -o "StrictHostKeyChecking=no" \
-                -o "GlobalKnownHostsFile=/dev/null" \
+                -o "UpdateHostKeys=no" \
+                -o "StrictHostKeyChecking=yes" \
                 -o "UserKnownHostsFile=/dev/null" \
                 -o "IdentitiesOnly=yes" \
                 -o "Compression=yes" \
