@@ -86,6 +86,11 @@
           "uf_eg_maadi_annex1"
         ]
       },
+      "bevm007": {
+        "enable": [
+          "uf_bi_bujumbura"
+        ]
+      },
       "dhis2-dev": {
         "enable": [
           "yusuph"
@@ -124,6 +129,7 @@
       "nicolas",
       "salima",
       "uf_bd_coxcoord",
+      "uf_bi_bujumbura",
       "uf_cd_goma",
       "uf_cd_kinshasacoord",
       "uf_cd_masisi",
