@@ -85,7 +85,7 @@ in {
 
       private_key = mkOption {
         type     = types.str;
-        default  = "/run/id_tunnel";
+        default  = "/run/tunnel/id_tunnel";
         readOnly = true;
         description = ''
           Location to load the private key file for the reverse tunnels from.
@@ -164,6 +164,9 @@ in {
       in {
         isNormalUser = false;
         isSystemUser = true;
+        # The key to connect to the relays will be copied to /run/tunnel
+        home         = mkIf (cfg.enable) "/run/tunnel";
+        createHome   = mkIf (cfg.enable) true;
         shell        = pkgs.nologin;
         extraGroups  = mkIf cfg.relay.enable [ config.settings.users.ssh-group config.settings.users.rev-tunnel-group ];
         openssh.authorizedKeys.keys = mkIf cfg.relay.enable (
@@ -207,7 +210,7 @@ in {
       };
       copy_tunnel_key = {
         text = let
-          install = source: ''install -o tunnel -g root -m 0400 "${source}" "${cfg.private_key}"'';
+          install = source: ''install -o tunnel -g nogroup -m 0400 "${source}" "${cfg.private_key}"'';
         in ''
           if [ -f "${private_key_path}" ]; then
             ${install private_key_path}
