@@ -24,16 +24,16 @@ def args_parser():
   parser.add_argument('--timeout',  type=int, required=True, dest='time_out')
   return parser
 
-def get_ports(commit_message):
-  p = re.compile(r'\(x-nixos:rebuild:relay_port:([1-9][0-9]*)\)')
-  ms = p.finditer(commit_message)
+def get_ports(regex, commit_message):
+  ms = regex.finditer(commit_message)
   # Group 0 is the full matched expression, group 1 is the first subgroup
   return map(lambda m: m.group(1), ms)
 
 def ports(event_log):
   with open(event_log, 'r') as f:
     data = json.load(f)
-  return removeNone(flatmap(lambda c: get_ports(c["message"]),
+  regex = re.compile(r'\(x-nixos:rebuild:relay_port:([1-9][0-9]*)\)')
+  return removeNone(flatmap(lambda c: get_ports(regex, c["message"]),
                             data["commits"]))
 
 def removeNone(xs):
