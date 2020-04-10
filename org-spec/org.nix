@@ -20,8 +20,14 @@ with lib;
   settings = {
     system.nix_channel = mkDefault "19.09"; 
     reverse_tunnel.relay_servers = {
-      sshrelay1.addresses = [ "sshrelay1.msf.be" "185.199.180.11" ];
-      sshrelay2.addresses = [ "sshrelay2.msf.be" "15.188.17.148"  ];
+      sshrelay1 = {
+        addresses  = [ "sshrelay1.msf.be" "185.199.180.11" ];
+        public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC0ynb9uL4ZD2qT/azc79uYON73GsHlvdyk8zaLY/gHq";
+      };
+      sshrelay2 = {
+        addresses  = [ "sshrelay2.msf.be" "15.188.17.148"  ];
+        public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDsn2Dvtzm6jJyL9SJY6D1/lRwhFeWR5bQtSSQv6bZYf";
+      };
     };
   };
 }
