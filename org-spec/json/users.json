@@ -1,31 +1,7 @@
 {
   "users": {
-    "_comment_unifield": "The unifield user is a legacy user for Pakistan UF, we cannot easily change the username anymore",
     "_comment_salima": "Karachi data encoder, to be migrated to std system for field user keys",
-    "tunnel_only": [
-      "damien",
-      "didier",
-      "dirk",
-      "godfried",
-      "joana",
-      "kathy",
-      "marco",
-      "nicolas",
-      "salima",
-      "uf_bd_coxcoord",
-      "uf_cd_goma",
-      "uf_cd_kinshasacoord",
-      "uf_cd_masisi",
-      "uf_cd_puc",
-      "uf_ke_embu",
-      "uf_mz_beira",
-      "uf_mz_maputo",
-      "uf_sl_baama",
-      "uf_sl_freetown",
-      "uf_sl_kenema",
-      "unifield",
-      "vini"
-    ],
+    "_comment_unifield": "The unifield user is a legacy user for Pakistan UF, we cannot easily change the username anymore",
     "per-host": {
       "benuc001": {
         "enable": [
@@ -105,6 +81,11 @@
           "uf_sl_freetown"
         ]
       },
+      "bevm005": {
+        "enable": [
+          "uf_eg_maadi_annex1"
+        ]
+      },
       "dhis2-dev": {
         "enable": [
           "yusuph"
@@ -131,6 +112,31 @@
           "yusuph"
         ]
       }
-    }
+    },
+    "tunnel_only": [
+      "damien",
+      "didier",
+      "dirk",
+      "godfried",
+      "joana",
+      "kathy",
+      "marco",
+      "nicolas",
+      "salima",
+      "uf_bd_coxcoord",
+      "uf_cd_goma",
+      "uf_cd_kinshasacoord",
+      "uf_cd_masisi",
+      "uf_cd_puc",
+      "uf_eg_maadi_annex1",
+      "uf_ke_embu",
+      "uf_mz_beira",
+      "uf_mz_maputo",
+      "uf_sl_baama",
+      "uf_sl_freetown",
+      "uf_sl_kenema",
+      "unifield",
+      "vini"
+    ]
   }
 }
