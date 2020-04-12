@@ -1,0 +1,6 @@
+name: 'NixOS deploy'
+description: 'Deploy the NixOS config' 
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+
