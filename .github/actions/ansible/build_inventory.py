@@ -70,7 +70,7 @@ def inventory(tunnel_ports, key_file, time_out):
 def go():
   configure_yaml()
   args = args_parser().parse_args()
-  #print(json.dumps(inventory(ports(args.event_log)), indent=2))
+  #print(json.dumps(inventory(ports(args.event_log), args.key_file, args.time_out), indent=2))
   print(yaml.safe_dump(inventory(ports(args.event_log), args.key_file, args.time_out),
                        default_flow_style=False, width=120, indent=2))
 
