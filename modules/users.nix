@@ -132,7 +132,7 @@ in {
 
     settings.reverse_tunnel.relay.tunneller.keyFiles =
       mapAttrsToList (name: _: toKeyPath name)
-        (filterAttrs (_: user: user.canTunnel) cfg.users);
+                     (filterAttrs (_: user: user.canTunnel) cfg.users);
   };
 }
 
