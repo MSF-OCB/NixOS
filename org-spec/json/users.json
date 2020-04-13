@@ -86,6 +86,11 @@
           "uf_eg_maadi_annex1"
         ]
       },
+      "bevm006": {
+        "enable": [
+          "uf_eg_maadi_coordination"
+        ]
+      },
       "bevm007": {
         "enable": [
           "uf_bi_bujumbura"
@@ -135,6 +140,7 @@
       "uf_cd_masisi",
       "uf_cd_puc",
       "uf_eg_maadi_annex1",
+      "uf_eg_maadi_coordination",
       "uf_ke_embu",
       "uf_mz_beira",
       "uf_mz_maputo",
