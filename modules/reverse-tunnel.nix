@@ -244,7 +244,7 @@ in {
           RestartSec = "10min";
         };
         script = let
-          tunnel_port = cfg.tunnels."${config.networking.hostName}".remote_forward_port;
+          tunnel_port     = cfg.tunnels."${config.networking.hostName}".remote_forward_port;
           prometheus_port = add_port_prefix cfg.prometheus_tunnel_port_prefix tunnel_port;
         in ''
           for host in ${concatStringsSep " " conf.addresses}; do
