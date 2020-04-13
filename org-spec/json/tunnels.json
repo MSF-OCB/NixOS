@@ -143,7 +143,7 @@
       },
       "mumbai-emr-a": {
         "remote_forward_port": 7020,
-        "public_key": ""
+        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAhE3yBUzeY4/bHg3FkOvXI1bxPDXBseekDZ4ra/Aubw"
       },      
       "MumbaiActive": {
         "remote_forward_port": 7020,
