@@ -93,7 +93,7 @@ while getopts ':d:h:r:lD' flag; do
       exit_missing_arg "${OPTARG}"
       ;;
     \? )
-      echo "Invalid option: -$OPTARG"
+      echo "Invalid option: -${OPTARG}"
       exit_usage
       ;;
     *  )
