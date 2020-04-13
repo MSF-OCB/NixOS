@@ -157,6 +157,7 @@ in {
 
     users.extraUsers = {
       tunnel = let
+        stringNotEmpty  = s: stringLength (replaceStrings [ " " ] [ "" ] s) != 0;
         prefixes        = [ 0 cfg.prometheus_tunnel_port_prefix ];
         make_limitation = base_port: prefix: "permitlisten=\"${toString (add_port_prefix prefix base_port)}\"";
         make_key_config = tunnel:
@@ -170,7 +171,9 @@ in {
         shell        = pkgs.nologin;
         extraGroups  = mkIf cfg.relay.enable [ config.settings.users.ssh-group config.settings.users.rev-tunnel-group ];
         openssh.authorizedKeys.keys = mkIf cfg.relay.enable (
-          naturalSort (mapAttrsToList (_: tunnel: make_key_config tunnel) cfg.tunnels));
+          naturalSort (mapAttrsToList (_: tunnel: make_key_config tunnel)
+                                      (filterAttrs (_: tunnel: stringNotEmpty tunnel.public_key)
+                                                   cfg.tunnels)));
       };
 
       tunneller = mkIf cfg.relay.enable {
