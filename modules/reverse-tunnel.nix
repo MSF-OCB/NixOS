@@ -183,8 +183,11 @@ in {
       };
     };
 
+    # This line is very important, it ensures that the remote hosts can
+    # set up their reverse tunnels without any issues with host keys
     programs.ssh.knownHosts =
-      mapAttrs (_: conf: { hostNames = conf.addresses; publicKey = conf.public_key; }) cfg.relay_servers;
+      mapAttrs (_: conf: { hostNames = conf.addresses; publicKey = conf.public_key; })
+               cfg.relay_servers;
 
     system.activationScripts = mkIf cfg.enable (let
       # Referencing the path directly, causes the file to be copied to the nix store.
