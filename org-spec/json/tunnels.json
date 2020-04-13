@@ -146,11 +146,11 @@
         "public_key": ""
       },      
       "MumbaiActive": {
-        "remote_forward_port": 7021,
+        "remote_forward_port": 7020,
         "public_key": "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAA2w/wBWWGS8aUkPsDO+zWOIVBsxCV9dF9QYWVDCJGmkvkBqbGJEl9DT1o+STp6mGhCsNp1IfCVcCWEI3LPQA8umwHySxDgKh9aYRjIW3I3w78c+HTcjxjUPGgQt4myo4m0QqurXBj2KDcyi/lpgop4PUhXtCByvdyxkGhsiW/oPpo5Og=="
       },      
       "MumbaiPassive": {
-        "remote_forward_port": 7022,
+        "remote_forward_port": 7021,
         "public_key": "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBLKygEiN52QCQh66Do/WNYNMFPTfXuEYMsqiKw/oACRPziMzS31/QaCc6/j+lN1S2L14b4X0XuYmbgTz27GhPbE="
       },
       "nixos-dev": {
