@@ -29,6 +29,11 @@
           "uf_cd_masisi"
         ]
       },
+      "benuc018": {
+        "enable": [
+          "uf_ua_zyhtomyr"
+        ]
+      },
       "benuc020": {
         "enable": [
           "salima",
@@ -96,6 +101,11 @@
           "uf_bi_bujumbura"
         ]
       },
+      "chk-emr-a": {
+        "enable": [
+          "gauthier"
+        ]
+      },
       "dhis2-dev": {
         "enable": [
           "yusuph"
@@ -120,11 +130,6 @@
         "enable": [
           "didier",
           "yusuph"
-        ]
-      },
-      "chk-emr-a": {
-        "enable": [
-          "gauthier"
         ]
       }
     },
@@ -152,6 +157,7 @@
       "uf_sl_baama",
       "uf_sl_freetown",
       "uf_sl_kenema",
+      "uf_ua_zyhtomyr",
       "unifield",
       "vini"
     ]
