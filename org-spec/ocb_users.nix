@@ -37,6 +37,11 @@ with (import ../msf_lib.nix { inherit lib; });
       hasShell    = true;
       extraGroups = [ "docker" ];
     };
+    # Msfocb-kinshasa-sida-Ehmanager@brussels.msf.org
+    gauthier = tunnelOnly // {
+      hasShell    = true;
+      extraGroups = [ "docker" ];
+    };
   };
 
   users.users = {

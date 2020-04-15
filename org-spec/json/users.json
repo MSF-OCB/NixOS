@@ -121,6 +121,11 @@
           "didier",
           "yusuph"
         ]
+      },
+      "chk-emr-a": {
+        "enable": [
+          "gauthier"
+        ]
       }
     },
     "tunnel_only": [
