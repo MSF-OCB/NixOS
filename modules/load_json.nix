@@ -29,12 +29,17 @@ with (import ../msf_lib.nix { inherit lib; });
         #   listToAttrs_const { per-host.benuc002.enable = [ "foo", "bar" ]; } [ "per-host" "benuc002" "enable" ] const
         # will yield:
         #   { foo = const; bar = const; }
-        listToAttrs_const = attrset: path: const: listToAttrs (map (name: nameValuePair name const)
+        listToAttrs_const = path: const: attrset: listToAttrs (map (name: nameValuePair name const)
                                                                    (attrByPath path [] attrset));
-      in
         # recursiveUpdate merges the two resulting attribute sets recursively
-        recursiveUpdate (listToAttrs_const json_data [ "users" "tunnel_only" ]                      msf_lib.user_roles.tunnelOnly)
-                        (listToAttrs_const json_data [ "users" "per-host" "${host_name}" "enable" ] { enable = true; });
+        recursiveMerge = attrs: foldr recursiveUpdate {} attrs;
+        # Given the host name and the json data, retrieve the enabled roles for the given host
+        enabledRoles = host_name: attrByPath [ "users" "per-host" host_name "enable_roles" ] [];
+      in
+        recursiveMerge ([ (listToAttrs_const [ "users" "tunnel_only" ]                 msf_lib.user_roles.tunnelOnly json_data)
+                          (listToAttrs_const [ "users" "per-host" host_name "enable" ] { enable = true; }            json_data) ] ++
+                          (map (role: listToAttrs_const [ "users" "roles" role ] { enable = true; } json_data)
+                               (enabledRoles host_name json_data)));
 
       reverse_tunnel.tunnels = let
         tunnel_json_path = ../org-spec/json/tunnels.json;
