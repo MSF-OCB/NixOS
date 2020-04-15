@@ -29,11 +29,6 @@
           "uf_cd_masisi"
         ]
       },
-      "benuc018": {
-        "enable": [
-          "uf_ua_Zyhtomyr"
-        ]
-      },
       "benuc020": {
         "enable": [
           "salima",
@@ -152,7 +147,6 @@
       "uf_sl_baama",
       "uf_sl_freetown",
       "uf_sl_kenema",
-      "uf_ua_Zyhtomyr",
       "unifield",
       "vini"
     ]
