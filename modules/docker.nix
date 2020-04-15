@@ -46,7 +46,7 @@ with lib;
     virtualisation.docker = {
       enable       = true;
       enableOnBoot = true;
-      liveRestore   = !cfg.swarm.enable;
+      liveRestore  = !cfg.swarm.enable;
       extraOptions = concatStringsSep " " (
         # Do not break currently running non-encrypted set-ups.
         (optional config.settings.crypto.enable ''--data-root  "/opt/docker"'') ++
