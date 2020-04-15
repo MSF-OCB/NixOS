@@ -25,20 +25,24 @@ with (import ../msf_lib.nix { inherit lib; });
         # Load the list at path in the given attribute set and convert it to
         # an attribute set with every list element as a key and the value
         # set to a given constant.
+        # The function onAbsent is called when the specified path does not exist.
         # Example:
-        #   listToAttrs_const { per-host.benuc002.enable = [ "foo", "bar" ]; } [ "per-host" "benuc002" "enable" ] const
+        #   listToAttrs_const [ "per-host" "benuc002" "enable" ] val (const []) { per-host.benuc002.enable = [ "foo", "bar" ]; }
         # will yield:
-        #   { foo = const; bar = const; }
-        listToAttrs_const = path: const: attrset: listToAttrs (map (name: nameValuePair name const)
-                                                                   (attrByPath path [] attrset));
+        #   { foo = val; bar = val; }
+        listToAttrs_const = path: const: onAbsent: attrset: listToAttrs (map (name: nameValuePair name const)
+                                                                        (attrByPath path (onAbsent path) attrset));
         # recursiveUpdate merges the two resulting attribute sets recursively
         recursiveMerge = attrs: foldr recursiveUpdate {} attrs;
         # Given the host name and the json data, retrieve the enabled roles for the given host
-        enabledRoles = host_name: attrByPath [ "users" "per-host" host_name "enable_roles" ] [];
+        enabledRoles   = host_name: attrByPath [ "users" "per-host" host_name "enable_roles" ] [];
+        empty          = const [];
+        onRoleAbsent   = role: host_name: _:
+          abort ''The role "${role}" which was enabled for host "${host_name}" is not defined.'';
       in
-        recursiveMerge ([ (listToAttrs_const [ "users" "tunnel_only" ]                 msf_lib.user_roles.tunnelOnly json_data)
-                          (listToAttrs_const [ "users" "per-host" host_name "enable" ] { enable = true; }            json_data) ] ++
-                          (map (role: listToAttrs_const [ "users" "roles" role ] { enable = true; } json_data)
+        recursiveMerge ([ (listToAttrs_const [ "users" "tunnel_only" ]                 msf_lib.user_roles.tunnelOnly empty json_data)
+                          (listToAttrs_const [ "users" "per-host" host_name "enable" ] { enable = true; }            empty json_data) ] ++
+                          (map (role: listToAttrs_const [ "users" "roles" role ] { enable = true; } (onRoleAbsent role host_name) json_data)
                                (enabledRoles host_name json_data)));
 
       reverse_tunnel.tunnels = let
