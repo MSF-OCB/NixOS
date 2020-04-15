@@ -8,6 +8,16 @@
           "uf_mz_maputo"
         ]
       },
+      "benuc002": {
+        "enable_roles": [
+          "mast"
+        ]
+      },
+      "benuc004": {
+        "enable_roles": [
+          "mast"
+        ]
+      },
       "benuc006": {
         "enable": [
           "unifield"
@@ -19,14 +29,32 @@
           "uf_mz_beira"
         ]
       },
+      "benuc009": {
+        "enable_roles": [
+          "mast"
+        ]
+      },
       "benuc010": {
         "enable": [
           "nicolas"
         ]
       },
+      "benuc014": {
+        "enable_roles": [
+          "mast"
+        ]
+      },
       "benuc015": {
         "enable": [
           "uf_cd_masisi"
+        ],
+        "enable_roles": [
+          "mast"
+        ]
+      },
+      "benuc016": {
+        "enable_roles": [
+          "mast"
         ]
       },
       "benuc018": {
@@ -46,14 +74,35 @@
           "unifield"
         ]
       },
+      "benuc023": {
+        "enable_roles": [
+          "mast"
+        ]
+      },
+      "benuc024": {
+        "enable_roles": [
+          "mast"
+        ]
+      },
       "benuc025": {
         "enable": [
           "uf_sl_baama"
+        ],
+        "enable_roles": [
+          "mast"
         ]
       },
       "benuc026": {
         "enable": [
           "uf_sl_kenema"
+        ],
+        "enable_roles": [
+          "mast"
+        ]
+      },
+      "benuc027": {
+        "enable_roles": [
+          "mast"
         ]
       },
       "benuc030": {
@@ -61,9 +110,17 @@
           "uf_cd_puc"
         ]
       },
+      "benuc035": {
+        "enable_roles": [
+          "mast"
+        ]
+      },
       "benuc037": {
         "enable": [
           "uf_ke_embu"
+        ],
+        "enable_roles": [
+          "mast"
         ]
       },
       "bevm001": {
@@ -132,6 +189,17 @@
           "yusuph"
         ]
       }
+    },
+    "roles": {
+      "mast": [
+        "damien",
+        "didier",
+        "godfried",
+        "joana",
+        "kathy",
+        "vini",
+        "yusuph"
+      ]
     },
     "tunnel_only": [
       "damien",

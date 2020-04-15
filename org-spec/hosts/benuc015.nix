@@ -17,19 +17,6 @@
     reverse_tunnel.enable = true;
     crypto.enable = true;
     docker.enable = true;
-    
-    autoShutdown = {
-      enable = false;
-      startAt = "20:00";
-    };
-    
-    users.users = {
-      yusuph.enable   = true;
-      damien.enable   = true;
-      didier.enable   = true;
-      godfried.enable = true;
-      vini.enable     = true;
-    };
   };
 }
 
