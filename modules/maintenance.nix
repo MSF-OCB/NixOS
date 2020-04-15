@@ -56,7 +56,8 @@ in {
         script        = ''
           ${pkgs.git}/bin/git -C /etc/nixos fetch origin master
           ${pkgs.git}/bin/git -C /etc/nixos checkout master
-          ${pkgs.git}/bin/git -C /etc/nixos reset --hard HEAD
+          ${pkgs.git}/bin/git -C /etc/nixos reset --hard origin/master
+          ${pkgs.git}/bin/git -C /etc/nixos clean -d --force
           ${pkgs.git}/bin/git -C /etc/nixos pull
         '';
       };
