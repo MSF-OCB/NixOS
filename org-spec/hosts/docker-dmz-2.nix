@@ -19,6 +19,7 @@
       inDMZ = true;
     };
     docker.enable = true;
+    docker.swarm.enable = true;
     network = {
       host_name = "docker-dmz-2";
       static_ifaces.ens192 = {
