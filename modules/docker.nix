@@ -10,15 +10,21 @@
 
 { config, lib, pkgs, ... }:
 
+let
+  cfg = config.settings.docker;
+in
+
 with lib;
 
 {
-
   options = {
-    settings.docker.enable = mkEnableOption "the Docker service";
+    settings.docker = {
+      enable       = mkEnableOption "the Docker service";
+      swarm.enable = mkEnableOption "swarm mode";
+    };
   };
 
-  config = mkIf config.settings.docker.enable {
+  config = mkIf cfg.enable {
 
     environment = {
       systemPackages = with pkgs; [
@@ -38,8 +44,9 @@ with lib;
     };
 
     virtualisation.docker = {
-      enable = true;
+      enable       = true;
       enableOnBoot = true;
+      liveRestore   = !cfg.swarm.enable;
       extraOptions = concatStringsSep " " (
         # Do not break currently running non-encrypted set-ups.
         (optional config.settings.crypto.enable ''--data-root  "/opt/docker"'') ++
