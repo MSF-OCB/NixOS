@@ -158,6 +158,11 @@
           "uf_gn_conakry"
         ]
       },
+      "bevm009": {
+        "enable": [
+          "uf_gn_sida"
+        ]
+      },
       "chk-emr-a": {
         "enable": [
           "gauthier"
@@ -220,6 +225,7 @@
       "uf_eg_maadi_annex1",
       "uf_eg_maadi_coordination",
       "uf_gn_conakry",
+      "uf_gn_sida",
       "uf_ke_embu",
       "uf_mz_beira",
       "uf_mz_maputo",
