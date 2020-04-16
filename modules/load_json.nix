@@ -33,7 +33,7 @@ with (import ../msf_lib.nix { inherit lib; });
         listToAttrs_const = path: const: onAbsent: attrset: listToAttrs (map (name: nameValuePair name const)
                                                                         (attrByPath path onAbsent attrset));
         # recursiveUpdate merges the two resulting attribute sets recursively
-        recursiveMerge = attrs: foldr recursiveUpdate {} attrs;
+        recursiveMerge = foldr recursiveUpdate {};
         # Given the host name and the json data, retrieve the enabled roles for the given host
         enabledRoles   = host_name: attrByPath [ "users" "per-host" host_name "enable_roles" ] [];
         onRoleAbsent   = role: host_name: abort ''The role "${role}" which was enabled for host "${host_name}" is not defined.'';
