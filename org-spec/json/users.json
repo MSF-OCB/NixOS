@@ -153,6 +153,11 @@
           "uf_bi_bujumbura"
         ]
       },
+      "bevm008": {
+        "enable": [
+          "uf_gn_conakry"
+        ]
+      },
       "chk-emr-a": {
         "enable": [
           "gauthier"
@@ -214,6 +219,7 @@
       "uf_cd_puc",
       "uf_eg_maadi_annex1",
       "uf_eg_maadi_coordination",
+      "uf_gn_conakry",
       "uf_ke_embu",
       "uf_mz_beira",
       "uf_mz_maputo",
