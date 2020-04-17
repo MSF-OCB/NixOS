@@ -27,8 +27,9 @@ let
         description = "The port used for this server on the relay servers.";
       };
 
+      # We allow the empty string to allow bootstrapping an installation where the key has not yet been generated
       public_key = mkOption {
-        type = types.str;
+        type = types.either msf_lib.empty_str_type msf_lib.pub_key_type;
       };
     };
 
@@ -48,7 +49,7 @@ let
       };
 
       public_key = mkOption {
-        type = types.str;
+        type = msf_lib.pub_key_type;
       };
     };
 

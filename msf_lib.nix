@@ -24,6 +24,20 @@ with lib;
     #   * followed by an upper or lower case ascii character or a digit
     host_name_type =
       types.strMatching "^[[:upper:][:lower:]][-[:upper:][:lower:][:digit:]]*[[:upper:][:lower:][:digit:]]$";
+    empty_str_type = types.strMatching "^$" // {
+      description = "empty string";
+    };
+    pub_key_type   = let
+      key_data_pattern = "[[:lower:][:upper:][:digit:]\\/+]";
+      key_patterns     = {
+        ssh-ed25519         = "^ssh-ed25519 ${key_data_pattern}{68}$";
+        ecdsa-sha2-nistp256 = "^ecdsa-sha2-nistp256 ${key_data_pattern}{139}=$";
+        ecdsa-sha2-nistp521 = "^ecdsa-sha2-nistp521 ${key_data_pattern}{230}==$";
+      };
+      pub_key_pattern  = concatStringsSep "|" (attrValues key_patterns);
+    in types.strMatching pub_key_pattern // {
+      description = ''valid ${concatStringsSep " or " (attrNames key_patterns)} key, meaning a string matching the pattern ${pub_key_pattern}'';
+    };
 
     importIfExists = path: optional (builtins.pathExists path) path;
 
