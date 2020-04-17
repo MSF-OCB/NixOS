@@ -203,7 +203,7 @@
       },    
       "docker-dmz-11": {
         "remote_forward_port": 7105,
-        "public_key": ""
+        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJCKoimfy9UxVI/9HM0V34eNP4E+5fGfCjz591zid0rI"
       },    
       "rescue-iso": {
         "remote_forward_port": 8000,
