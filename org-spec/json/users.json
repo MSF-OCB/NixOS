@@ -35,6 +35,9 @@
         ]
       },
       "benuc014": {
+        "enable": [
+          "uf_ht_port_a_piment"
+        ],
         "enable_roles": [
           "mast"
         ]
@@ -235,6 +238,7 @@
       "uf_gn_conakry",
       "uf_gn_kouroussa",
       "uf_gn_sida",
+      "uf_ht_port_a_piment",
       "uf_in_mumbai",
       "uf_ke_embu",
       "uf_mz_beira",
