@@ -196,6 +196,11 @@
           "didier",
           "yusuph"
         ]
+      },
+      "mumbai-emr-a": {
+        "enable": [
+          "uf_in_mumbai"
+        ]
       }
     },
     "roles": {
@@ -230,6 +235,7 @@
       "uf_gn_conakry",
       "uf_gn_kouroussa",
       "uf_gn_sida",
+      "uf_in_mumbai",
       "uf_ke_embu",
       "uf_mz_beira",
       "uf_mz_maputo",
