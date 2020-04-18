@@ -227,7 +227,7 @@ if [ "${CREATE_DATA_PART}" = true ]; then
 
   dd bs=512 count=4 if=/dev/urandom of=/tmp/keyfile
   chown root:root /tmp/keyfile
-  chmod 0600 /tmp/keyfile
+  chmod 0400 /tmp/keyfile
 
   cryptsetup --verbose \
              --batch-mode \
@@ -260,7 +260,7 @@ if [ "${CREATE_DATA_PART}" = true ]; then
 
   mv /tmp/keyfile /mnt/keyfile
   chown root:root /mnt/keyfile
-  chmod 0600 /mnt/keyfile
+  chmod 0400 /mnt/keyfile
 fi
 
 echo -e "\nNixOS installation finished, please reboot using \"sudo systemctl reboot\""
