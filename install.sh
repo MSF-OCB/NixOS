@@ -234,7 +234,7 @@ if [ "${CREATE_DATA_PART}" = true ]; then
              --cipher aes-xts-plain64 \
              --key-size 512 \
              --hash sha512 \
-             --use-random \
+             --use-urandom \
              luksFormat \
              --type luks2 \
              --key-file /tmp/keyfile \
