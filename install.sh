@@ -225,9 +225,9 @@ if [ "${CREATE_DATA_PART}" = true ]; then
   lvcreate --yes --extents 100%FREE --name nixos_data LVMVolGroup
   wait_for_devices "/dev/LVMVolGroup/nixos_data"
 
-  dd bs=512 count=4 if=/dev/urandom of=/tmp/keyfile
-  chown root:root /tmp/keyfile
-  chmod 0400 /tmp/keyfile
+  dd bs=512 count=4 if=/dev/urandom of=/mnt/keyfile
+  chown root:root /mnt/keyfile
+  chmod 0400 /mnt/keyfile
 
   cryptsetup --verbose \
              --batch-mode \
@@ -237,9 +237,9 @@ if [ "${CREATE_DATA_PART}" = true ]; then
              --use-urandom \
              luksFormat \
              --type luks2 \
-             --key-file /tmp/keyfile \
+             --key-file /mnt/keyfile \
              /dev/LVMVolGroup/nixos_data
-  cryptsetup open --key-file /tmp/keyfile /dev/LVMVolGroup/nixos_data nixos_data_decrypted
+  cryptsetup open --key-file /mnt/keyfile /dev/LVMVolGroup/nixos_data nixos_data_decrypted
   mkfs.ext4 -e remount-ro -m 1 -L nixos_data /dev/mapper/nixos_data_decrypted
 
   wait_for_devices "/dev/disk/by-label/nixos_data"
@@ -254,13 +254,8 @@ fi
 nixos-install --no-root-passwd --max-jobs 4
 
 if [ "${CREATE_DATA_PART}" = true ]; then
-  umount /mnt/home
-  umount /mnt/opt
+  umount -R /mnt/opt
   cryptsetup close nixos_data_decrypted
-
-  mv /tmp/keyfile /mnt/keyfile
-  chown root:root /mnt/keyfile
-  chmod 0400 /mnt/keyfile
 fi
 
 echo -e "\nNixOS installation finished, please reboot using \"sudo systemctl reboot\""
