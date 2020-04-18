@@ -5,7 +5,7 @@ set -e
 # curl -L https://github.com/msf-ocb/nixos/raw/master/install.sh | sudo bash -s -- -d <disk device> -h <host name>
 
 function wait_for_devices() {
-  arr=("$@")
+  arr=("${@}")
   devs="${arr[@]}"
   all_found=false
   for dev in ${devs}; do
@@ -16,7 +16,7 @@ function wait_for_devices() {
     for dev in ${devs}; do
       if [ ! -b ${dev} ]; then
         missing=true
-        echo "waiting for ${dev}... ($countdown)"
+        echo "waiting for ${dev}... (${countdown})"
       fi
     done
     if [ "${missing}" = true ]; then
