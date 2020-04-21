@@ -252,8 +252,8 @@
       "bevm011": {
         "remote_forward_port": 9011,
         "public_key": ""  
-       }
       }
     }
   }
+}
 
