@@ -13,11 +13,11 @@
       encryption_manager = pkgs.callPackage (pkgs.fetchFromGitHub {
         owner  = "msf-ocb";
         repo   = "nixos_encryption_manager";
-        rev    = "81e4ab6b040d160505c06797a824bd7cdb233b7e";
-        sha256 = "1vyxnrw4kylxkrpkiqy13knbpcia3v05nb4k832w3jf173al89xl";
+        rev    = "36bb50d97c11c1381a2a938390ce62fa0d2bef90";
+        sha256 = "13cqz1akj5n2lq0b1asfnrscqjxr6kxlcp8kf4lcszfhk8zc1arm";
       }) {};
     in {
-      data_manager = {
+      encryption_manager = {
         description   = "Web interface to manage the encrypted data partition";
         serviceConfig = {
           User    = user;
@@ -25,7 +25,7 @@
           Restart = "always";
         };
         script = ''
-          ${data_manager}/bin/nixos_encryption_manager
+          ${encryption_manager}/bin/nixos_encryption_manager
         '';
       };
     };
