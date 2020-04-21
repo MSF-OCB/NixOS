@@ -1,5 +1,5 @@
 {
-  time.timeZone = "Africa/ Kinshasa";
+  time.timeZone = "Africa/Kinshasa";
 
   settings = {
     network.host_name = "bevm011";
