@@ -11,7 +11,7 @@
 { config, lib, ...}:
 
 with lib;
-with (import ../msf_lib.nix { inherit lib; });
+with (import ../msf_lib.nix);
 
 {
   config = let

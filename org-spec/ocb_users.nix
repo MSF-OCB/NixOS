@@ -10,7 +10,7 @@
 { lib, ... }:
 
 with lib;
-with (import ../msf_lib.nix { inherit lib; });
+with (import ../msf_lib.nix);
 
 {
   settings.users.users = let
