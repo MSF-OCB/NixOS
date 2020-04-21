@@ -1,7 +1,8 @@
+
 { lib, ... }:
 
 with lib;
-with (import ../msf_lib.nix { inherit lib; });
+with (import ../msf_lib.nix);
 
 {
   imports = flatten [

@@ -8,13 +8,11 @@
 #                                                                      #
 ########################################################################
 
-{ lib }:
-
 # Usage:
-#   with (import ../msf_lib.nix { inherit lib; });
+#   with (import ../msf_lib.nix);
 #   msf_lib.<identifier>
 
-with lib;
+with (import <nixpkgs> {}).lib;
 
 {
   msf_lib = {

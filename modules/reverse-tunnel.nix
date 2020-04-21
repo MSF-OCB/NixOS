@@ -11,7 +11,7 @@
 { config, pkgs, lib, ... }:
 
 with lib;
-with (import ../msf_lib.nix { inherit lib; });
+with (import ../msf_lib.nix);
 
 let
   cfg = config.settings.reverse_tunnel;
