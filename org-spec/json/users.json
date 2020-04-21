@@ -169,6 +169,11 @@
           "uf_gn_sida"
         ]
       },
+      "bevm010": {
+        "enable": [
+          "uf_cf_coordination"
+        ]
+      },
       "chk-emr-a": {
         "enable": [
           "gauthier"
@@ -233,6 +238,7 @@
       "uf_cd_kinshasacoord",
       "uf_cd_masisi",
       "uf_cd_puc",
+      "uf_cf_coordination",
       "uf_eg_maadi_annex1",
       "uf_eg_maadi_coordination",
       "uf_gn_conakry",
