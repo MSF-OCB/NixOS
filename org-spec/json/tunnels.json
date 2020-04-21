@@ -256,6 +256,10 @@
       "bevm012": {
         "remote_forward_port": 9012,
         "public_key": ""  
+      },
+      "bevm013": {
+        "remote_forward_port": 9013,
+        "public_key": ""  
       }
     }
   }
