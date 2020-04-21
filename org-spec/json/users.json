@@ -179,6 +179,11 @@
           "uf_cd_kinshasa_sida"
         ]
       },
+      "bevm013": {
+        "enable": [
+          "uf_ve_anzoategui"
+        ]
+      },
       "chk-emr-a": {
         "enable": [
           "gauthier"
@@ -259,6 +264,7 @@
       "uf_sl_freetown",
       "uf_sl_kenema",
       "uf_ua_zyhtomyr",
+      "uf_ve_anzoategui",
       "unifield",
       "vini"
     ]
