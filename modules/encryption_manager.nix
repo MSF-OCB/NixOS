@@ -18,13 +18,13 @@
       }) {};
     in {
       data_manager = {
-        description   = "";
+        description   = "Web interface to manage the encrypted data partition";
         serviceConfig = {
           User    = user;
           Type    = "simple";
           Restart = "always";
         };
-        script        = ''
+        script = ''
           ${data_manager}/bin/nixos_encryption_manager
         '';
       };
