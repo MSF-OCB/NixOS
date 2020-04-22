@@ -10,14 +10,10 @@
 { lib, ... }:
 
 with lib;
-with (import ../msf_lib.nix);
+with (import ../msf_lib.nix).user_roles;
 
 {
-  settings.users.users = let
-    admin        = msf_lib.user_roles.admin;
-    tunnelOnly   = msf_lib.user_roles.tunnelOnly;
-    fieldSupport = msf_lib.user_roles.fieldSupport;
-  in {
+  settings.users.users = {
 
     # User used for automated access (eg. Ansible)
     robot    = admin;
@@ -27,6 +23,8 @@ with (import ../msf_lib.nix);
     thierry  = admin;
     xavier   = admin;
     yves     = admin;
+
+    ian      = admin_base;
 
     # Field support team
     ali      = fieldSupport;

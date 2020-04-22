@@ -40,14 +40,16 @@ with (import <nixpkgs> {}).lib;
     importIfExists = path: optional (builtins.pathExists path) path;
 
     user_roles = rec {
-      # Admin users have shell access, belong to the wheel group, and are enabled by default
-      admin = {
-        enable      = true;
+      # admin_base users have shell access, belong to the wheel group, but are not enabled by default
+      admin_base = {
+        enable      = mkDefault false;
         sshAllowed  = true;
         hasShell    = true;
         canTunnel   = true;
         extraGroups = [ "wheel" "docker" ];
       };
+      # Admin users have the same rights as admin_base users and are enabled by default
+      admin = admin_base // { enable = true; };
       # Users who can tunnel only
       # These are not enabled by default and should be enabled on a by-server basis
       tunnelOnly = {
@@ -56,7 +58,7 @@ with (import <nixpkgs> {}).lib;
         hasShell   = false;
         canTunnel  = true;
       };
-      # Users who are tunnel-only but can tunnel to all NixOS servers
+      # Users who are tunnel-only but can tunnel to all NixOS servers and query the open tunnels
       fieldSupport = tunnelOnly // { enable = true;
                                      forceMonitorCommand = true; };
     };

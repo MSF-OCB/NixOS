@@ -220,6 +220,11 @@
           "yusuph"
         ]
       },
+      "docker-dmz-1": {
+        "enable": [
+          "ian"
+        ]
+      },
       "mumbai-emr-a": {
         "enable": [
           "uf_in_mumbai"
