@@ -184,6 +184,11 @@
           "uf_ve_anzoategui"
         ]
       },
+      "bevm014": {
+        "enable": [
+          "uf_ve_bolivar"
+        ]
+      },
       "chk-emr-a": {
         "enable": [
           "gauthier"
@@ -265,6 +270,7 @@
       "uf_sl_kenema",
       "uf_ua_zyhtomyr",
       "uf_ve_anzoategui",
+      "uf_ve_bolivar",
       "unifield",
       "vini"
     ]
