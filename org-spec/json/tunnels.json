@@ -263,7 +263,7 @@
       },
       "bevm014": {
         "remote_forward_port": 9014,
-        "public_key": ""
+        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPaWp3PUgx9nNxHgqmUmQ7tpgV8n0x3mNO8PCUSQXt7d"
       }
     }
   }
