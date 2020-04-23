@@ -47,7 +47,7 @@ with lib;
   config = {
     
     # memtest86-efi has an unfree licence... 
-    nixpkgs.config.allowUnfree = (cfg.mode == cfg.modes.uefi);
+    #nixpkgs.config.allowUnfree = (cfg.mode == cfg.modes.uefi);
 
     boot = {
       growPartition = true;
@@ -59,7 +59,7 @@ with lib;
         grub_common = {
           enable  = true;
           version = 2;
-          memtest86.enable = true;
+          memtest86.enable = false;
         };
       in mkIf (mode != cfg.modes.none) (mkMerge [
         (mkIf (mode == cfg.modes.legacy) {
