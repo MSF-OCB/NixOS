@@ -2,9 +2,9 @@
 
 {
   config = let
-    user = "encryption_manager";
+    encryption_manager_user = "encryption_manager";
   in {
-    users.users."${user}" = {
+    users.users."${encryption_manager_user}" = {
       isNormalUser = false;
       isSystemUser = true;
     };
@@ -20,7 +20,7 @@
       encryption_manager = {
         description   = "Web interface to manage the encrypted data partition";
         serviceConfig = {
-          User    = user;
+          User    = encryption_manager_user;
           Type    = "simple";
           Restart = "always";
         };
