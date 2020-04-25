@@ -96,6 +96,7 @@ with lib;
         startAgent = false;
         # We do not have GUIs
         setXAuthLocation = false;
+        hostKeyAlgorithms = [ "ssh-ed25519" "ssh-rsa" ];
       };
 
       tmux = {
