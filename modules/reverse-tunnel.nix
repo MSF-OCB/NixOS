@@ -286,8 +286,6 @@ in {
       monitoring_services = optionalAttrs cfg.relay.enable {
         port_monitor = {
           enable = true;
-          restartIfChanged = false;
-          unitConfig.X-StopOnRemoval = false;
           serviceConfig = {
             User = "root";
             Type = "oneshot";

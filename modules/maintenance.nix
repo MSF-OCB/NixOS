@@ -70,6 +70,9 @@ in {
           Type = "oneshot";
         };
 
+        restartIfChanged = false;
+        unitConfig.X-StopOnRemoval = false;
+
         environment = config.nix.envVars //
           { inherit (config.environment.sessionVariables) NIX_PATH;
             HOME = "/root";
