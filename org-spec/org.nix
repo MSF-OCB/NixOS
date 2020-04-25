@@ -8,7 +8,7 @@
 #                                                                      #
 ########################################################################
 
-{ lib, ... }:
+{ config, lib, ... }:
 
 with lib;
 
@@ -18,7 +18,23 @@ with lib;
   ];
   
   settings = {
-    system.nix_channel = mkDefault "19.09"; 
+    system.nix_channel = let
+      host_name           = config.settings.network.host_name;
+      stable_version      = "19.09";
+      upgrade_version     = "20.03";
+      early_upgrade_hosts = [
+        "sshrelay1"
+        "benuc002"
+        "benuc010"
+        "benuc012"
+        "bevm012"
+        "nixos-dev"
+        "dhis2-dev"
+      ];
+    in mkDefault (if (elem host_name early_upgrade_hosts)
+                  then upgrade_version
+                  else stable_version);
+
     reverse_tunnel.relay_servers = {
       sshrelay1 = {
         addresses  = [ "sshrelay1.msf.be" "185.199.180.11" ];
