@@ -77,8 +77,29 @@ in {
 
         path = with pkgs; [ coreutils gnutar xz.bin gzip gitMinimal config.nix.package.out ];
 
-        script        = ''
-          ${config.system.build.nixos-rebuild}/bin/nixos-rebuild switch --no-build-output
+        script = let
+          upgrade_cfg = config.system.autoUpgrade;
+          nixos-rebuild = "${config.system.build.nixos-rebuild}/bin/nixos-rebuild";
+          date     = "${pkgs.coreutils}/bin/date";
+          readlink = "${pkgs.coreutils}/bin/readlink";
+          shutdown = "${pkgs.systemd}/bin/shutdown";
+        in ''
+          ${nixos-rebuild} boot --no-build-output
+
+          booted="$(${readlink} /run/booted-system/{initrd,kernel,kernel-modules})"
+          built="$(${readlink} /nix/var/nix/profiles/system/{initrd,kernel,kernel-modules})"
+          ${optionalString (upgrade_cfg.rebootWindow != null) ''current_time="$(${date} +%H:%M)"''}
+
+          if [ "$booted" = "$built" ]; then
+            ${nixos-rebuild} switch
+          ${optionalString (upgrade_cfg.rebootWindow != null) ''
+            elif [[ "''${current_time}" < "${upgrade_cfg.rebootWindow.lower}" ]] || \
+                 [[ "''${current_time}" > "${upgrade_cfg.rebootWindow.upper}" ]]; then
+              echo "Outside of configured reboot window, skipping."
+          ''}
+          else
+            ${shutdown} -r +1
+          fi
         '';
       };
 

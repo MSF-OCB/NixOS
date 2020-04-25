@@ -46,7 +46,7 @@ in {
         booted="$(${readlink} /run/booted-system/{initrd,kernel,kernel-modules})"
         built="$(${readlink} /nix/var/nix/profiles/system/{initrd,kernel,kernel-modules})"
         ${optionalString (cfg.rebootWindow != null) ''current_time="$(${date} +%H:%M)"''}
-          
+ 
         if [ "$booted" = "$built" ]; then
           ${nixos-rebuild} switch ${toString flags}
         ${optionalString (cfg.rebootWindow != null) ''
