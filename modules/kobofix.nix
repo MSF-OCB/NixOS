@@ -29,7 +29,6 @@ with lib;
         WorkingDirectory = config.settings.kobofix.kobo_directory;
       };
       path = [ pkgs.docker ];
-      restartIfChanged = false;
       script = let
         docker_compose = "${pkgs.docker_compose}/bin/docker-compose";
       in ''

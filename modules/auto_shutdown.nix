@@ -28,8 +28,6 @@ in {
     systemd.services.auto_shutdown = {
       enable = true;
       description = "Automatically shut down the server at a fixed time.";
-      restartIfChanged = false;
-      unitConfig.X-StopOnRemoval = false;
       serviceConfig.Type = "oneshot";
       script = ''
         /run/current-system/sw/bin/shutdown -h +5
