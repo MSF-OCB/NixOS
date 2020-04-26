@@ -16,11 +16,12 @@ with (import ../msf_lib.nix);
 {
   config = let
     host_name = config.settings.network.host_name;
+    loadJSON  = path: builtins.fromJSON (builtins.readFile path);
   in {
     settings = {
       users.users = let
         users_json_path = ../org-spec/json/users.json;
-        json_data = builtins.fromJSON (builtins.readFile users_json_path);
+        json_data       = loadJSON users_json_path;
 
         # Load the list at path in the given attribute set and convert it to
         # an attribute set with every list element as a key and the value
@@ -45,7 +46,7 @@ with (import ../msf_lib.nix);
 
       reverse_tunnel.tunnels = let
         tunnel_json_path = ../org-spec/json/tunnels.json;
-        json_data = builtins.fromJSON (builtins.readFile tunnel_json_path);
+        json_data        = loadJSON tunnel_json_path;
       in
         json_data.tunnels.per-host;
     };
