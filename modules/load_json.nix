@@ -41,7 +41,7 @@ with (import ../msf_lib.nix);
         enabledRoles   = host_name: attrByPath [ "users" "per-host" host_name "enable_roles" ] [];
         onRoleAbsent   = role: host_name: abort ''The role "${role}" which was enabled for host "${host_name}" is not defined.'';
       in
-        recursiveMerge ([ (listToAttrs_const [ "users" "tunnel_only" ]                 remoteTunnel       [] json_data)
+        recursiveMerge ([ (listToAttrs_const [ "users" "remote_tunnel" ]               remoteTunnel       [] json_data)
                           (listToAttrs_const [ "users" "per-host" host_name "enable" ] { enable = true; } [] json_data) ] ++
                           (map (role: listToAttrs_const [ "users" "roles" role ] { enable = true; } (onRoleAbsent role host_name) json_data)
                                (enabledRoles host_name json_data)));
