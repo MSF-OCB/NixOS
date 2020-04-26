@@ -5,7 +5,7 @@ with lib;
 with (import ../msf_lib.nix);
 
 {
-  imports = flatten [
+  imports = [
     ../modules/network.nix
     ../modules/packages.nix
     ../modules/load_json.nix
@@ -13,7 +13,7 @@ with (import ../msf_lib.nix);
     ../modules/sshd.nix
     ../modules/system.nix
     ../modules/users.nix
-    (msf_lib.importIfExists ../org-spec/org.nix)
+    ../org-spec/org.nix
   ];
 }
 
