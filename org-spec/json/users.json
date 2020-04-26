@@ -236,18 +236,7 @@
         ]
       }
     },
-    "roles": {
-      "mast": [
-        "damien",
-        "didier",
-        "godfried",
-        "joana",
-        "kathy",
-        "vini",
-        "yusuph"
-      ]
-    },
-    "tunnel_only": [
+    "remote_tunnel": [
       "damien",
       "didier",
       "dirk",
@@ -284,6 +273,17 @@
       "uf_ve_bolivar",
       "unifield",
       "vini"
-    ]
+    ],
+    "roles": {
+      "mast": [
+        "damien",
+        "didier",
+        "godfried",
+        "joana",
+        "kathy",
+        "vini",
+        "yusuph"
+      ]
+    }
   }
 }
