@@ -28,9 +28,10 @@ with (import ../msf_lib.nix);
         # set to a given constant.
         # The function onAbsent is called when the specified path does not exist.
         # Example:
-        #   listToAttrs_const [ "per-host" "benuc002" "enable" ] val (const []) { per-host.benuc002.enable = [ "foo", "bar" ]; }
+        #   listToAttrs_const [ "per-host" "benuc002" "enable" ] val [] { per-host.benuc002.enable = [ "foo", "bar" ]; }
         # will yield:
         #   { foo = val; bar = val; }
+        # If the given path cannot be found, the value of onAbsent will be returned.
         listToAttrs_const = path: const: onAbsent: attrset: listToAttrs (map (name: nameValuePair name const)
                                                                         (attrByPath path onAbsent attrset));
         # recursiveUpdate merges the two resulting attribute sets recursively
