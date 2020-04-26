@@ -50,17 +50,25 @@ with (import <nixpkgs> {}).lib;
       };
       # Admin users have the same rights as admin_base users and are enabled by default
       admin = admin_base // { enable = true; };
+
+      localShell = {
+        enable     = mkDefault false;
+        sshAllowed = true;
+        hasShell   = true;
+        canTunnel  = false;
+      };
+
       # Users who can tunnel only
       # These are not enabled by default and should be enabled on a by-server basis
-      tunnelOnly = {
+      remoteTunnel = {
         enable     = mkDefault false;
         sshAllowed = true;
         hasShell   = false;
         canTunnel  = true;
       };
       # Users who are tunnel-only but can tunnel to all NixOS servers and query the open tunnels
-      fieldSupport = tunnelOnly // { enable = true;
-                                     forceMonitorCommand = true; };
+      fieldSupport = remoteTunnel // { enable = true;
+                                       forceMonitorCommand = true; };
     };
   };
 }

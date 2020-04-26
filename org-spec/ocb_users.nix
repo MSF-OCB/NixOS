@@ -31,13 +31,12 @@ with (import ../msf_lib.nix).msf_lib.user_roles;
     deepak   = fieldSupport;
     paul     = fieldSupport;
 
-    yusuph   = tunnelOnly // {
+    yusuph   = remoteTunnel // {
       hasShell    = true;
       extraGroups = [ "docker" ];
     };
     # Msfocb-kinshasa-sida-Ehmanager@brussels.msf.org
-    gauthier = tunnelOnly // {
-      hasShell    = true;
+    gauthier = localShell // {
       extraGroups = [ "docker" ];
     };
   };
