@@ -24,6 +24,7 @@ with lib;
       upgrade_version     = "20.03";
       early_upgrade_hosts = [
         "sshrelay1"
+        "sshrelay2"
         "benuc002"
         "benuc010"
         "benuc012"
