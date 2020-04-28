@@ -10,6 +10,11 @@
 {
   time.timeZone = "Europe/Brussels";
 
+  boot.kernel.sysctl = {
+    # Required for ElasticSearch
+    "vm.max_map_count" = 262144;
+  };
+
   settings = {
     boot.mode = "uefi";
     reverse_tunnel.enable = true;
