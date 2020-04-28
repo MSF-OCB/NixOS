@@ -8,7 +8,6 @@
 ########################################################################
 
 {
-
   time.timeZone = "Europe/Brussels";
 
   settings = {
@@ -18,8 +17,6 @@
     crypto.enable = true;
     docker.enable = true;
     virtualbox.enable = true;
-    system.nix_channel = "20.03"; 
   };
-
 }
 

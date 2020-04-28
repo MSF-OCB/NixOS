@@ -30,7 +30,9 @@ with lib;
         "benuc012"
         "bevm012"
         "nixos-dev"
+        "nixos-virt"
         "dhis2-dev"
+        "docker-dmz-11"
       ];
     in mkDefault (if (elem host_name early_upgrade_hosts)
                   then upgrade_version
