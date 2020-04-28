@@ -194,6 +194,11 @@
           "uf_ve_bolivar"
         ]
       },
+      "bevm015": {
+        "enable": [
+          "uf_cm_bamenda"
+        ]
+      },
       "chk-emr-a": {
         "enable": [
           "gauthier"
@@ -255,6 +260,7 @@
       "uf_cd_puc",
       "uf_cf_castor_bangui",
       "uf_cf_coordination",
+      "uf_cm_bamenda",
       "uf_eg_maadi_annex1",
       "uf_eg_maadi_coordination",
       "uf_gn_conakry",
