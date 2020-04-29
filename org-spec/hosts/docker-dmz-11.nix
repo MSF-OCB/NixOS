@@ -25,6 +25,10 @@
     };
     docker.enable = true;
     docker.swarm.enable = true;
+    packages.python_package =
+      (pkgs.python3.withPackages (python_pkgs: [
+        python_pkgs.docker
+      ]));
     network = {
       host_name = "docker-dmz-11";
       static_ifaces.ens192 = {
@@ -36,3 +40,4 @@
     };
   };
 }
+
