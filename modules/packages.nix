@@ -19,7 +19,7 @@ with lib;
 {
   options.settings.packages.python_package = mkOption {
     type    = types.package;
-    default = [];
+    default = pkgs.python3;
   };
 
   config.environment.systemPackages = with pkgs; [
