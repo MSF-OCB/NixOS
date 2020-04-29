@@ -8,11 +8,21 @@
 #                                                                      #
 ########################################################################
 
-{ pkgs, ... }:
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.settings.packages;
+in
+
+with lib;
 
 {
+  options.settings.packages.python_package = mkOption {
+    type    = types.package;
+    default = [];
+  };
 
-  environment.systemPackages = with pkgs; [
+  config.environment.systemPackages = with pkgs; [
     cryptsetup
     keyutils
     wget
@@ -44,7 +54,7 @@
     nix-info
     nix-bundle
     # We need python3 to be able to control the machine using Ansible
-    python3
+    cfg.python_package
   ];
 
 }
