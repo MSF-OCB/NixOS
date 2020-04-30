@@ -26,8 +26,9 @@ with import <nixpkgs> {};
       filetype plugin on
       filetype indent on
       if has("autocmd")
-        au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
+        autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
           \| exe "normal! g`\"" | endif
+        autocmd BufWritePre * :%s/\s\+$//e
       endif
 
       set encoding=utf-8
