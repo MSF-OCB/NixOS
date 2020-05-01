@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - 'install.sh'
+      - 'rescue_iso/**'
+      - 'README.md'
+      - '.gitignore'
 
 jobs:
   deploy:
