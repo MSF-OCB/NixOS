@@ -25,6 +25,5 @@ ansible-playbook --timeout="${CONNECTION_TIMEOUT}" \
                  --key-file "${KEYFILE}" \
                  --vault-password-file "${VAULTPASS}" \
                  --inventory "${HOSTFILE}" \
-                 --extra-vars "build_sha=${GITHUB_SHA}" \
                  "${ANSIBLE_DIR}"/deploy.yml
 
