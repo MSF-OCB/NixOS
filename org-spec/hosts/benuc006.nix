@@ -24,6 +24,8 @@
     docker.enable = true;
   };
 
+environment.systemPackages = with pkgs; [certbot];
+
   imports = [
     ../../modules/kobofix.nix
   ];
