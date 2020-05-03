@@ -7,7 +7,7 @@
 # LOCAL EDITS WILL BE OVERWRITTEN.                                     #
 #                                                                      #
 ########################################################################
-
+{ pkgs, ... }:
 {
   time.timeZone = "Africa/Johannesburg";
 
