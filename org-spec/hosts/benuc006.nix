@@ -8,6 +8,7 @@
 #                                                                      #
 ########################################################################
 { pkgs, ... }:
+
 {
   time.timeZone = "Africa/Johannesburg";
 
@@ -24,9 +25,10 @@
     docker.enable = true;
   };
 
-environment.systemPackages = with pkgs; [certbot];
+  environment.systemPackages = [ pkgs.certbot ];
 
   imports = [
     ../../modules/kobofix.nix
   ];
 }
+
