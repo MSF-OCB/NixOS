@@ -2,9 +2,7 @@
 
 umask 0077
 
-# The workdir of the Docker container will be the clone of the NixOS repo
 ANSIBLE_DIR="/nixos_deploy"
-
 KEYFILE="/root/.id_ec"
 VAULTPASS="/root/.vault_pass"
 HOSTFILE="${ANSIBLE_DIR}/hosts.yml"
