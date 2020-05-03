@@ -7,7 +7,7 @@ ANSIBLE_DIR="/nixos_deploy"
 
 KEYFILE="/root/.id_ec"
 VAULTPASS="/root/.vault_pass"
-HOSTFILE="${ANSIBLE_DIR}/hosts/yml"
+HOSTFILE="${ANSIBLE_DIR}/hosts.yml"
 CONNECTION_TIMEOUT=120
 
 echo "${VAULT_PASS}" > "${VAULTPASS}"
