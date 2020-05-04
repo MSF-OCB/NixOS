@@ -13,7 +13,8 @@
 with lib;
 
 let
-  cfg = config.settings.users;
+  cfg            = config.settings.users;
+  org_cfg        = config.settings.org;
   reverse_tunnel = config.settings.reverse_tunnel;
 
   userOpts = { name, config, ... }: {
@@ -102,7 +103,7 @@ in {
   };
 
   config = let
-    toKeyPath = name: ../org-spec/keys + ("/" + name);
+    toKeyPath = name: org_cfg.keys_path + ("/" + name);
   in {
     users = {
       mutableUsers = false;
