@@ -16,8 +16,26 @@ with lib;
   imports = [
     ./ocb_users.nix
   ];
-  
-  settings = {
+
+  options.settings.org = {
+    users_json_path = mkOption {
+      type     = types.path;
+      default  = ./json/users.json;
+      readOnly = true;
+    };
+    tunnels_json_path = mkOption {
+      type     = types.path;
+      default  = ./json/tunnels.json;
+      readOnly = true;
+    };
+    keys_path = mkOption {
+      type     = types.path;
+      default  = ./keys;
+      readOnly = true;
+    };
+  };
+
+  config.settings = {
     system.nix_channel = let
       host_name           = config.settings.network.host_name;
       stable_version      = "19.09";

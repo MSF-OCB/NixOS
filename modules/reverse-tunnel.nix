@@ -14,7 +14,8 @@ with lib;
 with (import ../msf_lib.nix);
 
 let
-  cfg = config.settings.reverse_tunnel;
+  cfg     = config.settings.reverse_tunnel;
+  org_cfg = config.settings.org;
 
   tunnelOpts = { name, ... }: {
     options = {
@@ -146,7 +147,7 @@ in {
     assertions = [
       {
         assertion = cfg.enable -> hasAttr config.networking.hostName cfg.tunnels;
-        message   = "The reverse tunnel service is enabled but this host's host name is not present in the tunnel config (org-spec/json/tunnels.json).";
+        message   = "The reverse tunnel service is enabled but this host's host name is not present in the tunnel config (${toString org_cfg.tunnels_json_path}).";
       }
       {
         assertion = cfg.enable -> builtins.pathExists cfg.private_key_source;
