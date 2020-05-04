@@ -50,7 +50,13 @@ with lib;
         "nixos-dev"
         "nixos-virt"
         "dhis2-dev"
+        "dhis2-hq-monitoring"
+        "dhis2-hq-remote"
+        "dhis2-metadata"
+        "dhis2-validation"
+        "docker-dmz-2"
         "docker-dmz-11"
+        "rescue-iso"
       ];
     in mkDefault (if (elem host_name early_upgrade_hosts)
                   then upgrade_version
