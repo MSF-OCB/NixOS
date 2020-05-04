@@ -57,7 +57,11 @@ def inventory(tunnel_ports, key_file, time_out):
           "hosts": inventory_definition(tunnel_ports),
           "vars": {
             "ansible_host": "localhost",
-            "ansible_ssh_common_args": f"-o 'ProxyCommand=ssh -W %h:%p -i {key_file} -p 22 -o ConnectTimeout={time_out} tunneller@sshrelay2.msf.be'"
+            "ansible_ssh_common_args": f"-o 'ProxyCommand=ssh -W %h:%p " + \
+                                                            f"-i {key_file} " + \
+                                                             "-p 22 " + \
+                                                            f"-o ConnectTimeout={time_out} " + \
+                                                             "tunneller@sshrelay2.msf.be'"
           }
         }
       },
