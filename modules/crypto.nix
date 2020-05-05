@@ -58,7 +58,7 @@ in {
                              (optional config.services.dockerRegistry.enable "docker-registry.service");
       in [
         {
-          enable = true;
+          enable = cfg.enable;
           what   = "/dev/disk/by-label/nixos_data";
           where  = "/opt";
           type   = "ext4";
@@ -70,7 +70,7 @@ in {
           requiredBy = dependent_services;
         }
         {
-          enable   = true;
+          enable   = cfg.enable;
           what     = "/opt/.home";
           where    = "/home";
           type     = "none";
