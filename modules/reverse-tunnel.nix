@@ -208,10 +208,10 @@ in {
           base_files = [ private_key_path cfg.private_key_source_default];
           files = concatStringsSep " " (unique (concatMap (f: [ f "${f}.pub" ]) base_files));
         in ''
-          for FILE in ${files}; do
-            if [ -f ''${FILE} ]; then
-              chown root:root ''${FILE}
-              chmod 0400 ''${FILE}
+          for file in ${files}; do
+            if [ -f ''${file} ]; then
+              chown root:root ''${file}
+              chmod 0400 ''${file}
             fi
           done
         '';
