@@ -63,6 +63,7 @@
       "benuc020": {
         "enable": [
           "salima",
+          "uf_pk_karashi",
           "unifield"
         ]
       },
@@ -271,6 +272,7 @@
       "uf_ke_embu",
       "uf_mz_beira",
       "uf_mz_maputo",
+      "uf_pk_karashi",
       "uf_sl_baama",
       "uf_sl_freetown",
       "uf_sl_kenema",
