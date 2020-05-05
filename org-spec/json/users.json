@@ -62,7 +62,6 @@
       },
       "benuc020": {
         "enable": [
-          "5",
           "salima",
           "unifield"
         ]
@@ -243,7 +242,6 @@
       }
     },
     "remote_tunnel": [
-      "5",
       "damien",
       "didier",
       "dirk",
