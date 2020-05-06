@@ -13,73 +13,147 @@ with lib;
 
 let
   cfg = config.settings.crypto;
-in {
 
-  options = {
-    settings.crypto = {
-      enable = mkEnableOption "the service to mount the encrypted data partition";
+  cryptoOpts = { name, config, ... }: {
+    options = {
+      enable = mkEnableOption "the encrypted device";
+
+      name = mkOption {
+        type = types.strMatching "^[[:lower:]][-_[:lower:]]+[[:lower:]]$";
+      };
 
       device = mkOption {
         type    = types.str;
-        default = "/dev/LVMVolGroup/nixos_data";
+        example = "/dev/LVMVolGroup/nixos_data";
         description = "The device to mount.";
       };
-    };
-  };
 
-  config = {
-    systemd = mkIf cfg.enable {
-      services.open_nixos_data = {
-        enable = cfg.enable;
-        description = "Open nixos_data volume";
-        conflicts = [ "shutdown.target" ];
-        before    = [ "shutdown.target" ];
-        unitConfig = {
-          DefaultDependencies = "no";
-          ConditionPathExists = "!/dev/mapper/nixos_data_decrypted";
-        };
-        serviceConfig = {
-          User = "root";
-          Type = "oneshot";
-          RemainAfterExit = true;
-          ExecStart = ''
-            ${pkgs.cryptsetup}/bin/cryptsetup open ${cfg.device} nixos_data_decrypted --key-file /keyfile
-          '';
-          ExecStop = ''
-            ${pkgs.cryptsetup}/bin/cryptsetup close nixos_data_decrypted
-          '';
-        };
+      key_file = mkOption {
+        type    = types.str;
+        default = "/keyfile";
       };
 
-      mounts = let
+      mount_point = mkOption {
+        type        = types.strMatching "^(/[-_[:lower:]]*)+$";
+        description = ''
+          The mount point on which to mount the partition contained
+          in this encrypted volume.
+          Currently we assume that every encrypted volume, contains
+          a single partition, but this assumption could be generalised.
+        '';
+      };
+
+      filesystem_type = mkOption {
+        type    = types.str;
+        default = "ext4";
+      };
+
+      mount_options = mkOption {
+        type    = types.str;
+        default = "";
+        example = "acl,noatime,nosuid,nodev";
+      };
+
+      dependent_services = mkOption {
+        type    = with types; listOf (strMatching "^[-_[:upper:][:lower:]]*\\.service$");
+        example = [ "docker.service" "docker-registry.service" ];
+        default = [];
+      };
+
+    };
+
+    config = {
+      name = mkDefault name;
+    };
+  };
+in {
+
+  options.settings.crypto = {
+    mounts = mkOption {
+      type    = with types; attrsOf (submodule cryptoOpts);
+      default = [];
+    };
+    encrypted_opt.enable = mkEnableOption "the encrypted /opt partition";
+  };
+
+  imports = [
+    (mkRenamedOptionModule [ "settings" "crypto" "enable" ] [ "settings" "crypto" "encrypted_opt" "enable" ])
+  ];
+
+  config = let
+    decrypted_name    = conf: "nixos_decrypted_${conf.name}";
+    open_service_name = conf: "open_encrypted_${conf.name}";
+
+    mkOpenService = conf: {
+      enable      = conf.enable;
+      description = "Open the encrypted ${conf.name} partition.";
+      conflicts   = [ "shutdown.target" ];
+      before      = [ "shutdown.target" ];
+      restartIfChanged = false;
+      unitConfig = {
+        DefaultDependencies = "no";
+        ConditionPathExists = "!/dev/mapper/${decrypted_name conf}";
+        X-StopOnRemoval     = false;
+      };
+      serviceConfig = {
+        User = "root";
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = ''
+          ${pkgs.cryptsetup}/bin/cryptsetup open ${conf.device} ${decrypted_name conf} --key-file ${conf.key_file}
+        '';
+        ExecStop = ''
+          ${pkgs.cryptsetup}/bin/cryptsetup close ${decrypted_name conf}
+        '';
+      };
+    };
+    mkMountUnit = conf: {
+      enable = conf.enable;
+      #TODO generalise, should we specify the partitions seperatly?
+      what   = "/dev/mapper/${decrypted_name conf}";
+      where  = conf.mount_point;
+      type   = conf.filesystem_type;
+      options    = conf.mount_options;
+      after      = [ "${open_service_name conf}.service" ];
+      requires   = [ "${open_service_name conf}.service" ];
+      wantedBy   = [ "multi-user.target" ];
+      before     = conf.dependent_services;
+      requiredBy = conf.dependent_services;
+    };
+
+    enabled_mounts = filterAttrs (_: conf: conf.enable) cfg.mounts;
+    open_services  = mapAttrs' (name: conf: nameValuePair "open_encrypted_${conf.name}"
+                                                          (mkOpenService conf))
+                               enabled_mounts;
+    mount_units    = mapAttrsToList (_: conf: mkMountUnit conf) enabled_mounts;
+
+    extra_mount_units = [
+      (mkIf cfg.encrypted_opt.enable {
+        enable   = true;
+        what     = "/opt/.home";
+        where    = "/home";
+        type     = "none";
+        options  = "bind";
+        after    = [ "opt.mount" ];
+        requires = [ "opt.mount" ];
+        wantedBy = [ "multi-user.target" ];
+      })
+    ];
+  in {
+    settings.crypto.mounts = {
+      opt = mkIf cfg.encrypted_opt.enable {
+        enable = true;
+        device = "/dev/LVMVolGroup/nixos_data";
+        mount_point   = "/opt";
+        mount_options = "acl,noatime,nosuid,nodev";
         # When /opt is a separate partition, it needs to be mounted before starting docker and docker-registry.
-        # For documentation about "optional" see: https://github.com/NixOS/nixpkgs/blob/master/lib/lists.nix
         dependent_services = (optional config.virtualisation.docker.enable "docker.service") ++
                              (optional config.services.dockerRegistry.enable "docker-registry.service");
-      in [
-        {
-          enable = cfg.enable;
-          what   = "/dev/disk/by-label/nixos_data";
-          where  = "/opt";
-          type   = "ext4";
-          options    = "acl,noatime,nosuid,nodev";
-          after      = [ "open_nixos_data.service" ];
-          requires   = [ "open_nixos_data.service" ];
-          wantedBy   = [ "multi-user.target" ];
-          before     = dependent_services;
-          requiredBy = dependent_services;
-        }
-        {
-          enable   = cfg.enable;
-          what     = "/opt/.home";
-          where    = "/home";
-          type     = "none";
-          options  = "bind";
-          after    = [ "opt.mount" ];
-          requires = [ "opt.mount" ];
-          wantedBy = [ "multi-user.target" ];
-        }
-      ];
+      };
+    };
+    systemd = {
+      services = open_services;
+      mounts   = mount_units ++ extra_mount_units;
     };
   };
 }
