@@ -94,7 +94,7 @@ in {
     decrypted_name    = conf: "nixos_decrypted_${conf.name}";
     open_service_name = conf: "open_encrypted_${conf.name}";
 
-    mkOpenService = conf: {
+    mkService = conf: {
       enable      = conf.enable;
       description = "Open the encrypted ${conf.name} partition.";
       conflicts   = [ "shutdown.target" ];
@@ -117,7 +117,7 @@ in {
         '';
       };
     };
-    mkMountUnit = conf: {
+    mkMount = conf: {
       enable = conf.enable;
       #TODO generalise, should we specify the partitions separatly?
       what   = "/dev/mapper/${decrypted_name conf}";
@@ -131,24 +131,10 @@ in {
       requiredBy = conf.dependent_services;
     };
 
-    enabled_mounts = filterAttrs (_: conf: conf.enable) cfg.mounts;
-    open_services  = mapAttrs' (name: conf: nameValuePair "open_encrypted_${conf.name}"
-                                                          (mkOpenService conf))
-                               enabled_mounts;
-    mount_units    = mapAttrsToList (_: conf: mkMountUnit conf) enabled_mounts;
-
-    extra_mount_units = [
-      (mkIf cfg.encrypted_opt.enable {
-        enable   = true;
-        what     = "/opt/.home";
-        where    = "/home";
-        type     = "none";
-        options  = "bind";
-        after    = [ "opt.mount" ];
-        requires = [ "opt.mount" ];
-        wantedBy = [ "multi-user.target" ];
-      })
-    ];
+    filterEnabled = filterAttrs (_: conf: conf.enable);
+    mkServices    = mapAttrs' (_: conf: nameValuePair (open_service_name conf)
+                                                      (mkService conf));
+    mkMounts      = mapAttrsToList (_: conf: mkMount conf);
   in {
     settings.crypto.mounts = {
       opt = mkIf cfg.encrypted_opt.enable {
@@ -161,9 +147,23 @@ in {
                              (optional config.services.dockerRegistry.enable "docker-registry.service");
       };
     };
-    systemd = {
-      services = open_services;
-      mounts   = mount_units ++ extra_mount_units;
+    systemd = let
+      enabled = filterEnabled cfg.mounts;
+      extra_mount_units = [
+        (mkIf cfg.encrypted_opt.enable {
+          enable   = true;
+          what     = "/opt/.home";
+          where    = "/home";
+          type     = "none";
+          options  = "bind";
+          after    = [ "opt.mount" ];
+          requires = [ "opt.mount" ];
+          wantedBy = [ "multi-user.target" ];
+        })
+      ];
+    in {
+      services = mkServices enabled;
+      mounts   = mkMounts enabled ++ extra_mount_units;
     };
   };
 }
