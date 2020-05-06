@@ -119,7 +119,7 @@ in {
     };
     mkMount = conf: {
       enable = conf.enable;
-      #TODO generalise, should we specify the partitions separatly?
+      #TODO generalise, should we specify the partitions separately?
       what   = "/dev/mapper/${decrypted_name conf}";
       where  = conf.mount_point;
       type   = conf.filesystem_type;
