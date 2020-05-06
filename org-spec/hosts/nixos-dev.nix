@@ -14,8 +14,8 @@
   settings = {
     boot.mode = "uefi";
     reverse_tunnel.enable = true;
-    crypto = {
-      encrypted_opt.enable = true;
+    crypto.encrypted_opt = {
+      enable = true;
       device = "/dev/LVMVolGroup_slow/nixos_data";
     };
     vmware.enable = true;

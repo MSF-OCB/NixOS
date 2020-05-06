@@ -19,8 +19,8 @@
       device = "/dev/disk/by-id/wwn-0x5000c50093627fae";
     };
     reverse_tunnel.enable = true;
-    crypto = {
-      encrypted_opt.enable = true;
+    crypto.encrypted_opt = {
+      enable = true;
       device = "/safe.img";
     };
     docker.enable = true;

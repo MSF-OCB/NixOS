@@ -18,8 +18,8 @@
       device = "/dev/disk/by-id/wwn-0x502b2a201d1c1b1a";
     };
     reverse_tunnel.enable = true;
-    crypto = {
-      encrypted_opt.enable = true;
+    crypto.encrypted_opt = {
+      enable = true;
       device = "/safe.img";
     };
     docker.enable = true;

@@ -18,8 +18,8 @@
       device = "/dev/disk/by-id/ata-TS128GMTS600_D130020403";
     };
     reverse_tunnel.enable = true;
-    crypto = {
-      encrypted_opt.enable = false;
+    crypto.encrypted_opt = {
+      enable = false;
       device = "/safe.img";
     };
     docker.enable = true;

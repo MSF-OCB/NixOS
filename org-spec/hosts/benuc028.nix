@@ -15,8 +15,8 @@
     network.host_name = "benuc028";
     boot.mode = "uefi";
     reverse_tunnel.enable = true;
-    crypto = {
-      encrypted_opt.enable = true;
+    crypto.encrypted_opt = {
+      enable = true;
       device = "/safe.img";
     };
     docker.enable = true;

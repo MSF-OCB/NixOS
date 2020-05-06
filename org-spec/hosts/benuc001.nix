@@ -18,8 +18,8 @@
       device = "/dev/disk/by-id/ata-Samsung_SSD_850_EVO_500GB_S2RBNX0HA07507L";
     };
     reverse_tunnel.enable = true;
-    crypto = {
-      encrypted_opt.enable = true;
+    crypto.encrypted_opt = {
+      enable = true;
       device = "/safe.img";
     };
     docker.enable = true;
