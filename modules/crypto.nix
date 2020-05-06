@@ -23,8 +23,8 @@ let
       };
 
       device = mkOption {
-        type    = types.str;
-        example = "/dev/LVMVolGroup/nixos_data";
+        type        = types.str;
+        example     = "/dev/LVMVolGroup/nixos_data";
         description = "The device to mount.";
       };
 
@@ -73,11 +73,21 @@ in {
       type    = with types; attrsOf (submodule cryptoOpts);
       default = [];
     };
-    encrypted_opt.enable = mkEnableOption "the encrypted /opt partition";
+
+    encrypted_opt = {
+      enable = mkEnableOption "the encrypted /opt partition";
+
+      device = mkOption {
+        type        = types.str;
+        default     = "/dev/LVMVolGroup/nixos_data";
+        description = "The device to mount on /opt.";
+      };
+    };
   };
 
   imports = [
     (mkRenamedOptionModule [ "settings" "crypto" "enable" ] [ "settings" "crypto" "encrypted_opt" "enable" ])
+    (mkRenamedOptionModule [ "settings" "crypto" "device" ] [ "settings" "crypto" "encrypted_opt" "device" ])
   ];
 
   config = let
