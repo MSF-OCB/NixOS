@@ -153,7 +153,7 @@ in {
     settings.crypto.mounts = {
       opt = mkIf cfg.encrypted_opt.enable {
         enable = true;
-        device = "/dev/LVMVolGroup/nixos_data";
+        device = cfg.encrypted_opt.device;
         mount_point   = "/opt";
         mount_options = "acl,noatime,nosuid,nodev";
         # When /opt is a separate partition, it needs to be mounted before starting docker and docker-registry.
