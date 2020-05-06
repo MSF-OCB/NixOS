@@ -21,7 +21,7 @@
       device = "/dev/disk/by-id/wwn-0x5000c500935b35ec";
     };
     reverse_tunnel.enable = true;
-    crypto.enable = true;
+    crypto.encrypted_opt.enable = true;
     docker.enable = true;
   };
 

@@ -18,7 +18,7 @@
     };
     reverse_tunnel.enable = true;
     vmware.enable = true;
-    crypto.enable = false;
+    crypto.encrypted_opt.enable = false;
     docker.enable = true;
     network = {
       host_name = "dhis2-prod";

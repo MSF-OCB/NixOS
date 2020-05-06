@@ -14,7 +14,7 @@
     network.host_name = "nixos-virt";
     boot.mode = "uefi";
     reverse_tunnel.enable = false;
-    crypto.enable = true;
+    crypto.encrypted_opt.enable = true;
     docker.enable = true;
     virtualbox.enable = true;
   };
