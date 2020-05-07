@@ -13,12 +13,9 @@
   settings = {
     boot.mode = "uefi";
     reverse_tunnel.enable = true;
-#    crypto = {
-#      encrypted_opt.enable = true;
-#      mounts = {
-#        "es_proxy" = {
-#	  
-#	};
+#    crypto.mounts = {
+#     "es_proxy" = {
+#
 #     };
 #    };
     vmware = {
