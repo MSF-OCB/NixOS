@@ -205,6 +205,11 @@
           "uf_ic_abidjan"
         ]
       },
+      "bevm017": {
+        "enable": [
+          "uf_ke_kiambu"
+        ]
+      },
       "chk-emr-a": {
         "enable": [
           "gauthier"
@@ -276,6 +281,7 @@
       "uf_ic_abidjan",
       "uf_in_mumbai",
       "uf_ke_embu",
+      "uf_ke_kiambu",
       "uf_mz_beira",
       "uf_mz_maputo",
       "uf_pk_karashi",
