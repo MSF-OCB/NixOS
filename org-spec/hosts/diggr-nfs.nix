@@ -31,11 +31,15 @@
         fallback = false;
       };
     };
-#    services.nfs.server.enable = true;
-#    services.nfs.server.exports = ''
-#      /etc  *(rw,nohide,insecure,no_subtree_check)
-#    '';
-
   };
+
+  services.nfs.server.enable = true;
+  services.nfs.server.exports = "
+    /etc  192.168.50.0/24(rw,nohide,insecure,no_subtree_check)
+  ";
+  services.nfs.server.statdPort = 4000;
+  services.nfs.server.lockdPort = 4001;
+  networking.firewall.allowedTCPPorts = [ 2049 111 4000 4001 ];
+  networking.firewall.allowedUDPPorts = [ 2049 111 4000 4001 ];
 }
 
