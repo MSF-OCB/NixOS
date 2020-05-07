@@ -54,6 +54,7 @@ with lib;
         "dhis2-hq-remote"
         "dhis2-metadata"
         "dhis2-validation"
+        "diggr-nfs"
         "docker-dmz-2"
         "docker-dmz-11"
         "rescue-iso"
