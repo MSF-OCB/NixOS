@@ -201,6 +201,10 @@
         "remote_forward_port": 7101,
         "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG3cine6Ft3bAtEsWVHFy7a6ImcdOJJNjYlxjb4GAhXw"
       },    
+      "diggr-nfs": {
+        "remote_forward_port": 7103,
+        "public_key": ""
+      },    
       "docker-dmz-11": {
         "remote_forward_port": 7105,
         "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILwADhZ181R5XoobdnZzdOqxTZRmoTorkDUE3oNmcnE9"
