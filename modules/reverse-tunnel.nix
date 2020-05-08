@@ -159,7 +159,7 @@ in {
 
     users.extraUsers = {
       tunnel = let
-        stringNotEmpty  = s: stringLength (replaceStrings [ " " ] [ "" ] s) != 0;
+        stringNotEmpty  = s: stringLength s != 0;
         prefixes        = [ 0 cfg.prometheus_tunnel_port_prefix ];
         make_limitation = base_port: prefix: "permitlisten=\"${toString (add_port_prefix prefix base_port)}\"";
         make_key_config = tunnel:
