@@ -7,7 +7,11 @@
 #                                                                      #
 ########################################################################
 
-{
+let
+  statdPort  = 4000;
+  lockdPort  = 4001;
+  mountdPort = 4002;
+in {
   time.timeZone = "Europe/Brussels";
 
   settings = {
@@ -33,13 +37,18 @@
     };
   };
 
-  services.nfs.server.enable = true;
-  services.nfs.server.exports = "
-    /opt  192.168.50.158(rw,nohide,insecure,no_subtree_check)
-  ";
-  services.nfs.server.statdPort = 4000;
-  services.nfs.server.lockdPort = 4001;
-  networking.firewall.allowedTCPPorts = [ 2049 111 4000 4001 ];
-  networking.firewall.allowedUDPPorts = [ 2049 111 4000 4001 ];
+  services.nfs.server = {
+    enable = true;
+    exports = ''
+      /opt  192.168.50.158(rw,nohide,insecure,no_subtree_check)
+    '';
+    inherit statdPort lockdPort mountdPort;
+  };
+  networking.firewall = let
+    ports = [ 111 2049 statdPort lockdPort mountdPort ];
+  in {
+    allowedTCPPorts = ports;
+    allowedUDPPorts = ports;
+  };
 }
 
