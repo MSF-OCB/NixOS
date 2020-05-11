@@ -17,23 +17,25 @@ with lib;
   settings = {
     boot.mode = "uefi";
     reverse_tunnel.enable = true;
-    nfs.server = {
+    nfs.server = let
+      exportTo = [ "docker-dmz-11"];
+    in {
       enable = true;
       cryptoMounts = {
         esdata = {
           enable   = true;
           device   = "/dev/LVM_FCdata3_VG/esdata";
-          exportTo = [ "docker-dmz-11.local" ];
+          inherit exportTo;
         };
         esproxy = {
           enable   = true;
           device   = "/dev/LVM_FCdata1_VG/esproxy";
-          exportTo = [ "docker-dmz-11.local" ];
+          inherit exportTo;
         };
         esbackup = {
           enable   = true;
           device   = "/dev/LVM_NLdata1_VG/esbackup";
-          exportTo = [ "docker-dmz-11.local" ];
+          inherit exportTo;
         };
         diggr_other = {
           enable   = true;
