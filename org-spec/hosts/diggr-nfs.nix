@@ -54,10 +54,10 @@ in {
   services.nfs.server = {
     enable = true;
     exports = ''
-      /exports/esdata      192.168.50.158(rw,nohide,insecure,no_subtree_check)
-      /exports/esproxy     192.168.50.158(rw,nohide,insecure,no_subtree_check)
-      /exports/esbackup    192.168.50.158(rw,nohide,insecure,no_subtree_check)
-      /exports/diggr_other 192.168.50.158(rw,nohide,insecure,no_subtree_check)
+      /exports/esdata      docker-dmz-11.local(rw,nohide,insecure,no_subtree_check)
+      /exports/esproxy     docker-dmz-11.local(rw,nohide,insecure,no_subtree_check)
+      /exports/esbackup    docker-dmz-11.local(rw,nohide,insecure,no_subtree_check)
+      /exports/diggr_other docker-dmz-11.local(rw,nohide,insecure,no_subtree_check)
     '';
     inherit statdPort lockdPort mountdPort;
   };
