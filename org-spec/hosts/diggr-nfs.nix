@@ -7,21 +7,35 @@
 #                                                                      #
 ########################################################################
 
+{ lib, ... }:
+
+with lib;
+
 let
   statdPort  = 4000;
   lockdPort  = 4001;
   mountdPort = 4002;
+
+  mkNfsCryptoMount = name: device: {
+    enable             = true;
+    device             = "/dev/mapper/${device}";
+    mount_point        = "/exports/${name}";
+    mount_options      = "acl,noatime,nosuid,nodev";
+    dependent_services = [ "nfs-server.service" ];
+  };
+
 in {
   time.timeZone = "Europe/Brussels";
 
   settings = {
     boot.mode = "uefi";
     reverse_tunnel.enable = true;
-#    crypto.mounts = {
-#     "es_proxy" = {
-#
-#     };
-#    };
+    crypto.mounts = mapAttrs mkNfsCryptoMount {
+      esdata      = "LVM_FCdata3_VG-esdata";
+      esproxy     = "LVM_FCdata1_VG-esproxy";
+      esbackup    = "LVM_NLdata1_VG-esbackup";
+      diggr_other = "LVM_FCdata2_VG-diggr_other";
+    };
     vmware = {
       enable = true;
       inDMZ = true;
@@ -40,11 +54,10 @@ in {
   services.nfs.server = {
     enable = true;
     exports = ''
-      /opt                  192.168.50.158(rw,nohide,insecure,no_subtree_check)
-      /export/esdata        192.168.50.158(rw,nohide,insecure,no_subtree_check)
-      /export/esproxy_data  192.168.50.158(rw,nohide,insecure,no_subtree_check)
-      /export/esbackup      192.168.50.158(rw,nohide,insecure,no_subtree_check)
-      /export/diggr_other   192.168.50.158(rw,nohide,insecure,no_subtree_check)
+      /exports/esdata      192.168.50.158(rw,nohide,insecure,no_subtree_check)
+      /exports/esproxy     192.168.50.158(rw,nohide,insecure,no_subtree_check)
+      /exports/esbackup    192.168.50.158(rw,nohide,insecure,no_subtree_check)
+      /exports/diggr_other 192.168.50.158(rw,nohide,insecure,no_subtree_check)
     '';
     inherit statdPort lockdPort mountdPort;
   };
