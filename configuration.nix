@@ -27,6 +27,7 @@ with lib;
     ./modules/crypto.nix
     ./modules/docker.nix
     ./modules/maintenance.nix
+    ./modules/nfs.nix
     ./modules/prometheus.nix
     ./modules/virtualbox.nix
     ./modules/vmware.nix
