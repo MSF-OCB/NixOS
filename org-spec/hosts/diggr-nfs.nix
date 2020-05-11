@@ -40,7 +40,11 @@ in {
   services.nfs.server = {
     enable = true;
     exports = ''
-      /opt  192.168.50.158(rw,nohide,insecure,no_subtree_check)
+      /opt                  192.168.50.158(rw,nohide,insecure,no_subtree_check)
+      /export/esdata        192.168.50.158(rw,nohide,insecure,no_subtree_check)
+      /export/esproxy_data  192.168.50.158(rw,nohide,insecure,no_subtree_check)
+      /export/esbackup      192.168.50.158(rw,nohide,insecure,no_subtree_check)
+      /export/diggr_other   192.168.50.158(rw,nohide,insecure,no_subtree_check)
     '';
     inherit statdPort lockdPort mountdPort;
   };
