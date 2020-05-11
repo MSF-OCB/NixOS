@@ -59,6 +59,11 @@ in
       default  = [ 111 2049 ];
       readOnly = true;
     };
+    nfsExportOptions = mkOption {
+      type     = types.str;
+      default  = "rw,nohide,secure,no_subtree_check";
+      readOnly = true;
+    };
 
     client = {
       enable = mkEnableOption "the NFS client.";
@@ -85,7 +90,7 @@ in
     };
     mkNfsCryptoMounts = mapAttrs mkNfsCryptoMount;
 
-    mkExportEntry = name: client: "/exports/${name} ${client}(rw,nohide,insecure,no_subtree_check)";
+    mkExportEntry = name: client: "/exports/${name} ${client}(${nfsExportOptions})";
     mkExportList  = name: conf: map (mkExportEntry name) conf.exportTo;
     mkExports     = confs: concatStringsSep "\n" (flatten (mapAttrsToList mkExportList confs));
 
