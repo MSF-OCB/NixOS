@@ -17,11 +17,11 @@ with lib;
   settings = {
     boot.mode = "uefi";
     reverse_tunnel.enable = true;
-    nfs.server = let
-      exportTo = [ "docker-dmz-11"];
-    in {
+    nfs.server = {
       enable = true;
-      cryptoMounts = {
+      cryptoMounts = let
+        exportTo = [ "docker-dmz-11"];
+      in {
         esdata = {
           enable   = true;
           device   = "/dev/LVM_FCdata3_VG/esdata";
