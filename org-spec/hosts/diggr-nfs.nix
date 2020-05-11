@@ -19,7 +19,6 @@ with lib;
     reverse_tunnel.enable = true;
     nfs.server = {
       enable = true;
-
       cryptoMounts = {
         esdata = {
           enable   = true;
