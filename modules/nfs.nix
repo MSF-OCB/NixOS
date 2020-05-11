@@ -85,7 +85,7 @@ in
     };
     mkNfsCryptoMounts = mapAttrs mkNfsCryptoMount;
 
-    mkExportEntry = name: device: "/exports/${name} ${device}(rw,nohide,insecure,no_subtree_check)";
+    mkExportEntry = name: client: "/exports/${name} ${client}(rw,nohide,insecure,no_subtree_check)";
     mkExportList  = name: conf: map (mkExportEntry name) conf.exportTo;
     mkExports     = confs: concatStringsSep "\n" (flatten (mapAttrsToList mkExportList confs));
 
