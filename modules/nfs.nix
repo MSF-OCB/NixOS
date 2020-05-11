@@ -85,8 +85,9 @@ in
     };
     mkNfsCryptoMounts = mapAttrs mkNfsCryptoMount;
 
-    mkExportList = name: conf: map (device: "/exports/${name} ${device}(rw,nohide,insecure,no_subtree_check)") conf.exportTo;
-    mkExports    = confs: concatStringsSep "\n" (flatten (mapAttrsToList mkExportList confs));
+    mkExportEntry = name: device: "/exports/${name} ${device}(rw,nohide,insecure,no_subtree_check)";
+    mkExportList  = name: conf: map (mkExportEntry name) conf.exportTo;
+    mkExports     = confs: concatStringsSep "\n" (flatten (mapAttrsToList mkExportList confs));
 
     enabledCryptoMounts = filterAttrs (_: conf: conf.enable) cfg.server.cryptoMounts;
   in mkMerge [
