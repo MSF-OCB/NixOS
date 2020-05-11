@@ -90,7 +90,7 @@ in
     };
     mkNfsCryptoMounts = mapAttrs mkNfsCryptoMount;
 
-    mkExportEntry = name: client: "/exports/${name} ${client}(${nfsExportOptions})";
+    mkExportEntry = name: client: "/exports/${name} ${client}(${cfg.nfsExportOptions})";
     mkExportList  = name: conf: map (mkExportEntry name) conf.exportTo;
     mkExports     = confs: concatStringsSep "\n" (flatten (mapAttrsToList mkExportList confs));
 
