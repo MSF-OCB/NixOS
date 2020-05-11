@@ -83,7 +83,7 @@ in
 
     mkNfsCryptoMount = name: conf: {
       enable             = true;
-      device             = "/dev/mapper/${conf.device}";
+      device             = conf.device;
       mount_point        = "/exports/${name}";
       mount_options      = "acl,noatime,nosuid,nodev";
       dependent_services = [ "nfs-server.service" ];

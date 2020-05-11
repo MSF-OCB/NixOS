@@ -22,22 +22,22 @@ with lib;
       cryptoMounts = {
         esdata = {
           enable   = true;
-          device   = "LVM_FCdata3_VG-esdata";
+          device   = "/dev/LVM_FCdata3_VG/esdata";
           exportTo = [ "docker-dmz-11.local" ];
         };
         esproxy = {
           enable   = true;
-          device   = "LVM_FCdata1_VG-esproxy";
+          device   = "/dev/LVM_FCdata1_VG/esproxy";
           exportTo = [ "docker-dmz-11.local" ];
         };
         esbackup = {
           enable   = true;
-          device   = "LVM_NLdata1_VG-esbackup";
+          device   = "/dev/LVM_NLdata1_VG/esbackup";
           exportTo = [ "docker-dmz-11.local" ];
         };
         diggr_other = {
           enable   = true;
-          device   = "LVM_FCdata2_VG-diggr_other";
+          device   = "/dev/LVM_FCdata2_VG/diggr_other";
           exportTo = [ "docker-dmz-11.local" ];
         };
       };
