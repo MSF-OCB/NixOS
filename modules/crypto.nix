@@ -113,7 +113,7 @@ in {
           ${pkgs.cryptsetup}/bin/cryptsetup open ${conf.device} ${decrypted_name conf} --key-file ${conf.key_file}
         '';
         ExecStop = ''
-          ${pkgs.cryptsetup}/bin/cryptsetup close ${decrypted_name conf}
+          ${pkgs.cryptsetup}/bin/cryptsetup close --deferred ${decrypted_name conf}
         '';
       };
     };
