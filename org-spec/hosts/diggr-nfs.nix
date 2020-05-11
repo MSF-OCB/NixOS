@@ -23,24 +23,24 @@ with lib;
         exportTo = [ "docker-dmz-11"];
       in {
         esdata = {
-          enable   = true;
-          device   = "/dev/LVM_FCdata3_VG/esdata";
+          enable = true;
+          device = "/dev/LVM_FCdata3_VG/esdata";
           inherit exportTo;
         };
         esproxy = {
-          enable   = true;
-          device   = "/dev/LVM_FCdata1_VG/esproxy";
+          enable = true;
+          device = "/dev/LVM_FCdata1_VG/esproxy";
           inherit exportTo;
         };
         esbackup = {
-          enable   = true;
-          device   = "/dev/LVM_NLdata1_VG/esbackup";
+          enable = true;
+          device = "/dev/LVM_NLdata1_VG/esbackup";
           inherit exportTo;
         };
         diggr_other = {
-          enable   = true;
-          device   = "/dev/LVM_FCdata2_VG/diggr_other";
-          exportTo = [ "docker-dmz-11.local" ];
+          enable = true;
+          device = "/dev/LVM_FCdata2_VG/diggr_other";
+          inherit exportTo;
         };
       };
     };
