@@ -103,7 +103,6 @@ in {
       unitConfig = {
         DefaultDependencies = "no";
         ConditionPathExists = "!/dev/mapper/${decrypted_name conf}";
-        X-StopOnRemoval     = false;
       };
       serviceConfig = {
         User = "root";
