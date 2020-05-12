@@ -132,6 +132,7 @@
       },
       "bevm002": {
         "enable": [
+          "tnl_bd_coxnewbatch",
           "uf_bd_coxcoord"
         ]
       },
@@ -262,6 +263,7 @@
       "marco",
       "nicolas",
       "salima",
+      "tnl_bd_coxnewbatch",
       "uf_bd_coxcoord",
       "uf_bi_bujumbura",
       "uf_cd_goma",
