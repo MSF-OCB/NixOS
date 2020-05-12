@@ -20,7 +20,7 @@ with lib;
     nfs.server = {
       enable = true;
       cryptoMounts = let
-        exportTo = [ "docker-dmz-11"];
+        exportTo = [ "docker-dmz-11.local" ];
       in {
         esdata = {
           enable = true;
