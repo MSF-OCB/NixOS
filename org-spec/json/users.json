@@ -1,6 +1,5 @@
 {
   "users": {
-    "_comment_salima": "Karachi data encoder, to be migrated to std system for field user keys",
     "_comment_unifield": "The unifield user is a legacy user for Pakistan UF, we cannot easily change the username anymore",
     "per-host": {
       "benuc001": {
@@ -62,14 +61,12 @@
       },
       "benuc020": {
         "enable": [
-          "salima",
           "uf_pk_karashi",
           "unifield"
         ]
       },
       "benuc021": {
         "enable": [
-          "salima",
           "unifield"
         ]
       },
@@ -262,7 +259,6 @@
       "kathy",
       "marco",
       "nicolas",
-      "salima",
       "tnl_bd_coxcoord",
       "uf_bd_coxcoord",
       "uf_bi_bujumbura",
