@@ -132,11 +132,7 @@
       },
       "bevm002": {
         "enable": [
-<<<<<<< HEAD
           "tnl_bd_coxcoord",
-          "tnl_bd_coxnewbatch",
-=======
->>>>>>> Revert "Commit keygen changes, batch id batch_bd_coxnewbatch_1589282961"
           "uf_bd_coxcoord"
         ]
       },
