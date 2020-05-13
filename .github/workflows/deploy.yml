@@ -14,8 +14,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: ./.github/actions/nixos_deploy
+    - uses: msf-ocb/nixos-deploy@master
       env:
         VAULT_PASS: ${{ secrets.VAULT_PASS }}
         NIXOS_DEPLOY_FIXED_HOSTS: 'sshrelay1.msf.be sshrelay2.msf.be'
