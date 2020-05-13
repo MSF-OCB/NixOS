@@ -51,9 +51,9 @@ with lib;
     network = {
       host_name = "diggr-nfs";
       static_ifaces.ens192 = {
-        address = "192.168.50.244";
-        prefix_length = 24;
-        gateway = "192.168.50.1";
+        address = "172.16.0.95";
+        prefix_length = 22;
+        gateway = "172.16.0.100";
         fallback = false;
       };
     };
