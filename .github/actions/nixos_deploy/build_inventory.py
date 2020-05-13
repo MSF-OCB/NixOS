@@ -4,7 +4,7 @@ import argparse
 import json
 import re
 
-def configure_yaml():
+def configure_yaml(yaml):
   yaml.SafeDumper.add_representer(
     type(None),
     lambda dumper, value: dumper.represent_scalar(u'tag:yaml.org,2002:null', '')
@@ -65,7 +65,7 @@ def write_inventory(inv, use_json):
     print(json.dumps(inv, indent=2))
   else:
     import yaml
-    configure_yaml()
+    configure_yaml(yaml)
     print(yaml.safe_dump(inv, indent=2,
                               default_flow_style=False,
                               width=120))
