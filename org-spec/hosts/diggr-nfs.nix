@@ -46,7 +46,6 @@ with lib;
     };
     vmware = {
       enable = true;
-      inDMZ = true;
     };
     network = {
       host_name = "diggr-nfs";
