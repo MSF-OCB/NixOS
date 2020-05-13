@@ -80,19 +80,20 @@ in
 
   config = let
     ports = cfg.nfsPorts ++ [ cfg.statdPort cfg.lockdPort cfg.mountdPort ];
+    exported_path = name: "/exports/${name}";
 
     mkNfsCryptoMount = name: conf: {
       enable             = true;
       device             = conf.device;
-      mount_point        = "/exports/${name}";
+      mount_point        = exported_path name;
       mount_options      = "acl,noatime,nosuid,nodev";
       dependent_services = [ "nfs-server.service" ];
     };
     mkNfsCryptoMounts = mapAttrs mkNfsCryptoMount;
 
-    mkExportEntry = name: client: "/exports/${name} ${client}(${cfg.nfsExportOptions})";
-    mkExportList  = name: conf: map (mkExportEntry name) conf.exportTo;
-    mkExports     = confs: concatStringsSep "\n" (flatten (mapAttrsToList mkExportList confs));
+    mkClientConf  = client: "${client}(${cfg.nfsExportOptions})";
+    mkExportEntry = name: conf: "${exported_path name} ${concatMapStringsSep " " mkClientConf conf.exportTo}";
+    mkExports     = confs: concatStringsSep "\n" (mapAttrsToList mkExportEntry confs);
 
     enabledCryptoMounts = filterAttrs (_: conf: conf.enable) cfg.server.cryptoMounts;
   in mkMerge [
