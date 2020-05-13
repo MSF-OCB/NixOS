@@ -3,13 +3,6 @@
 import argparse
 import json
 import re
-import yaml
-
-from functools import reduce
-from itertools import chain
-
-def flatmap(f, items):
-  return chain.from_iterable(map(f, items))
 
 def configure_yaml():
   yaml.SafeDumper.add_representer(
@@ -19,9 +12,11 @@ def configure_yaml():
 
 def args_parser():
   parser = argparse.ArgumentParser()
-  parser.add_argument('--eventlog', type=str, required=True, dest='event_log')
-  parser.add_argument('--keyfile',  type=str, required=True, dest='key_file')
-  parser.add_argument('--timeout',  type=int, required=True, dest='time_out')
+  parser.add_argument('--fixedhosts', type=str, required=False, dest='fixed_hosts', default="")
+  parser.add_argument('--eventlog',   type=str, required=True,  dest='event_log')
+  parser.add_argument('--keyfile',    type=str, required=True,  dest='key_file')
+  parser.add_argument('--timeout',    type=int, required=True,  dest='time_out')
+  parser.add_argument('--json', required=False, dest='use_json', action='store_true')
   return parser
 
 def get_ports(regex, commit_message):
@@ -33,25 +28,19 @@ def ports(event_log):
   with open(event_log, 'r') as f:
     data = json.load(f)
   regex = re.compile(r'\(x-nixos:rebuild:relay_port:([1-9][0-9]*)\)')
-  return removeNone(flatmap(lambda c: get_ports(regex, c["message"]),
-                            data["commits"]))
-
-def removeNone(xs):
-  return filter(lambda x: x, xs)
+  return [port
+          for commit in data["commits"]
+          for port in get_ports(regex, commit["message"])]
 
 def inventory_definition(tunnel_ports):
-  return reduce(lambda d, p: { **d, f"tunnelled_{p}": { "ansible_port": p } },
-                tunnel_ports, dict())
+  return { f"tunnelled_{port}": { "ansible_port": port } for port in tunnel_ports }
 
-def inventory(tunnel_ports, key_file, time_out):
+def inventory(fixed_hosts, tunnel_ports, key_file, time_out):
   return {
     "all": {
       "children": {
         "relays": {
-          "hosts": {
-            "sshrelay1.msf.be": None,
-            "sshrelay2.msf.be": None
-          }
+          "hosts": { key: None for key in fixed_hosts }
         },
         "tunnelled": {
           "hosts": inventory_definition(tunnel_ports),
@@ -71,12 +60,23 @@ def inventory(tunnel_ports, key_file, time_out):
     }
   }
 
+def write_inventory(inv, use_json):
+  if use_json:
+    print(json.dumps(inv, indent=2))
+  else:
+    import yaml
+    configure_yaml()
+    print(yaml.safe_dump(inv, indent=2,
+                              default_flow_style=False,
+                              width=120))
+
 def go():
-  configure_yaml()
   args = args_parser().parse_args()
-  #print(json.dumps(inventory(ports(args.event_log), args.key_file, args.time_out), indent=2))
-  print(yaml.safe_dump(inventory(ports(args.event_log), args.key_file, args.time_out),
-                       default_flow_style=False, width=120, indent=2))
+  write_inventory(inventory(args.fixed_hosts.split(),
+                            ports(args.event_log),
+                            args.key_file,
+                            args.time_out),
+                  args.use_json)
 
 if __name__ == "__main__":
   go()
