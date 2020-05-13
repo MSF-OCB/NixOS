@@ -35,7 +35,7 @@ with lib;
     services.timesyncd.servers = mkIf (!cfg.inDMZ) [ "172.16.0.101" ];
 
     networking.nameservers = if cfg.inDMZ
-                             then [ "9.9.9.9" "149.112.112.112" ]
+                             then [ "192.168.50.50" "9.9.9.9" ]
                              else [ "172.16.0.101" "9.9.9.9" ];
   };
 }
