@@ -14,7 +14,9 @@ chmod 0400 "${keyfile}"
 
 python3 "${ansible_dir}"/build_inventory.py --keyfile "${keyfile}" \
                                             --timeout "${connection_timeout}" \
-                                            --eventlog "${GITHUB_EVENT_PATH}" > "${hostfile}"
+                                            --eventlog "${GITHUB_EVENT_PATH}" \
+                                            --fixedhosts "${NIXOS_DEPLOY_FIXED_HOSTS}" \
+                                            > "${hostfile}"
 
 export ANSIBLE_PYTHON_INTERPRETER="auto_silent"
 export ANSIBLE_HOST_KEY_CHECKING="False"

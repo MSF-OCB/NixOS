@@ -18,4 +18,5 @@ jobs:
     - uses: ./.github/actions/nixos_deploy
       env:
         VAULT_PASS: ${{ secrets.VAULT_PASS }}
+        NIXOS_DEPLOY_FIXED_HOSTS: 'sshrelay1.msf.be sshrelay2.msf.be'
 
