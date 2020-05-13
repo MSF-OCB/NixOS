@@ -20,7 +20,7 @@ with lib;
     nfs.server = {
       enable = true;
       cryptoMounts = let
-        exportTo = [ "docker-dmz-11.local" ];
+        exportTo = [ "docker-dmz-11.ocb.msf.org" ];
       in {
         esdata = {
           enable = true;
@@ -44,9 +44,7 @@ with lib;
         };
       };
     };
-    vmware = {
-      enable = true;
-    };
+    vmware.enable = true;
     network = {
       host_name = "diggr-nfs";
       static_ifaces.ens192 = {
