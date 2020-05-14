@@ -16,7 +16,6 @@ jobs:
     steps:
     - uses: msf-ocb/nixos-deploy@master
       env:
-        VAULT_PASS: ${{ secrets.VAULT_PASS }}
         NIXOS_ROBOT_KEY: ${{ secrets.NIXOS_ROBOT_KEY }}
         NIXOS_DEPLOY_FIXED_HOSTS: 'sshrelay1.msf.be sshrelay2.msf.be'
 
