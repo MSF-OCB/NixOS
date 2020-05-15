@@ -46,7 +46,7 @@ with lib;
   systemd.mounts = let
     mkMount = what: where: {
       enable = true;
-      what = "docker-dmz-11.ocb.msf.org:/exports/${what}";
+      what = "diggr-nfs.ocb.msf.org:/exports/${what}";
       where = concatStringsSep "/" ([ "/opt/diggr_data" ] ++ where);
       type = "nfs4";
       options = "proto=tcp,auto,_netdev";
