@@ -7,7 +7,9 @@
 #                                                                      #
 ########################################################################
 
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
+
+with lib;
 
 {
   time.timeZone = "Europe/Brussels";
@@ -40,6 +42,22 @@
         fallback = false;
       };
     };
+  };
+  systemd.mounts = let
+    mkMount = what: where: {
+      enable = true;
+      what = "docker-dmz-11.ocb.msf.org:/exports/${what}";
+      where = concatStringsSep "/" ([ "/opt/diggr_data" ] ++ where);
+      type = "nfs4";
+      options = "proto=tcp,auto,_netdev";
+      after = [ "network.target" ];
+      wantedBy = [ "multi-user.target" ];
+    };
+  in mapAttrsToList mkMount {
+    diggr_other = [];
+    esdata      = [ "elasticsearch" ];
+    esbackup    = [ "elasticsearch/backup" ];
+    esproxy     = [ "esproxy" ];
   };
 }
 
