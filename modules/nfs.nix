@@ -61,7 +61,7 @@ in
     };
     nfsExportOptions = mkOption {
       type     = types.str;
-      default  = "rw,nohide,secure,no_subtree_check";
+      default  = "rw,nohide,secure,no_subtree_check,no_root_squash";
       readOnly = true;
     };
 
