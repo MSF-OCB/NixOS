@@ -3,17 +3,23 @@
 nix-channel --add https://nixos.org/channels/nixos-20.03 nixpkgs
 nix-channel --update
 
-nix-shell --packages git --run "git clone https://github.com/msf-ocb/nixos nixos_repo"
+# If we are not running in a github action, we need to clone the repo ourselves
+if [ -z "$(ls -A ." ]; then
+  dir="/nixos_repo"
+  nix-shell --packages git --run "git clone https://github.com/msf-ocb/nixos ${dir}"
+else
+  dir="."
+fi
 
-touch /nixos_repo/local/id_tunnel
-echo '{}' > /nixos_repo/hardware-configuration.nix
+touch "${dir}/local/id_tunnel"
+echo '{}' > "${dir}/hardware-configuration.nix"
 
-for host in $(ls /nixos_repo/org-spec/hosts); do
-  if [ -L /nixos_repo/settings.nix ]; then
-    unlink /nixos_repo/settings.nix
+for host in ${NIXOS_BUILD_HOSTS:-$(ls ${dir}/org-spec/hosts)}; do
+  if [ -L "${dir}/settings.nix" ]; then
+    unlink "${dir}/settings.nix"
   fi
-  ln -s /nixos_repo/org-spec/hosts/${host} /nixos_repo/settings.nix
-  nix-build '<nixpkgs/nixos>' -I nixos-config=/nixos_repo/configuration.nix -A system
+  ln -s "${dir}/org-spec/hosts/${host}" "${dir}/settings.nix"
+  nix-build '<nixpkgs/nixos>' -I nixos-config="${dir}/configuration.nix" -A system
   if [ "${?}" != "0" ]; then
     echo "Build failed: ${host}"
     exit 1
