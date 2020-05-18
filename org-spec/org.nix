@@ -38,30 +38,9 @@ with lib;
   config.settings = {
     system.nix_channel = let
       host_name           = config.settings.network.host_name;
-      stable_version      = "19.09";
+      stable_version      = "20.03";
       upgrade_version     = "20.03";
-      early_upgrade_hosts = [
-        "sshrelay1"
-        "sshrelay2"
-        "benuc002"
-        "benuc010"
-        "benuc012"
-        "benuc022"
-        "bevm012"
-        "maadi-emr-a"
-        "nixos-dev"
-        "nixos-virt"
-        "dhis2-dev"
-        "dhis2-hq-monitoring"
-        "dhis2-hq-remote"
-        "dhis2-metadata"
-        "dhis2-prod"
-        "dhis2-validation"
-        "diggr-nfs"
-        "docker-dmz-2"
-        "docker-dmz-11"
-        "rescue-iso"
-      ];
+      early_upgrade_hosts = [];
     in mkDefault (if (elem host_name early_upgrade_hosts)
                   then upgrade_version
                   else stable_version);
