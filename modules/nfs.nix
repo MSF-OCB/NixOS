@@ -59,9 +59,14 @@ in
       default  = [ 111 2049 ];
       readOnly = true;
     };
+    nfsUserId  = mkOption {
+      type     = types.int;
+      default  = 20000;
+      readOnly = true;
+    };
     nfsExportOptions = mkOption {
       type     = types.str;
-      default  = "rw,nohide,secure,no_subtree_check,no_root_squash";
+      default  = "rw,nohide,secure,no_subtree_check,all_squash,anonuid=${toString cfg.nfsUserId},anongid=65534";
       readOnly = true;
     };
 
@@ -98,6 +103,13 @@ in
     enabledCryptoMounts = filterAttrs (_: conf: conf.enable) cfg.server.cryptoMounts;
   in mkMerge [
     (mkIf cfg.server.enable {
+
+      users.extraUsers.nfs = {
+        uid          = cfg.nfsUserId;
+        isNormalUser = false;
+        isSystemUser = true;
+        shell        = pkgs.nologin;
+      };
       settings.crypto.mounts = mkNfsCryptoMounts enabledCryptoMounts;
       services.nfs.server = {
         inherit (cfg) statdPort lockdPort mountdPort;
