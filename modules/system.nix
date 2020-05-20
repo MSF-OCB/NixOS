@@ -52,6 +52,9 @@ with lib;
         sudo = "sudo ";
         whereami = "curl ipinfo.io";
       };
+      variables = {
+        EDITOR = "vim";
+      }
     };
 
     system.activationScripts = {
@@ -91,7 +94,6 @@ with lib;
 
     programs = {
       bash.enableCompletion = true;
-      vim.defaultEditor     = true;
 
       ssh = {
         startAgent = false;
