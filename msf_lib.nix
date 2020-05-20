@@ -33,9 +33,8 @@ with (import <nixpkgs> {}).lib;
         ecdsa-sha2-nistp521 = "^ecdsa-sha2-nistp521 ${key_data_pattern}{230}==$";
       };
       pub_key_pattern  = concatStringsSep "|" (attrValues key_patterns);
-    in types.strMatching pub_key_pattern // {
-      description = ''valid ${concatStringsSep " or " (attrNames key_patterns)} key, meaning a string matching the pattern ${pub_key_pattern}'';
-    };
+      description      = ''valid ${concatStringsSep " or " (attrNames key_patterns)} key, meaning a string matching the pattern ${pub_key_pattern}'';
+    in types.strMatching pub_key_pattern // { inherit description; };
 
     importIfExists = path: optional (builtins.pathExists path) path;
 
