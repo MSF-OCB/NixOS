@@ -54,7 +54,7 @@ with lib;
       };
       variables = {
         EDITOR = "vim";
-      }
+      };
     };
 
     system.activationScripts = {
