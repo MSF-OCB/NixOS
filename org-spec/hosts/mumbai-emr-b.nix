@@ -12,7 +12,7 @@
   time.timeZone = "Asia/Kolkata";
 
   settings = {
-    network.host_name = "MumbaiPassive";
+    network.host_name = "mumbai-emr-b";
     boot.mode = "uefi";
     reverse_tunnel.enable = true;
     crypto.encrypted_opt.enable = true;
