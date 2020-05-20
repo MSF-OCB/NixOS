@@ -91,6 +91,7 @@ with lib;
 
     programs = {
       bash.enableCompletion = true;
+      vim.defaultEditor     = true;
 
       ssh = {
         startAgent = false;
