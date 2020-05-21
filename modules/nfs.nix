@@ -39,21 +39,6 @@ let
 in
 {
   options.settings.nfs = {
-    statdPort  = mkOption {
-      type     = types.int;
-      default  = 4000;
-      readOnly = true;
-    };
-    lockdPort  = mkOption {
-      type     = types.int;
-      default  = 4001;
-      readOnly = true;
-    };
-    mountdPort = mkOption {
-      type     = types.int;
-      default  = 4002;
-      readOnly = true;
-    };
     nfsPorts   = mkOption {
       type     = with types; listOf int;
       default  = [ 111 2049 ];
@@ -69,7 +54,6 @@ in
       default  = "rw,nohide,secure,no_subtree_check,all_squash,anonuid=${toString cfg.nfsUserId},anongid=65534";
       readOnly = true;
     };
-
     client = {
       enable = mkEnableOption "the NFS client.";
     };
@@ -84,7 +68,6 @@ in
   };
 
   config = let
-    ports = cfg.nfsPorts ++ [ cfg.statdPort cfg.lockdPort cfg.mountdPort ];
     exported_path = name: "/exports/${name}";
 
     mkNfsCryptoMount = name: conf: {
@@ -101,29 +84,22 @@ in
     mkExports     = confs: concatStringsSep "\n" (mapAttrsToList mkExportEntry confs);
 
     enabledCryptoMounts = filterAttrs (_: conf: conf.enable) cfg.server.cryptoMounts;
-  in mkMerge [
-    (mkIf cfg.server.enable {
-
-      users.extraUsers.nfs = {
-        uid          = cfg.nfsUserId;
-        isNormalUser = false;
-        isSystemUser = true;
-        shell        = pkgs.nologin;
-      };
-      settings.crypto.mounts = mkNfsCryptoMounts enabledCryptoMounts;
-      services.nfs.server = {
-        inherit (cfg) statdPort lockdPort mountdPort;
-        enable  = cfg.server.enable;
-        exports = mkExports enabledCryptoMounts;
-      };
-      networking.firewall = {
-        allowedTCPPorts = ports;
-        allowedUDPPorts = ports;
-      };
-    })
-    (mkIf cfg.client.enable {
-      services.rpcbind.enable = cfg.client.enable;
-    })
-  ];
+  in mkIf cfg.server.enable {
+    users.extraUsers.nfs = {
+      uid          = cfg.nfsUserId;
+      isNormalUser = false;
+      isSystemUser = true;
+      shell        = pkgs.nologin;
+    };
+    settings.crypto.mounts = mkNfsCryptoMounts enabledCryptoMounts;
+    services.nfs.server = {
+      inherit (cfg.server) enable;
+      exports = mkExports enabledCryptoMounts;
+    };
+    networking.firewall = {
+      allowedTCPPorts = cfg.nfsPorts;
+      allowedUDPPorts = cfg.nfsPorts;
+    };
+  };
 }
 
