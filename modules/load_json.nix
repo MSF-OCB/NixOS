@@ -28,14 +28,13 @@ with (import ../msf_lib.nix);
         # Load the list at path in the given attribute set and convert it to
         # an attribute set with every list element as a key and the value
         # set to a given constant.
-        # The function onAbsent is called when the specified path does not exist.
+        # If the given path cannot be found, the value of onAbsent will be returned.
         # Example:
         #   listToAttrs_const [ "per-host" "benuc002" "enable" ] val [] { per-host.benuc002.enable = [ "foo", "bar" ]; }
         # will yield:
         #   { foo = val; bar = val; }
-        # If the given path cannot be found, the value of onAbsent will be returned.
-        listToAttrs_const = path: const: onAbsent: attrset: listToAttrs (map (name: nameValuePair name const)
-                                                                        (attrByPath path onAbsent attrset));
+        listToAttrs_const = path: const: onAbsent: attrset: listToAttrs (map (flip nameValuePair const)
+                                                                             (attrByPath path onAbsent attrset));
         # recursiveUpdate merges the two resulting attribute sets recursively
         recursiveMerge = foldr recursiveUpdate {};
         # Given the host name and the json data, retrieve the enabled roles for the given host
