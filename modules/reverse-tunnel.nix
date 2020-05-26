@@ -159,11 +159,15 @@ in {
 
     users.extraUsers = {
       tunnel = let
-        stringNotEmpty  = s: stringLength s != 0;
-        prefixes        = [ 0 cfg.prometheus_tunnel_port_prefix ];
-        make_limitation = base_port: prefix: "permitlisten=\"${toString (add_port_prefix prefix base_port)}\"";
-        make_key_config = tunnel:
-          "${concatMapStringsSep "," (make_limitation tunnel.remote_forward_port) prefixes} ${tunnel.public_key} tunnel@${tunnel.name}";
+        stringNotEmpty = s: stringLength s != 0;
+        prefixes       = [ 0 cfg.prometheus_tunnel_port_prefix ];
+        mkLimitation   = base_port: prefix: "permitlisten=\"${toString (add_port_prefix prefix base_port)}\"";
+        mkKeyConfig    = tunnel:
+          "${concatMapStringsSep "," (mkLimitation tunnel.remote_forward_port) prefixes} ${tunnel.public_key} tunnel@${tunnel.name}";
+        mkKeyConfigs   = msf_lib.compose [ naturalSort
+                                           (mapAttrsToList (_: tunnel: mkKeyConfig tunnel))
+                                           (filterAttrs (_: tunnel: stringNotEmpty tunnel.public_key)) ];
+
       in {
         isNormalUser = false;
         isSystemUser = true;
@@ -172,10 +176,7 @@ in {
         createHome   = mkIf (cfg.enable) true;
         shell        = pkgs.nologin;
         extraGroups  = mkIf cfg.relay.enable [ config.settings.users.ssh-group config.settings.users.rev-tunnel-group ];
-        openssh.authorizedKeys.keys = mkIf cfg.relay.enable (
-          naturalSort (mapAttrsToList (_: tunnel: make_key_config tunnel)
-                                      (filterAttrs (_: tunnel: stringNotEmpty tunnel.public_key)
-                                                   cfg.tunnels)));
+        openssh.authorizedKeys.keys = mkIf cfg.relay.enable (mkKeyConfigs cfg.tunnels);
       };
 
       tunneller = mkIf cfg.relay.enable {

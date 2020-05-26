@@ -50,7 +50,7 @@ let
       gateway = mkOption {
         type = types.str;
       };
-      
+
       nameservers = mkOption {
         type    = with types; listOf str;
         default = [];
@@ -99,22 +99,25 @@ in {
         denyInterfaces  = [ "eth*" "wlan*" "veth*" "docker*" ];
         extraConfig = let
           format_name_servers = concatStringsSep " ";
-          make_config = iface: conf: if conf.fallback then ''
-                                       profile static_${iface}
-                                       static ip_address=${conf.address}/${toString conf.prefix_length}
-                                       static routers=${conf.gateway}
-                                       static domain_name_servers=${format_name_servers conf.nameservers}
+          mkConfig = iface: conf: if conf.fallback then ''
+                                    profile static_${iface}
+                                    static ip_address=${conf.address}/${toString conf.prefix_length}
+                                    static routers=${conf.gateway}
+                                    static domain_name_servers=${format_name_servers conf.nameservers}
 
-                                       # fallback to static profile on ${iface}
-                                       interface ${iface}
-                                       fallback static_${iface}
-                                     '' else ''
-                                       interface ${iface}
-                                       static ip_address=${conf.address}/${toString conf.prefix_length} 
-                                       static routers=${conf.gateway}
-                                       static domain_name_servers=${format_name_servers conf.nameservers}
-                                     '';
-        in concatStringsSep "\n\n" (mapAttrsToList make_config (filterAttrs (_: conf: conf.enable) cfg.static_ifaces));
+                                    # fallback to static profile on ${iface}
+                                    interface ${iface}
+                                    fallback static_${iface}
+                                  '' else ''
+                                    interface ${iface}
+                                    static ip_address=${conf.address}/${toString conf.prefix_length}
+                                    static routers=${conf.gateway}
+                                    static domain_name_servers=${format_name_servers conf.nameservers}
+                                  '';
+          mkConfigs = msf_lib.compose [ (concatStringsSep "\n\n")
+                                        (mapAttrsToList mkConfig)
+                                        msf_lib.filterEnabled ];
+        in mkConfigs cfg.static_ifaces;
       };
       nameservers = cfg.nameservers;
     };

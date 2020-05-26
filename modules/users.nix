@@ -11,6 +11,7 @@
 { config, lib, pkgs, ... }:
 
 with lib;
+with (import ../msf_lib.nix);
 
 let
   cfg            = config.settings.users;
@@ -118,22 +119,26 @@ in {
 
       users = let
         hasShell = user: user.hasShell || (user.forceMonitorCommand && reverse_tunnel.relay.enable);
-      in mapAttrs (name: user: {
-        name         = name;
-        isNormalUser = user.hasShell;
-        isSystemUser = user.isSystemUser;
-        extraGroups  = user.extraGroups ++
-                       (optional (user.sshAllowed || user.canTunnel) cfg.ssh-group) ++
-                       (optional user.canTunnel cfg.fwd-tunnel-group) ++
-                       (optional user.hasShell  cfg.shell-user-group);
-        shell        = if (hasShell user) then config.users.defaultUserShell else pkgs.nologin;
-        openssh.authorizedKeys.keyFiles = [ (toKeyPath name) ];
-      }) (filterAttrs (_: user: user.enable) cfg.users);
+        mkUser = name: user: {
+          name         = name;
+          isNormalUser = user.hasShell;
+          isSystemUser = user.isSystemUser;
+          extraGroups  = user.extraGroups ++
+                         (optional (user.sshAllowed || user.canTunnel) cfg.ssh-group) ++
+                         (optional user.canTunnel cfg.fwd-tunnel-group) ++
+                         (optional user.hasShell  cfg.shell-user-group);
+          shell        = if (hasShell user) then config.users.defaultUserShell else pkgs.nologin;
+          openssh.authorizedKeys.keyFiles = [ (toKeyPath name) ];
+        };
+        mkUsers = msf_lib.compose [ (mapAttrs mkUser)
+                                    msf_lib.filterEnabled ];
+      in mkUsers cfg.users;
     };
 
-    settings.reverse_tunnel.relay.tunneller.keyFiles =
-      mapAttrsToList (name: _: toKeyPath name)
-                     (filterAttrs (_: user: user.canTunnel) cfg.users);
+    settings.reverse_tunnel.relay.tunneller.keyFiles = let
+      mkKeyFiles = msf_lib.compose [ (mapAttrsToList (name: _: toKeyPath name))
+                                     (filterAttrs (_: user: user.canTunnel)) ];
+    in mkKeyFiles cfg.users;
   };
 }
 
