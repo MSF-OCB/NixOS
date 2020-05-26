@@ -1,8 +1,3 @@
-
-{ lib, ... }:
-
-with lib;
-
 {
   imports = [
     ../modules/network.nix
