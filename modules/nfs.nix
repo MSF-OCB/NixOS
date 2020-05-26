@@ -10,6 +10,7 @@
 { config, pkgs, lib, ... }:
 
 with lib;
+with (import ../msf_lib.nix);
 
 let
   cfg = config.settings.nfs;
@@ -83,7 +84,7 @@ in
     mkExportEntry = name: conf: "${exported_path name} ${concatMapStringsSep " " mkClientConf conf.exportTo}";
     mkExports     = confs: concatStringsSep "\n" (mapAttrsToList mkExportEntry confs);
 
-    enabledCryptoMounts = filterAttrs (_: conf: conf.enable) cfg.server.cryptoMounts;
+    enabledCryptoMounts = msf_lib.filterEnabled cfg.server.cryptoMounts;
   in mkIf cfg.server.enable {
     users.extraUsers.nfs = {
       uid          = cfg.nfsUserId;

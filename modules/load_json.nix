@@ -17,7 +17,7 @@ with (import ../msf_lib.nix);
   config = let
     org_cfg   = config.settings.org;
     host_name = config.settings.network.host_name;
-    loadJSON  = path: builtins.fromJSON (builtins.readFile path);
+    loadJSON  = msf_lib.compose [ builtins.fromJSON builtins.readFile ];
   in {
     settings = {
       users.users = let
@@ -25,7 +25,7 @@ with (import ../msf_lib.nix);
         json_data       = loadJSON users_json_path;
         remoteTunnel    = msf_lib.user_roles.remoteTunnel;
 
-        # Load the list at path in the given attribute set and convert it to
+        # Load the list at path in an attribute set and convert it to
         # an attribute set with every list element as a key and the value
         # set to a given constant.
         # If the given path cannot be found, the value of onAbsent will be returned.
@@ -33,8 +33,9 @@ with (import ../msf_lib.nix);
         #   listToAttrs_const [ "per-host" "benuc002" "enable" ] val [] { per-host.benuc002.enable = [ "foo", "bar" ]; }
         # will yield:
         #   { foo = val; bar = val; }
-        listToAttrs_const = path: const: onAbsent: attrset: listToAttrs (map (flip nameValuePair const)
-                                                                             (attrByPath path onAbsent attrset));
+        listToAttrs_const = path: const: onAbsent: msf_lib.compose [ (flip genAttrs (_: const))
+                                                                     (attrByPath path onAbsent) ];
+
         # recursiveUpdate merges the two resulting attribute sets recursively
         recursiveMerge = foldr recursiveUpdate {};
         # Given the host name and the json data, retrieve the enabled roles for the given host

@@ -16,6 +16,14 @@ with (import <nixpkgs> {}).lib;
 
 {
   msf_lib = {
+
+    # compose [ f g h ] x == f (g (h x))
+    compose = let
+      apply = f: x: f x;
+    in flip (foldr apply);
+
+    filterEnabled = filterAttrs (_: conf: conf.enable);
+
     # A type for host names, host names consist of:
     #   * a first character which is an upper or lower case ascii character
     #   * followed by zero or more of: dash (-), upper case ascii, lower case ascii, digit

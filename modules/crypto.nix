@@ -10,6 +10,7 @@
 { config, lib, pkgs, ... }:
 
 with lib;
+with (import ../msf_lib.nix);
 
 let
   cfg = config.settings.crypto;
@@ -130,7 +131,6 @@ in {
       requiredBy = conf.dependent_services;
     };
 
-    filterEnabled = filterAttrs (_: conf: conf.enable);
     mkServices    = mapAttrs' (_: conf: nameValuePair (open_service_name conf)
                                                       (mkService conf));
     mkMounts      = mapAttrsToList (_: conf: mkMount conf);
@@ -147,7 +147,7 @@ in {
       };
     };
     systemd = let
-      enabled = filterEnabled cfg.mounts;
+      enabled = msf_lib.filterEnabled cfg.mounts;
       extra_mount_units = [
         (mkIf cfg.encrypted_opt.enable {
           enable   = true;
