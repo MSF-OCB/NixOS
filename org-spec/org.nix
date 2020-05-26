@@ -13,10 +13,6 @@
 with lib;
 
 {
-  imports = [
-    ./ocb_users.nix
-  ];
-
   options.settings.org = {
     users_json_path = mkOption {
       type     = types.path;
