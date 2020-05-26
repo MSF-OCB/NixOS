@@ -19,9 +19,9 @@ with lib;
 {
 
   imports = [
-    ./modules/imports.nix
     ./hardware-configuration.nix
     ./settings.nix
+    ./modules
     ./modules/auto_shutdown.nix
     ./modules/boot.nix
     ./modules/crypto.nix
