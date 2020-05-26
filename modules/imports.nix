@@ -2,7 +2,6 @@
 { lib, ... }:
 
 with lib;
-with (import ../msf_lib.nix);
 
 {
   imports = [
@@ -13,7 +12,7 @@ with (import ../msf_lib.nix);
     ../modules/sshd.nix
     ../modules/system.nix
     ../modules/users.nix
-    ../org-spec/org.nix
+    ../org-spec
   ];
 }
 
