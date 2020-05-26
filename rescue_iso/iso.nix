@@ -7,7 +7,7 @@ with lib;
   imports = [
     <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix>
     <nixpkgs/nixos/modules/installer/cd-dvd/channel.nix>
-    ../modules/imports.nix
+    ../modules
   ];
 
   # The live disc overrides SSHd's wantedBy property to an empty value
