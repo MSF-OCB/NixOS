@@ -19,8 +19,9 @@
       },
       "benuc007": {
         "enable": [
-          "yusuph",
-          "uf_mz_beira"
+          "tnl_mz_beira",
+          "uf_mz_beira",
+          "yusuph"
         ]
       },
       "benuc009": {
@@ -260,6 +261,7 @@
       "marco",
       "nicolas",
       "tnl_bd_coxcoord",
+      "tnl_mz_beira",
       "uf_bd_coxcoord",
       "uf_bi_bujumbura",
       "uf_cd_goma",
