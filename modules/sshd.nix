@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   reverse_tunnel = config.settings.reverse_tunnel;
