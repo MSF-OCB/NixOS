@@ -62,6 +62,7 @@
       },
       "benuc020": {
         "enable": [
+          "tnl_pk_karachi",
           "uf_pk_karashi",
           "unifield"
         ]
@@ -262,6 +263,7 @@
       "nicolas",
       "tnl_bd_coxcoord",
       "tnl_mz_beira",
+      "tnl_pk_karachi",
       "uf_bd_coxcoord",
       "uf_bi_bujumbura",
       "uf_cd_goma",
