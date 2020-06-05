@@ -1,6 +1,5 @@
 {
   "users": {
-    "_comment_unifield": "The unifield user is a legacy user for Pakistan UF, we cannot easily change the username anymore",
     "per-host": {
       "belt001": {
         "enable": [
@@ -9,7 +8,7 @@
       },
       "benuc001": {
         "enable": [
-          "uf_mz_maputo"
+          "tnl_mz_maputo"
         ]
       },
       "benuc004": {
@@ -19,13 +18,12 @@
       },
       "benuc006": {
         "enable": [
-          "unifield"
+          "tnl_legacy"
         ]
       },
       "benuc007": {
         "enable": [
           "tnl_mz_beira",
-          "uf_mz_beira",
           "yusuph"
         ]
       },
@@ -41,7 +39,7 @@
       },
       "benuc014": {
         "enable": [
-          "uf_ht_port_a_piment"
+          "tnl_ht_port_a_piment"
         ],
         "enable_roles": [
           "mast"
@@ -49,7 +47,7 @@
       },
       "benuc015": {
         "enable": [
-          "uf_cd_masisi"
+          "tnl_cd_masisi"
         ],
         "enable_roles": [
           "mast"
@@ -62,19 +60,18 @@
       },
       "benuc018": {
         "enable": [
-          "uf_ua_zyhtomyr"
+          "tnl_ua_zhytomyr"
         ]
       },
       "benuc020": {
         "enable": [
           "tnl_pk_karachi",
-          "uf_pk_karashi",
-          "unifield"
+          "tnl_legacy"
         ]
       },
       "benuc021": {
         "enable": [
-          "unifield"
+          "tnl_legacy"
         ]
       },
       "benuc023": {
@@ -84,7 +81,7 @@
       },
       "benuc024": {
         "enable": [
-          "uf_gn_kouroussa"
+          "tnl_gn_kouroussa"
         ],
         "enable_roles": [
           "mast"
@@ -92,7 +89,7 @@
       },
       "benuc025": {
         "enable": [
-          "uf_sl_baama"
+          "tnl_sl_baama"
         ],
         "enable_roles": [
           "mast"
@@ -100,7 +97,7 @@
       },
       "benuc026": {
         "enable": [
-          "uf_sl_kenema"
+          "tnl_sl_kenema"
         ],
         "enable_roles": [
           "mast"
@@ -113,7 +110,7 @@
       },
       "benuc030": {
         "enable": [
-          "uf_cd_puc"
+          "tnl_cd_puc"
         ]
       },
       "benuc035": {
@@ -123,7 +120,7 @@
       },
       "benuc037": {
         "enable": [
-          "uf_ke_embu"
+          "tnl_ke_embu"
         ],
         "enable_roles": [
           "mast"
@@ -131,88 +128,87 @@
       },
       "bevm001": {
         "enable": [
-          "uf_cd_goma"
+          "tnl_cd_goma"
         ]
       },
       "bevm002": {
         "enable": [
-          "tnl_bd_coxcoord",
-          "uf_bd_coxcoord"
+          "tnl_bd_coxcoord"
         ]
       },
       "bevm003": {
         "enable": [
-          "uf_cd_kinshasacoord"
+          "tnl_cd_kinshasacoord"
         ]
       },
       "bevm004": {
         "enable": [
-          "uf_sl_freetown"
+          "tnl_sl_freetown"
         ]
       },
       "bevm005": {
         "enable": [
-          "uf_eg_maadi_annex1"
+          "tnl_eg_maadi_annex1"
         ]
       },
       "bevm006": {
         "enable": [
-          "uf_eg_maadi_coordination"
+          "tnl_eg_maadi_coordination"
         ]
       },
       "bevm007": {
         "enable": [
-          "uf_bi_bujumbura"
+          "tnl_bi_bujumbura"
         ]
       },
       "bevm008": {
         "enable": [
-          "uf_gn_conakry"
+          "tnl_gn_conakry"
         ]
       },
       "bevm009": {
         "enable": [
-          "uf_gn_sida"
+          "tnl_gn_sida"
         ]
       },
       "bevm010": {
         "enable": [
-          "uf_cf_coordination"
+          "tnl_cf_coordination"
         ]
       },
       "bevm011": {
         "enable": [
-          "uf_cd_kinshasa_sida"
+          "tnl_cd_kinshasa_sida"
         ]
       },
       "bevm012": {
         "enable": [
-          "uf_cf_castor_bangui"
+          "tnl_cf_castor_bangui"
         ]
       },
       "bevm013": {
         "enable": [
-          "uf_ve_anzoategui"
+          "tnl_ve_anzoategui"
         ]
       },
       "bevm014": {
         "enable": [
-          "uf_ve_bolivar"
+          "tnl_ve_bolivar"
         ]
       },
       "bevm015": {
         "enable": [
-          "uf_cm_bamenda"
+          "tnl_cm_bamenda"
         ]
       },
       "bevm016": {
         "enable": [
-          "uf_ic_abidjan"
+          "tnl_ic_abidjan"
         ]
       },
       "bevm017": {
         "enable": [
-          "uf_ke_kiambu"
+          "tnl_ke_kiambu"
         ]
       },
       "chk-emr-a": {
@@ -254,7 +250,7 @@
       },
       "mumbai-emr-a": {
         "enable": [
-          "uf_in_mumbai"
+          "tnl_in_mumbai"
         ]
       },
       "nixos-dev": {
@@ -273,39 +269,36 @@
       "kathy",
       "nicolas",
       "tnl_bd_coxcoord",
+      "tnl_bi_bujumbura",
+      "tnl_cd_goma",
+      "tnl_cd_kinshasa_sida",
+      "tnl_cd_kinshasacoord",
+      "tnl_cd_masisi",
+      "tnl_cd_puc",
+      "tnl_cf_castor_bangui",
+      "tnl_cf_coordination",
+      "tnl_cm_bamenda",
+      "tnl_eg_maadi_annex1",
+      "tnl_eg_maadi_coordination",
+      "tnl_gn_conakry",
+      "tnl_gn_kouroussa",
+      "tnl_gn_sida",
+      "tnl_ht_port_a_piment",
+      "tnl_ic_abidjan",
+      "tnl_in_mumbai",
+      "tnl_ke_embu",
+      "tnl_ke_kiambu",
+      "tnl_legacy",
       "tnl_mz_beira",
+      "tnl_mz_maputo",
       "tnl_pk_karachi",
+      "tnl_sl_baama",
+      "tnl_sl_freetown",
+      "tnl_sl_kenema",
+      "tnl_ua_zhytomyr",
+      "tnl_ve_anzoategui",
+      "tnl_ve_bolivar",
       "tnl_za_khayelitsha",
-      "uf_bd_coxcoord",
-      "uf_bi_bujumbura",
-      "uf_cd_goma",
-      "uf_cd_kinshasa_sida",
-      "uf_cd_kinshasacoord",
-      "uf_cd_masisi",
-      "uf_cd_puc",
-      "uf_cf_castor_bangui",
-      "uf_cf_coordination",
-      "uf_cm_bamenda",
-      "uf_eg_maadi_annex1",
-      "uf_eg_maadi_coordination",
-      "uf_gn_conakry",
-      "uf_gn_kouroussa",
-      "uf_gn_sida",
-      "uf_ht_port_a_piment",
-      "uf_ic_abidjan",
-      "uf_in_mumbai",
-      "uf_ke_embu",
-      "uf_ke_kiambu",
-      "uf_mz_beira",
-      "uf_mz_maputo",
-      "uf_pk_karashi",
-      "uf_sl_baama",
-      "uf_sl_freetown",
-      "uf_sl_kenema",
-      "uf_ua_zyhtomyr",
-      "uf_ve_anzoategui",
-      "uf_ve_bolivar",
-      "unifield",
       "vini"
     ],
     "roles": {
