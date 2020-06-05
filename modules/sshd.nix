@@ -81,9 +81,11 @@ with lib;
 
       sshguard = mkIf config.settings.sshguard.enable {
         enable = true;
-        blocktime = 600;
-        # 7 * 24 * 60 * 60
-        detection_time = 604800;
+        # We are a bit more strict on the relays
+        attack_threshold = if reverse_tunnel.relay.enable
+                           then 40 else 80;
+        blocktime = 10 * 60;
+        detection_time = 7 * 24 * 60 * 60;
       };
     };
   };
