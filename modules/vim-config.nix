@@ -12,9 +12,6 @@ with import <nixpkgs> {};
       set backspace=2
       set showmode
       set autoindent
-      filetype on
-      filetype plugin on
-      filetype indent on
       if has("autocmd")
         autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
           \| exe "normal! g`\"" | endif
@@ -54,6 +51,18 @@ with import <nixpkgs> {};
       set ignorecase
       set smartcase
       set incsearch
+
+      if empty(glob('~/.vim/autoload/plug.vim'))
+        silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+          \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+        autocmd VimEnter * PlugInstall --sync
+      endif
+
+      call plug#begin('~/.vim/plugged')
+      Plug 'elmcast/elm-vim'
+      call plug#end()
+
+      filetype on
     '';
 
     packages.m.start = with pkgs.vimPlugins; [ vim-nix ];
