@@ -47,7 +47,7 @@ with lib;
     mkMount = what: where: {
       enable = true;
       what = "diggr-nfs.ocb.msf.org:/exports/${what}";
-      where = concatStringsSep "/" ([ "/opt/diggr_data" ] ++ where);
+      where = concatStringsSep "/" ([ "/opt" "diggr_data" ] ++ where);
       type = "nfs4";
       options = "proto=tcp,auto,_netdev";
       after = [ "network.target" ];
@@ -56,7 +56,7 @@ with lib;
   in mapAttrsToList mkMount {
     diggr_other = [];
     esdata      = [ "elasticsearch" ];
-    esbackup    = [ "elasticsearch/backup" ];
+    esbackup    = [ "elasticsearch" "backup" ];
     esproxy     = [ "esproxy" ];
   };
 }
