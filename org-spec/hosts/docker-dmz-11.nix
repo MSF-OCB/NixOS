@@ -64,8 +64,8 @@ with lib;
       startAt = "12:00";
       serviceConfig.Type = "oneshot";
       script = ''
-        ${pkgs.docker}/bin/docker service update a2n-esproxy-external --force
-        ${pkgs.docker}/bin/docker service update a2n-esproxy-internal --force
+        ${pkgs.docker}/bin/docker service update a2n-esproxy-external --quiet --force
+        ${pkgs.docker}/bin/docker service update a2n-esproxy-internal --quiet --force
       '';
     };
   };
