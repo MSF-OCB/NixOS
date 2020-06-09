@@ -43,21 +43,31 @@ with lib;
       };
     };
   };
-  systemd.mounts = let
-    mkMount = what: where: {
-      enable = true;
-      what = "diggr-nfs.ocb.msf.org:/exports/${what}";
-      where = concatStringsSep "/" ([ "/opt" "diggr_data" ] ++ where);
-      type = "nfs4";
-      options = "proto=tcp,auto,_netdev";
-      after = [ "network.target" ];
-      wantedBy = [ "multi-user.target" ];
+  systemd = {
+    mounts = let
+      mkMount = what: where: {
+        enable = true;
+        what = "diggr-nfs.ocb.msf.org:/exports/${what}";
+        where = concatStringsSep "/" ([ "/opt" "diggr_data" ] ++ where);
+        type = "nfs4";
+        options = "proto=tcp,auto,_netdev";
+        after = [ "network.target" ];
+        wantedBy = [ "multi-user.target" ];
+      };
+    in mapAttrsToList mkMount {
+      diggr_other = [];
+      esdata      = [ "elasticsearch" ];
+      esbackup    = [ "elasticsearch" "backup" ];
+      esproxy     = [ "esproxy" ];
     };
-  in mapAttrsToList mkMount {
-    diggr_other = [];
-    esdata      = [ "elasticsearch" ];
-    esbackup    = [ "elasticsearch" "backup" ];
-    esproxy     = [ "esproxy" ];
+    services.diggr_restart_esproxy_service = {
+      startAt = "12:00";
+      serviceConfig.Type = "oneshot";
+      script = ''
+        ${pkgs.docker}/bin/docker service update a2n-esproxy-external --force
+        ${pkgs.docker}/bin/docker service update a2n-esproxy-internal --force
+      '';
+    };
   };
 }
 
