@@ -60,13 +60,22 @@ with lib;
       esbackup    = [ "elasticsearch" "backup" ];
       esproxy     = [ "esproxy" ];
     };
-    services.diggr_restart_esproxy_service = {
-      startAt = "12:00";
-      serviceConfig.Type = "oneshot";
-      script = ''
-        ${pkgs.docker}/bin/docker service update a2n-esproxy-external --quiet --force
-        ${pkgs.docker}/bin/docker service update a2n-esproxy-internal --quiet --force
-      '';
+    services = {
+      diggr_restart_esproxy_service = {
+        startAt = "12:00";
+        serviceConfig.Type = "oneshot";
+        script = ''
+          ${pkgs.docker}/bin/docker service update a2n-esproxy-external --quiet --force
+          ${pkgs.docker}/bin/docker service update a2n-esproxy-internal --quiet --force
+        '';
+      };
+      diggr_cleanup_stopped_containers = {
+        startAt = "12:30";
+        serviceConfig.Type = "oneshot";
+        script = ''
+          ${pkgs.docker}/bin/docker rm $(${pkgs.docker}/bin/docker ps --quiet --filter "status=exited")
+        '';
+      };
     };
   };
 }
