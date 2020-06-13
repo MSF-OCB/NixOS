@@ -8,6 +8,10 @@
 #                                                                      #
 ########################################################################
 
+{ lib, ...}:
+
+with lib;
+
 {
 
   time.timeZone = "Europe/Brussels";
@@ -18,6 +22,38 @@
     reverse_tunnel.enable = true;
     crypto.encrypted_opt.enable = true;
     docker.enable = true;
+  };
+
+  networking = {
+    firewall = {
+      allowedTCPPorts = [ 1234 ];
+      extraCommands = ''
+        function append_rule() {
+          do_append_rule "''${1}" "iptables"
+          append_rule6 "''${1}"
+        }
+
+        function append_rule6() {
+          do_append_rule "''${1}" "ip6tables"
+        }
+
+        function do_append_rule() {
+          rule="''${1}"
+          iptables="''${2}"
+          if [ $(''${iptables} -C ''${rule} 2>/dev/null; echo $?) -ne "0" ]; then
+            ''${iptables} -A ''${rule}
+          fi
+        }
+
+        append_rule "FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT"
+        append_rule "FORWARD -o br0 --match physdev --physdev-out enp1s0 -j ACCEPT"
+        append_rule6 "FORWARD -o br0 -p icmpv6 -j ACCEPT"
+        ip46tables --policy FORWARD DROP
+      '';
+    };
+    useDHCP = mkForce false;
+    bridges.br0.interfaces = [ "enp1s0" "enp2s0" ];
+    interfaces.br0.useDHCP = true;
   };
 
 }
