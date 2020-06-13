@@ -57,7 +57,7 @@ in
         }
 
         # Accept incoming DHCPv4 traffic
-        append_rule4 "nixos-fw --protocol udp --dport 67:68 -j nixos-fw-accept"
+        append_rule4 "nixos-fw --protocol udp --dport 67:68 --jump nixos-fw-accept"
 
         # Forward all outgoing traffic on the bridge belonging to existing connections
         append_rule  "FORWARD --out-interface ${bridge_interface} --match conntrack --ctstate ESTABLISHED,RELATED --jump ACCEPT"
