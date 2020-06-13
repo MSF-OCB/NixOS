@@ -29,8 +29,12 @@ with lib;
       allowedTCPPorts = [ 1234 ];
       extraCommands = ''
         function append_rule() {
-          do_append_rule "''${1}" "iptables"
+          append_rule4 "''${1}"
           append_rule6 "''${1}"
+        }
+
+        function append_rule4() {
+          do_append_rule "''${1}" "iptables"
         }
 
         function append_rule6() {
@@ -47,6 +51,7 @@ with lib;
 
         append_rule "FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT"
         append_rule "FORWARD -o br0 --match physdev --physdev-out enp1s0 -j ACCEPT"
+        append_rule4 "FORWARD -o br0 -p udp --dport 67:68 --sport 67:68 -j ACCEPT"
         append_rule6 "FORWARD -o br0 -p icmpv6 -j ACCEPT"
         ip46tables --policy FORWARD DROP
       '';
