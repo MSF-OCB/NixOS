@@ -49,6 +49,9 @@ with lib;
           fi
         }
 
+        # Accept incoming DHCPv4 traffic
+        append_rule4 "nixos-fw --protocol udp --dport 67:68 -j nixos-fw-accept"
+
         # Forward all outgoing traffic on the bridge belonging to existing connections
         append_rule  "FORWARD --out-interface br0 --match conntrack --ctstate ESTABLISHED,RELATED --jump ACCEPT"
         # Accept all outgoing traffic to the external interface of the bridge
@@ -57,14 +60,31 @@ with lib;
         append_rule4 "FORWARD --out-interface br0 --protocol udp --dport 67:68 --sport 67:68 --jump ACCEPT"
         # IPv6 does not work without ICMPv6
         append_rule6 "FORWARD --out-interface br0 --protocol icmpv6 --jump ACCEPT"
-        # DROP by default
+        # Do not forward by default
         ip46tables --policy FORWARD DROP
       '';
     };
     useDHCP = mkForce false;
     bridges.br0.interfaces = [ "enp1s0" "enp2s0" ];
-    interfaces.br0.useDHCP = true;
+    interfaces.br0.ipv4.addresses = [ { address = "10.0.7.252"; prefixLength = 22; } ];
+    defaultGateway = { address = "10.0.7.254"; interface = "br0"; };
+    nameservers = [ "9.9.9.9" "149.112.112.112" ];
   };
 
+  services.dhcpd4 = {
+    enable = true;
+    interfaces = [ "br0" ];
+    extraConfig = ''
+      option subnet-mask 255.255.252.0;
+      option routers 10.0.7.254;
+      option domain-name-servers 9.9.9.9, 149.112.112.112;
+      min-lease-time ${toString (2 * 60 * 60)};
+      default-lease-time ${toString (4 * 60 * 60)};
+      max-lease-time ${toString (4 * 60 * 60)};
+      subnet 10.0.4.0 netmask 255.255.252.0 {
+        range 10.0.4.1 10.0.6.254;
+      }
+    '';
+  };
 }
 
