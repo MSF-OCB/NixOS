@@ -49,10 +49,15 @@ with lib;
           fi
         }
 
-        append_rule "FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT"
-        append_rule "FORWARD -o br0 --match physdev --physdev-out enp1s0 -j ACCEPT"
-        append_rule4 "FORWARD -o br0 -p udp --dport 67:68 --sport 67:68 -j ACCEPT"
-        append_rule6 "FORWARD -o br0 -p icmpv6 -j ACCEPT"
+        # Forward all outgoing traffic on the bridge belonging to existing connections
+        append_rule  "FORWARD --out-interface br0 --match conntrack --ctstate ESTABLISHED,RELATED --jump ACCEPT"
+        # Accept all outgoing traffic to the external interface of the bridge
+        append_rule  "FORWARD --out-interface br0 --match physdev --physdev-out enp1s0 --jump ACCEPT"
+        # Accept DHCPv4
+        append_rule4 "FORWARD --out-interface br0 --protocol udp --dport 67:68 --sport 67:68 --jump ACCEPT"
+        # IPv6 does not work without ICMPv6
+        append_rule6 "FORWARD --out-interface br0 --protocol icmpv6 --jump ACCEPT"
+        # DROP by default
         ip46tables --policy FORWARD DROP
       '';
     };
