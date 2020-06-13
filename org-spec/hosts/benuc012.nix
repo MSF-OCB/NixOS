@@ -12,6 +12,13 @@
 
 with lib;
 
+let
+  bridge_interface = "br0";
+  local_ip = "10.0.7.252";
+  upstream_gateway = "10.0.7.254";
+  nameservers = [ "9.9.9.9" "149.112.112.112" ];
+in
+
 {
 
   time.timeZone = "Europe/Brussels";
@@ -53,31 +60,31 @@ with lib;
         append_rule4 "nixos-fw --protocol udp --dport 67:68 -j nixos-fw-accept"
 
         # Forward all outgoing traffic on the bridge belonging to existing connections
-        append_rule  "FORWARD --out-interface br0 --match conntrack --ctstate ESTABLISHED,RELATED --jump ACCEPT"
+        append_rule  "FORWARD --out-interface ${bridge_interface} --match conntrack --ctstate ESTABLISHED,RELATED --jump ACCEPT"
         # Accept all outgoing traffic to the external interface of the bridge
-        append_rule  "FORWARD --out-interface br0 --match physdev --physdev-out enp1s0 --jump ACCEPT"
+        append_rule  "FORWARD --out-interface ${bridge_interface} --match physdev --physdev-out enp1s0 --jump ACCEPT"
         # Accept DHCPv4
-        append_rule4 "FORWARD --out-interface br0 --protocol udp --dport 67:68 --sport 67:68 --jump ACCEPT"
+        append_rule4 "FORWARD --out-interface ${bridge_interface} --protocol udp --dport 67:68 --sport 67:68 --jump ACCEPT"
         # IPv6 does not work without ICMPv6
-        append_rule6 "FORWARD --out-interface br0 --protocol icmpv6 --jump ACCEPT"
+        append_rule6 "FORWARD --out-interface ${bridge_interface} --protocol icmpv6 --jump ACCEPT"
         # Do not forward by default
         ip46tables --policy FORWARD DROP
       '';
     };
     useDHCP = mkForce false;
-    bridges.br0.interfaces = [ "enp1s0" "enp2s0" ];
-    interfaces.br0.ipv4.addresses = [ { address = "10.0.7.252"; prefixLength = 22; } ];
-    defaultGateway = { address = "10.0.7.254"; interface = "br0"; };
-    nameservers = [ "9.9.9.9" "149.112.112.112" ];
+    bridges."${bridge_interface}".interfaces = [ "enp1s0" "enp2s0" ];
+    interfaces."${bridge_interface}".ipv4.addresses = [ { address = local_ip; prefixLength = 22; } ];
+    defaultGateway = { address = upstream_gateway; interface = bridge_interface; };
+    inherit nameservers;
   };
 
   services.dhcpd4 = {
     enable = true;
-    interfaces = [ "br0" ];
+    interfaces = [ bridge_interface ];
     extraConfig = ''
       option subnet-mask 255.255.252.0;
-      option routers 10.0.7.254;
-      option domain-name-servers 9.9.9.9, 149.112.112.112;
+      option routers ${upstream_gateway};
+      option domain-name-servers ${concatStringsSep ", " nameservers};
       min-lease-time ${toString (2 * 60 * 60)};
       default-lease-time ${toString (4 * 60 * 60)};
       max-lease-time ${toString (4 * 60 * 60)};
