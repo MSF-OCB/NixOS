@@ -238,7 +238,11 @@
       "dhis2-validation": {
         "enable": [
           "didier",
-          "yusuph"
+          "yusuph",
+          "Kathy",
+          "damien",
+          "godfried",
+          "vini"
         ]
       },
       "docker-dmz-1": {
