@@ -35,6 +35,7 @@ with lib;
     lm_sensors
     ipset
     nmap
+    tcpdump
     traceroute
     ethtool
     tcptrack
