@@ -14,6 +14,7 @@ with lib;
     ./modules/docker.nix
     ./modules/maintenance.nix
     ./modules/nfs.nix
+    ./modules/panic_button.nix
     ./modules/prometheus.nix
     ./modules/virtualbox.nix
     ./modules/vmware.nix
