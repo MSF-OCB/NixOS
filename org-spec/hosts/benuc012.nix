@@ -29,11 +29,11 @@ in
     reverse_tunnel.enable = true;
     crypto.encrypted_opt.enable = true;
     docker.enable = true;
+    services.panic_button.enable = true;
   };
 
   networking = {
     firewall = {
-      allowedTCPPorts = [ 1234 ];
       extraCommands = ''
         function append_rule() {
           append_rule4 "''${1}"
