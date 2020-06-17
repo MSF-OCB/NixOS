@@ -80,7 +80,7 @@ in
 
     systemd.services = {
       panic_button = {
-        enable = cfg.enable;
+        inherit (cfg) enable;
         description = "Web interface to lock the encrypted data partition";
         # Include the path to the security wrappers
         path = [ "/run/wrappers/" ];
