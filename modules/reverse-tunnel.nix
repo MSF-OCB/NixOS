@@ -157,7 +157,6 @@ in {
         mkKeyConfigs   = msf_lib.compose [ naturalSort
                                            (mapAttrsToList (_: tunnel: mkKeyConfig tunnel))
                                            (filterAttrs (_: tunnel: stringNotEmpty tunnel.public_key)) ];
-
       in {
         isNormalUser = false;
         isSystemUser = true;
@@ -189,8 +188,8 @@ in {
       # Referencing the path directly, causes the file to be copied to the nix store.
       # By converting the path to a string with toString, we can avoid the file being copied.
       private_key_path = if cfg.copy_private_key_to_store
-                         then "${cfg.private_key_source}"
-                         else "${toString cfg.private_key_source}";
+                         then cfg.private_key_source
+                         else toString cfg.private_key_source;
     in {
       tunnel_key_permissions = {
         # Use toString, we do not want to change permissions
@@ -271,7 +270,7 @@ in {
         '';
       };
       tunnel_services = optionalAttrs cfg.enable (
-        mapAttrs' (name: conf: nameValuePair ("autossh-reverse-tunnel-${name}")
+        mapAttrs' (name: conf: nameValuePair "autossh-reverse-tunnel-${name}"
                                              (make_tunnel_service conf))
                   cfg.relay_servers);
 
