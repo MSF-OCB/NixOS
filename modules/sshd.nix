@@ -37,8 +37,7 @@ with lib;
         ports = mkIf reverse_tunnel.relay.enable reverse_tunnel.relay.ports;
         kexAlgorithms = [ "curve25519-sha256@libssh.org"
                           "diffie-hellman-group18-sha512"
-                          "diffie-hellman-group16-sha512"
-                          "diffie-hellman-group14-sha256" ];
+                          "diffie-hellman-group16-sha512" ];
         macs = [ "hmac-sha2-512-etm@openssh.com"
                  "hmac-sha2-256-etm@openssh.com"
                  "umac-128-etm@openssh.com" ];
