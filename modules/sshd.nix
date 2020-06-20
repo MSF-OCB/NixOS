@@ -66,10 +66,9 @@ with lib;
         '' + optionalString reverse_tunnel.relay.enable ''
           Match User ${concatStringsSep "," (attrNames (filterAttrs (_: user: user.enable && user.forceMonitorCommand) cfg_users))}
             PermitTTY no
-            ForceCommand ${let name = "ssh_port_monitor_command";
-                           in pkgs.writeShellScriptBin name ''
+            ForceCommand ${pkgs.writeShellScript "ssh_port_monitor_command" ''
                              ${pkgs.iproute}/bin/ss -tunl6 | ${pkgs.coreutils}/bin/sort -n | ${pkgs.gnugrep}/bin/egrep "\[::1\]:[0-9]{4}[^0-9]"
-                           '' + "/bin/${name}"}
+                           ''}
         '';
       };
 
