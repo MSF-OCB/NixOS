@@ -9,17 +9,13 @@
 ########################################################################
 
 {
-  time.timeZone = "Europe/Brussels";
+  time.timeZone = "Africa/Bujumbura";
 
   settings = {
     network.host_name = "benuc028";
     boot.mode = "uefi";
     reverse_tunnel.enable = true;
-    crypto.encrypted_opt = {
-      enable = true;
-      device = "/safe.img";
-    };
+    crypto.encrypted_opt.enable = true;
     docker.enable = true;
   };
-
 }
