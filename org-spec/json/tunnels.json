@@ -103,7 +103,7 @@
       },
       "benuc028": {
         "remote_forward_port": 6028,
-        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAUn9fq8+V777HPsIsHGuwqO9GUx2eb3VgXfb4AlMrFc"
+        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP4RVPjOVAM9XxiqBbBxClWrkZI8DfWGy94FQrQbVDXp"
       },
       "benuc030": {
         "remote_forward_port": 6030,
