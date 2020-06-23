@@ -26,6 +26,12 @@ with (import ../msf_lib.nix).msf_lib.user_roles;
       hasShell    = true;
       extraGroups = [ "docker" ];
     };
+    
+    damien   = remoteTunnel // {
+      hasShell    = true;
+      extraGroups = [ "docker" ];
+    };
+    
     # Msfocb-kinshasa-sida-Ehmanager@brussels.msf.org
     gauthier = localShell // {
       extraGroups = [ "docker" ];
