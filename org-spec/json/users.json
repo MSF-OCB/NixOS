@@ -227,17 +227,25 @@
       },
       "dhis2-metadata": {
         "enable": [
-          "yusuph"
+          "yusuph",
+          "damien"
         ]
       },
       "dhis2-prod": {
         "enable": [
-          "yusuph"
+          "yusuph",
+          "damien"
         ]
       },
       "dhis2-validation": {
-        "enable_roles": [
-          "mast"
+        "enable": [
+        "damien",
+        "didier",
+        "godfried",
+        "joana",
+        "kathy",
+        "vini",
+        "yusuph"          
         ]
       },
       "docker-dmz-1": {
