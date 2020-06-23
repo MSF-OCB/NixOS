@@ -239,7 +239,7 @@
       },
       "dhis2-validation": {
         "enable_roles": [
-        "mast"          
+          "mast"
         ]
       },
       "docker-dmz-1": {
