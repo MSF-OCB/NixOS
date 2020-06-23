@@ -238,7 +238,7 @@
         ]
       },
       "dhis2-validation": {
-        "enable_role": [
+        "enable_roles": [
         "mast"          
         ]
       },
