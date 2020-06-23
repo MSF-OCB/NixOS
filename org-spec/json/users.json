@@ -238,14 +238,8 @@
         ]
       },
       "dhis2-validation": {
-        "enable": [
-        "damien",
-        "didier",
-        "godfried",
-        "joana",
-        "kathy",
-        "vini",
-        "yusuph"          
+        "enable_role": [
+        "mast"          
         ]
       },
       "docker-dmz-1": {
