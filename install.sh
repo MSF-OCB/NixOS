@@ -254,6 +254,7 @@ fi
 nixos-install --no-root-passwd --max-jobs 4
 
 if [ "${CREATE_DATA_PART}" = true ]; then
+  umount -R /mnt/home
   umount -R /mnt/opt
   cryptsetup close nixos_data_decrypted
 fi
