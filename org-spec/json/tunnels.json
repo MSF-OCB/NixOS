@@ -1,6 +1,10 @@
 {
   "tunnels": {
     "per-host": {
+      "belt001": {
+        "remote_forward_port": 5001,
+        "public_key": ""
+      },
       "benuc001": {
         "remote_forward_port": 6001,
         "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILb9xUaLuux8HW8RM0XuA/UTW2GZ1xuf4rSmmL+KrAue"
@@ -196,19 +200,19 @@
       "docker-dmz-1": {
         "remote_forward_port": 7100,
         "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICGJiqyc8QDf1Yr0bb1bUJVLAqw1bMSZhkQyWasMpTtr"
-      },    
+      },
       "docker-dmz-2": {
         "remote_forward_port": 7101,
         "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG3cine6Ft3bAtEsWVHFy7a6ImcdOJJNjYlxjb4GAhXw"
-      },    
+      },
       "diggr-nfs": {
         "remote_forward_port": 7103,
         "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJnGLPLgem4SRwkri2p5gkW6z4sc5stAm2VrWgVQM4/2"
-      },    
+      },
       "docker-dmz-11": {
         "remote_forward_port": 7105,
         "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILwADhZ181R5XoobdnZzdOqxTZRmoTorkDUE3oNmcnE9"
-      },    
+      },
       "rescue-iso": {
         "remote_forward_port": 8000,
         "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDPkVmtj3Jkh/8tLJP+tE0/t3GMWJj6mVQ/PfkF7wIL6"
@@ -247,23 +251,23 @@
       },
       "bevm009": {
         "remote_forward_port": 9009,
-        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINmumdLYIu81wyN3tePikqCa40SEBMGrGAagaLpP/Idk"  
+        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINmumdLYIu81wyN3tePikqCa40SEBMGrGAagaLpP/Idk"
       },
       "bevm010": {
         "remote_forward_port": 9010,
-        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFyfmxRMex9WF45LdhBIP72xrf2gn4z1d+3N8BD2uW/H"  
+        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFyfmxRMex9WF45LdhBIP72xrf2gn4z1d+3N8BD2uW/H"
       },
       "bevm011": {
         "remote_forward_port": 9011,
-        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKrHfkN6cK6Cpu3qrb+ygjxlScPzvlJQE6+I4RBF4q11"  
+        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKrHfkN6cK6Cpu3qrb+ygjxlScPzvlJQE6+I4RBF4q11"
       },
       "bevm012": {
         "remote_forward_port": 9012,
-        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJl5Zx1izQIC4tGPaGWPyLlzJJsN39CYbHWWTteRQif+"  
+        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJl5Zx1izQIC4tGPaGWPyLlzJJsN39CYbHWWTteRQif+"
       },
       "bevm013": {
         "remote_forward_port": 9013,
-        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAAfjTyA/Tqb+8L3d2rNj1jE4yA4WObStpB9De6fUx4T"  
+        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAAfjTyA/Tqb+8L3d2rNj1jE4yA4WObStpB9De6fUx4T"
       },
       "bevm014": {
         "remote_forward_port": 9014,
