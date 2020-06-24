@@ -3,7 +3,7 @@
     "per-host": {
       "belt001": {
         "remote_forward_port": 5001,
-        "public_key": ""
+        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHsGxnUqRUZXJbgRfbb8w9XBz/26ZPH5c2j1Zml/SD+Q"
       },
       "benuc001": {
         "remote_forward_port": 6001,
