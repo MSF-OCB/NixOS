@@ -34,6 +34,12 @@
           "nicolas"
         ]
       },
+      "nixos-dev": {
+        "enable": [
+          "nicolas",
+          "ian"
+        ]
+      },
       "benuc014": {
         "enable": [
           "uf_ht_port_a_piment"
