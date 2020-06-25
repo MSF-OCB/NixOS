@@ -251,6 +251,12 @@
         "enable": [
           "uf_in_mumbai"
         ]
+      },
+      "nixos-dev": {
+        "enable": [
+          "ian",
+          "nicolas"
+        ]
       }
     },
     "remote_tunnel": [
