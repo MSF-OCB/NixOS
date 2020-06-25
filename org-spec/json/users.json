@@ -2,6 +2,11 @@
   "users": {
     "_comment_unifield": "The unifield user is a legacy user for Pakistan UF, we cannot easily change the username anymore",
     "per-host": {
+      "belt001": {
+        "enable": [
+          "tnl_za_khayelitsha"
+        ]
+      },
       "benuc001": {
         "enable": [
           "uf_mz_maputo"
@@ -270,6 +275,7 @@
       "tnl_bd_coxcoord",
       "tnl_mz_beira",
       "tnl_pk_karachi",
+      "tnl_za_khayelitsha",
       "uf_bd_coxcoord",
       "uf_bi_bujumbura",
       "uf_cd_goma",
