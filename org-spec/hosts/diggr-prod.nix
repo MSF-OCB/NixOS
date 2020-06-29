@@ -29,6 +29,7 @@ with lib;
     };
     docker.enable = true;
     docker.swarm.enable = true;
+    maintenance.docker_prune_timer.enable = true;
     packages.python_package =
       (pkgs.python3.withPackages (python_pkgs: [
         python_pkgs.docker
