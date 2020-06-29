@@ -34,7 +34,7 @@ with lib;
         python_pkgs.docker
       ]));
     network = {
-      host_name = "docker-dmz-11";
+      host_name = "diggr-prod";
       static_ifaces.ens192 = {
         address = "192.168.50.243";
         prefix_length = 24;

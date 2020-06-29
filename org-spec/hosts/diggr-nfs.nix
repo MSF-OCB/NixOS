@@ -20,7 +20,7 @@ with lib;
     nfs.server = {
       enable = true;
       cryptoMounts = let
-        exportTo = [ "docker-dmz-11.ocb.msf.org" ];
+        exportTo = [ "diggr-prod.ocb.msf.org" ];
       in {
         esdata = {
           enable = true;
