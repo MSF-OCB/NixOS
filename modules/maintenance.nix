@@ -9,14 +9,16 @@ in {
   # https://github.com/NixOS/nixpkgs/pull/77622
   imports = [ ./nixos-upgrade.nix ];
 
-  options = {
-    settings.maintenance.sync_config.enable = mkOption {
+  options.settings.maintenance = {
+    sync_config.enable = mkOption {
       type        = types.bool;
       default     = true;
       description = ''
         Whether to pull the config from the master branch at github before running the upgrade service.
       '';
     };
+
+    docker_prune_timer.enable = mkEnableOption "service to periodically run docker system prune";
   };
 
   config = {
@@ -111,6 +113,18 @@ in {
             fi
           done
         '';
+      };
+
+      docker_prune_timer = mkIf cfg.docker_prune_timer.enable {
+        inherit (cfg.docker_prune_timer) enable;
+        description   = "Automatically run docker system prune";
+        serviceConfig = {
+          Type = "oneshot";
+        };
+        script = ''
+          ${pkgs.docker}/bin/docker system prune
+        '';
+        startAt = "Wed 04:00";
       };
     };
 
