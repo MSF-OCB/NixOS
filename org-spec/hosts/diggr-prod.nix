@@ -70,13 +70,6 @@ with lib;
           ${pkgs.docker}/bin/docker service update a2n-esproxy-internal --quiet --force
         '';
       };
-      diggr_cleanup_stopped_containers = {
-        startAt = "12:30";
-        serviceConfig.Type = "oneshot";
-        script = ''
-          ${pkgs.docker}/bin/docker rm $(${pkgs.docker}/bin/docker ps --quiet --filter "status=exited")
-        '';
-      };
     };
   };
 }
