@@ -12,6 +12,21 @@ in
   options = {
     settings.services.panic_button = {
       enable = mkEnableOption "the panic button service";
+
+      lock_retry_max_count = mkOption {
+        type = types.int;
+        default = 5;
+      };
+
+      verify_retry_max_count = mkOption {
+        type = types.int;
+        default = 50;
+      };
+
+      disable_targets = mkOption {
+        type = with types; listOf str;
+        default = [ "<localhost>" ];
+      };
     };
   };
 
@@ -27,17 +42,17 @@ in
     mkWrapped = name: wrapped: pkgs.writeShellScript name ''sudo --non-interactive ${wrapped}'';
     mkScript = name: content: pkgs.writeShellScript name content;
 
-    # TODO: remove quotes
     mkDisableKeyCommand = device: key_file: ''
-      echo "${pkgs.cryptsetup}/bin/cryptsetup luksRemoveKey ${device} ${key_file}"
+      ${pkgs.cryptsetup}/bin/cryptsetup luksRemoveKey ${device} ${key_file}
     '';
-    disableKeyCommands = concatStringsSep "\n" (mapAttrsToList (_: conf: mkDisableKeyCommand conf.device conf.key_file)
-                                                               crypto_cfg.mounts);
+    disableKeyCommands = mapAttrsToList (_: conf: mkDisableKeyCommand conf.device conf.key_file)
+                                        crypto_cfg.mounts;
+    rebootCommand = ''${pkgs.systemd}/bin/systemctl reboot'';
+    lockCommands = concatStringsSep "\n" (disableKeyCommands ++ [ rebootCommand ]);
 
     lock_script_name = "panic_button_lock_script";
     lock_script_wrapper_name = "${lock_script_name}_wrapped";
-    # TODO: add a reboot instruction (shutdown -r +1)
-    lock_script = mkScript lock_script_name disableKeyCommands;
+    lock_script = mkScript lock_script_name lockCommands;
     lock_script_wrapped = mkWrapped lock_script_wrapper_name lock_script;
 
     mkVerifyCommand = mount_point: ''
@@ -51,7 +66,7 @@ in
     verifyPreamble = ''set -e'';
     # TODO
     verifyUptimeCommand = ''
-      echo Something parsing the uptime command, exit 1 if the system has been up for a long time
+      echo "Something parsing the uptime command, exit 1 if the system has been up for a long time."
     '';
 
     verify_script_name = "verify_script";
@@ -93,9 +108,9 @@ in
         script = ''
           ${panic_button}/bin/nixos_panic_button --lock_script   ${lock_script_wrapped} \
                                                  --verify_script ${verify_script} \
-                                                 --lock_retry_max_count    5 \
-                                                 --verify_retry_max_count 20 \
-                                                 --disable_targets "<localhost>"
+                                                 --lock_retry_max_count   ${cfg.lock_retry_max_count} \
+                                                 --verify_retry_max_count ${cfg.verify_retry_max_count} \
+                                                 --disable_targets ${concatStringsSep " " cfg.disable_targets}
         '';
       };
     };
