@@ -122,7 +122,7 @@ in {
           Type = "oneshot";
         };
         script = ''
-          ${pkgs.docker}/bin/docker system prune
+          ${pkgs.docker}/bin/docker system prune --force
         '';
         startAt = "Wed 04:00";
       };
