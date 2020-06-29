@@ -105,12 +105,15 @@ in
           Type    = "simple";
           Restart = "always";
         };
-        script = ''
+        script = let
+          quoteString   = s: ''"${s}"'';
+          formatTargets = concatMapStringsSep " " quoteString;
+        in ''
           ${panic_button}/bin/nixos_panic_button --lock_script   ${lock_script_wrapped} \
                                                  --verify_script ${verify_script} \
                                                  --lock_retry_max_count   ${toString cfg.lock_retry_max_count} \
                                                  --verify_retry_max_count ${toString cfg.verify_retry_max_count} \
-                                                 --disable_targets ${concatStringsSep " " cfg.disable_targets}
+                                                 --disable_targets ${formatTargets cfg.disable_targets}
         '';
       };
     };
