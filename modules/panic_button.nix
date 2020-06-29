@@ -108,8 +108,8 @@ in
         script = ''
           ${panic_button}/bin/nixos_panic_button --lock_script   ${lock_script_wrapped} \
                                                  --verify_script ${verify_script} \
-                                                 --lock_retry_max_count   ${cfg.lock_retry_max_count} \
-                                                 --verify_retry_max_count ${cfg.verify_retry_max_count} \
+                                                 --lock_retry_max_count   ${toString cfg.lock_retry_max_count} \
+                                                 --verify_retry_max_count ${toString cfg.verify_retry_max_count} \
                                                  --disable_targets ${concatStringsSep " " cfg.disable_targets}
         '';
       };
