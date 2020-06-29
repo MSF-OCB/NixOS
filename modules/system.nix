@@ -97,7 +97,7 @@ with lib;
         newSession = true;
         clock24 = true;
         historyLimit = 10000;
-        extraTmuxConf = ''
+        extraConfig = ''
           set -g mouse on
         '';
       };
