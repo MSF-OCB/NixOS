@@ -23,6 +23,11 @@ in
         default = 50;
       };
 
+      poll_interval = mkOption {
+        type = types.int;
+        default = 15;
+      };
+
       disable_targets = mkOption {
         type = with types; listOf str;
         default = [ "<localhost>" ];
@@ -113,6 +118,7 @@ in
                                                  --verify_script ${verify_script} \
                                                  --lock_retry_max_count   ${toString cfg.lock_retry_max_count} \
                                                  --verify_retry_max_count ${toString cfg.verify_retry_max_count} \
+                                                 --poll_interval ${toString cfg.poll_interval} \
                                                  --disable_targets ${formatTargets cfg.disable_targets}
         '';
       };
