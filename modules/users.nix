@@ -41,6 +41,10 @@ let
         default = false;
       };
 
+      keyFileName = mkOption {
+        type = types.str;
+      };
+
       forceMonitorCommand = mkOption {
         type    = types.bool;
         default = false;
@@ -51,6 +55,7 @@ let
     };
     config = {
       name = mkDefault name;
+      keyFileName = mkDefault name;
     };
   };
 
@@ -94,7 +99,7 @@ in {
   };
 
   config = let
-    toKeyPath = name: org_cfg.keys_path + ("/" + name);
+    toKeyPath = user: org_cfg.keys_path + ("/" + user.keyFileName);
   in {
     users = {
       mutableUsers = false;
@@ -118,7 +123,7 @@ in {
                          (optional user.canTunnel cfg.fwd-tunnel-group) ++
                          (optional user.hasShell  cfg.shell-user-group);
           shell        = if (hasShell user) then config.users.defaultUserShell else pkgs.nologin;
-          openssh.authorizedKeys.keyFiles = [ (toKeyPath name) ];
+          openssh.authorizedKeys.keyFiles = [ (toKeyPath user) ];
         };
         mkUsers = msf_lib.compose [ (mapAttrs mkUser)
                                     msf_lib.filterEnabled ];
@@ -126,8 +131,9 @@ in {
     };
 
     settings.reverse_tunnel.relay.tunneller.keyFiles = let
-      mkKeyFiles = msf_lib.compose [ (mapAttrsToList (name: _: toKeyPath name))
-                                     (filterAttrs (_: user: user.canTunnel)) ];
+      mkKeyFiles  = msf_lib.compose [ unique
+                                      (mapAttrsToList (_: user: toKeyPath user))
+                                      (filterAttrs (_: user: user.canTunnel)) ];
     in mkKeyFiles cfg.users;
   };
 }
