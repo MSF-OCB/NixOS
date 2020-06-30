@@ -1,10 +1,16 @@
-{ lib, ... }:
+{ config, lib, ... }:
 
 with lib;
 with (import ../msf_lib.nix).msf_lib.user_roles;
 
+let
+  user_cfg = config.settings.users;
+in
+
 {
-  settings.users.users = {
+  settings.users.users = let
+    aliasTunnel = from: remoteTunnel // { inherit (user_cfg.users."${from}") enable; keyFileName = from; };
+  in {
 
     # User used for automated access (eg. Ansible)
     robot    = admin;
@@ -26,11 +32,29 @@ with (import ../msf_lib.nix).msf_lib.user_roles;
       hasShell    = true;
       extraGroups = [ "docker" ];
     };
-    
+
     # Msfocb-kinshasa-sida-Ehmanager@brussels.msf.org
     gauthier = localShell // {
       extraGroups = [ "docker" ];
     };
+
+    # Aliases for old tunnel keys which do not
+    # download the tunnel script from github
+    uf_bd_coxbazar      = aliasTunnel "tnl_bd_coxbazar";
+    uf_bd_coxcoord      = aliasTunnel "tnl_bd_coxcoord";
+    uf_bi_bujumbura     = aliasTunnel "tnl_bi_bujumbura";
+    uf_cd_goma          = aliasTunnel "tnl_cd_goma";
+    uf_cd_kinshasacoord = aliasTunnel "tnl_cd_kinshasacoord";
+    uf_cd_masisi        = aliasTunnel "tnl_cd_masisi";
+    uf_cd_puc           = aliasTunnel "tnl_cd_puc";
+    uf_ke_embu          = aliasTunnel "tnl_ke_embu";
+    uf_mz_beira         = aliasTunnel "tnl_mz_beira";
+    uf_pk_karachi       = aliasTunnel "tnl_pk_karachi";
+    uf_sl_baama         = aliasTunnel "tnl_sl_baama";
+    uf_sl_freetown      = aliasTunnel "tnl_sl_freetown";
+    uf_sl_kenema        = aliasTunnel "tnl_sl_kenema";
+    unifield            = aliasTunnel "tnl_legacy";
+
   };
 
   users.users = {
