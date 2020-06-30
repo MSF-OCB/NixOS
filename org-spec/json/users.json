@@ -133,6 +133,7 @@
       },
       "bevm002": {
         "enable": [
+          "tnl_bd_coxbazar",
           "tnl_bd_coxcoord"
         ]
       },
@@ -268,6 +269,7 @@
       "joana",
       "kathy",
       "nicolas",
+      "tnl_bd_coxbazar",
       "tnl_bd_coxcoord",
       "tnl_bi_bujumbura",
       "tnl_cd_goma",
