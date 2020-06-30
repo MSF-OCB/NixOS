@@ -40,7 +40,6 @@ in
 
     # Aliases for old tunnel keys which do not
     # download the tunnel script from github
-    uf_bd_coxbazar      = aliasTunnel "tnl_bd_coxbazar";
     uf_bd_coxcoord      = aliasTunnel "tnl_bd_coxcoord";
     uf_bi_bujumbura     = aliasTunnel "tnl_bi_bujumbura";
     uf_cd_goma          = aliasTunnel "tnl_cd_goma";
