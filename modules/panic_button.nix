@@ -13,6 +13,11 @@ in
     settings.services.panic_button = {
       enable = mkEnableOption "the panic button service";
 
+      listen_port = mkOption {
+        type = types.ints.between 1 65535;
+        default = 1234;
+      };
+
       lock_retry_max_count = mkOption {
         type = types.int;
         default = 5;
@@ -40,8 +45,8 @@ in
     panic_button = pkgs.callPackage (pkgs.fetchFromGitHub {
       owner = "r-vdp";
       repo = "panic_button";
-      rev = "22c1cde16a8690391400f120cebd2f4c19d75a7f";
-      sha256 = "04582mza6p561krxz9gvy9kwfqwfyk0x7y1lgvpiki6kh7xs02p2";
+      rev = "48dd6c834f7a01ec644963445e46c1a1c2a467f6";
+      sha256 = "022fnrcwkn5f9cn172jma7dm14kdy3w50bb2rhg03j0l0bwad0m6";
     }) {};
 
     mkWrapped = name: wrapped: pkgs.writeShellScript name ''sudo --non-interactive ${wrapped}'';
@@ -114,7 +119,8 @@ in
           quoteString   = s: ''"${s}"'';
           formatTargets = concatMapStringsSep " " quoteString;
         in ''
-          ${panic_button}/bin/nixos_panic_button --lock_script   ${lock_script_wrapped} \
+          ${panic_button}/bin/nixos_panic_button --listen_port ${toString cfg.listen_port} \
+                                                 --lock_script   ${lock_script_wrapped} \
                                                  --verify_script ${verify_script} \
                                                  --lock_retry_max_count   ${toString cfg.lock_retry_max_count} \
                                                  --verify_retry_max_count ${toString cfg.verify_retry_max_count} \
