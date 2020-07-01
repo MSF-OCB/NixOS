@@ -218,12 +218,14 @@
       },
       "dhis2-dev": {
         "enable": [
-          "yusuph"
+          "yusuph",
+          "damien"
         ]
       },
       "dhis2-hq-remote": {
         "enable": [
-          "yusuph"
+          "yusuph",
+          "damien"
         ]
       },
       "dhis2-metadata": {
@@ -261,7 +263,6 @@
       }
     },
     "remote_tunnel": [
-      "damien",
       "didier",
       "dirk",
       "godfried",
