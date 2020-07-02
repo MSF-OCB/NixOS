@@ -7,7 +7,7 @@
       },
       "belt002": {
         "remote_forward_port": 5002,
-        "public_key": ""
+        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO+movonWGiyxaNFy7rFBhoKMMGJhA1gV9g2bf/wTCqj"
       },
       "benuc001": {
         "remote_forward_port": 6001,
