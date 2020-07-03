@@ -6,6 +6,11 @@
           "tnl_za_khayelitsha"
         ]
       },
+      "belt002": {
+        "enable": [
+          "tnl_za_rustenburg"
+        ]
+      },
       "benuc001": {
         "enable": [
           "tnl_mz_maputo"
@@ -300,6 +305,7 @@
       "tnl_ve_anzoategui",
       "tnl_ve_bolivar",
       "tnl_za_khayelitsha",
+      "tnl_za_rustenburg",
       "vini"
     ],
     "roles": {
