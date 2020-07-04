@@ -45,8 +45,8 @@ in
     panic_button = pkgs.callPackage (pkgs.fetchFromGitHub {
       owner = "r-vdp";
       repo = "panic_button";
-      rev = "48dd6c834f7a01ec644963445e46c1a1c2a467f6";
-      sha256 = "022fnrcwkn5f9cn172jma7dm14kdy3w50bb2rhg03j0l0bwad0m6";
+      rev = "16a285ebce3f2018ff851cb07776357d5f111332";
+      sha256 = "1z7klwrx22hms9xpfyyd5yx3p8sk3jigi3wbn65fwij8igm70s3k";
     }) {};
 
     mkWrapped = name: wrapped: pkgs.writeShellScript name ''sudo --non-interactive ${wrapped}'';
