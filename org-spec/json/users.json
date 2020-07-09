@@ -65,6 +65,7 @@
       },
       "benuc018": {
         "enable": [
+          "tnl_ua_zhytomir",
           "tnl_ua_zhytomyr"
         ]
       },
@@ -301,6 +302,7 @@
       "tnl_sl_baama",
       "tnl_sl_freetown",
       "tnl_sl_kenema",
+      "tnl_ua_zhytomir",
       "tnl_ua_zhytomyr",
       "tnl_ve_anzoategui",
       "tnl_ve_bolivar",
