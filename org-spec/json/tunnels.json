@@ -223,7 +223,7 @@
       },
       "sherlog-helpdesk": {
         "remote_forward_port": 7110,
-        "public_key": ""
+        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEUb6X6wm81JSFublNoJgdxomB45MaK0B+ETUBysf5dR"
       },
       "bevm001": {
         "remote_forward_port": 9001,
