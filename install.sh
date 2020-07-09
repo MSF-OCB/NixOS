@@ -229,6 +229,7 @@ if [ "${CREATE_DATA_PART}" = true ]; then
   chown root:root /mnt/keyfile
   chmod 0400 /mnt/keyfile
 
+  mkdir -p /run/cryptsetup
   cryptsetup --verbose \
              --batch-mode \
              --cipher aes-xts-plain64 \
