@@ -209,13 +209,13 @@
         "remote_forward_port": 7101,
         "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG3cine6Ft3bAtEsWVHFy7a6ImcdOJJNjYlxjb4GAhXw"
       },
+      "diggr-prod": {
+        "remote_forward_port": 7102,
+        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILwADhZ181R5XoobdnZzdOqxTZRmoTorkDUE3oNmcnE9"
+      },
       "diggr-nfs": {
         "remote_forward_port": 7103,
         "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJnGLPLgem4SRwkri2p5gkW6z4sc5stAm2VrWgVQM4/2"
-      },
-      "diggr-prod": {
-        "remote_forward_port": 7105,
-        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILwADhZ181R5XoobdnZzdOqxTZRmoTorkDUE3oNmcnE9"
       },
       "rescue-iso": {
         "remote_forward_port": 8000,
