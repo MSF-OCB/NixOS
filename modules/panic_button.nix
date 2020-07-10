@@ -53,6 +53,7 @@ in
   config = mkIf cfg.enable (let
     panic_button_user = "panic_button";
 
+    # Use the prefetch_git script in the NixOS repo to update the values below
     panic_button = pkgs.callPackage (pkgs.fetchFromGitHub {
       owner = "msf-ocb";
       repo = "panic_button";
