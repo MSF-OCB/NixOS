@@ -54,7 +54,7 @@ in
     panic_button_user = "panic_button";
 
     panic_button = pkgs.callPackage (pkgs.fetchFromGitHub {
-      owner = "r-vdp";
+      owner = "msf-ocb";
       repo = "panic_button";
       rev = "67e993a777cee75c4b381ddc95a84f79819b8e9a";
       sha256 = "1rf4hkmmpigp06awl8p4g8dmkysikaz1a5xz3injxlqz2gi4ax11";
