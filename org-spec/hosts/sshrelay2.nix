@@ -24,7 +24,7 @@
 
   swapDevices = [
     {
-      device = /swap.img;
+      device = "/swap.img";
       size   = 4096;
     }
   ];
