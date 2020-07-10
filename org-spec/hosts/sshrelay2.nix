@@ -22,6 +22,13 @@
     };
   };
 
+  swapDevices = [
+    {
+      device = /swap.img;
+      size   = 4096;
+    }
+  ];
+
   imports = [
     ../../modules/aws.nix
   ];
