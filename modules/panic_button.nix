@@ -123,7 +123,7 @@ in
       panic_button = {
         inherit (cfg) enable;
         description = "Web interface to lock the encrypted data partition";
-        # Include the path to the security wrappers
+        # Include the path to the security wrappers to make sudo available
         path = [ "/run/wrappers/" ];
         wantedBy = [ "multi-user.target" ];
         serviceConfig = {
