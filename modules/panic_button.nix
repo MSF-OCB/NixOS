@@ -37,11 +37,22 @@ in
         type = with types; listOf str;
         default = [ "<localhost>" ];
       };
+
+      armed = mkOption {
+        type = types.bool;
+        default = true;
+        description = ''
+          Whether the panic button service is armed.
+          When disarming the service, no actual action will be taken when locking the server.
+        '';
+      };
+
     };
   };
 
   config = mkIf cfg.enable (let
     panic_button_user = "panic_button";
+
     panic_button = pkgs.callPackage (pkgs.fetchFromGitHub {
       owner = "r-vdp";
       repo = "panic_button";
@@ -49,8 +60,13 @@ in
       sha256 = "1rf4hkmmpigp06awl8p4g8dmkysikaz1a5xz3injxlqz2gi4ax11";
     }) {};
 
-    mkWrapped = name: wrapped: pkgs.writeShellScript name ''sudo --non-interactive ${wrapped}'';
-    mkScript = name: content: pkgs.writeShellScript name content;
+    mkScript = name: content: let
+      script = pkgs.writeShellScript name content;
+    in if cfg.armed
+       then script
+       else "${pkgs.coreutils}/bin/true";
+
+    mkWrapped = name: wrapped: mkScript name ''sudo --non-interactive ${wrapped}'';
 
     mkDisableKeyCommand = device: key_file: ''
       ${pkgs.cryptsetup}/bin/cryptsetup luksRemoveKey ${device} ${key_file}
@@ -61,9 +77,9 @@ in
     lockCommands = concatStringsSep "\n" (disableKeyCommands ++ [ rebootCommand ]);
 
     lock_script_name = "panic_button_lock_script";
-    lock_script_wrapper_name = "${lock_script_name}_wrapped";
-    lock_script = mkScript lock_script_name lockCommands;
-    lock_script_wrapped = mkWrapped lock_script_wrapper_name lock_script;
+    lock_script_wrapped_name = "${lock_script_name}_wrapped";
+    lock_script_wrapped = mkScript lock_script_wrapped_name lockCommands;
+    lock_script = mkWrapped lock_script_name lock_script_wrapped;
 
     mkVerifyCommand = mount_point: ''
       if [ "$(${pkgs.utillinux}/bin/mountpoint --quiet ${mount_point}; echo $?)" = "0" ]; then
@@ -79,8 +95,7 @@ in
       echo "Something parsing the uptime command, exit 1 if the system has been up for a long time."
     '';
 
-    verify_script_name = "verify_script";
-    verify_script_wrapper_name = "verify_script_wrapped";
+    verify_script_name = "panic_button_verify_script";
     verify_script = msf_lib.compose [ (mkScript verify_script_name)
                                       (concatStringsSep "\n") ]
                                     [ verifyPreamble
@@ -120,7 +135,7 @@ in
           formatTargets = concatMapStringsSep " " quoteString;
         in ''
           ${panic_button}/bin/nixos_panic_button --listen_port ${toString cfg.listen_port} \
-                                                 --lock_script   ${lock_script_wrapped} \
+                                                 --lock_script   ${lock_script} \
                                                  --verify_script ${verify_script} \
                                                  --lock_retry_max_count   ${toString cfg.lock_retry_max_count} \
                                                  --verify_retry_max_count ${toString cfg.verify_retry_max_count} \
