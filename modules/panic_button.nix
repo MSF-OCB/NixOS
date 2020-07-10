@@ -104,7 +104,7 @@ in
                                     [ verifyUptimeCommand
                                       verifyMountPoints ];
   in {
-    networking.firewall.allowedTCPPorts = [ 1234 ];
+    networking.firewall.allowedTCPPorts = [ cfg.listen_port ];
 
     users.users."${panic_button_user}" = {
       isNormalUser = false;
