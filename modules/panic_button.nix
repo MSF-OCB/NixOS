@@ -1,7 +1,6 @@
 { lib, config, pkgs, ... }:
 
 with lib;
-with (import ../msf_lib.nix);
 
 let
   cfg = config.settings.services.panic_button;
@@ -100,10 +99,8 @@ in
                                                              crypto_cfg.mounts);
 
     verify_script_name = "panic_button_verify_script";
-    verify_script = msf_lib.compose [ (mkScript verify_script_name)
-                                      (concatStringsSep "\n") ]
-                                    [ verifyUptimeCommand
-                                      verifyMountPoints ];
+    verify_script = mkScript verify_script_name (concatStringsSep "\n" [ verifyUptimeCommand
+                                                                         verifyMountPoints ]);
   in {
     networking.firewall.allowedTCPPorts = [ cfg.listen_port ];
 
