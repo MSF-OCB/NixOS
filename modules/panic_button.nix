@@ -81,6 +81,14 @@ in
     lock_script_wrapped = mkScript lock_script_wrapped_name lockCommands;
     lock_script = mkWrapped lock_script_name lock_script_wrapped;
 
+    verifyUptimeCommand = ''
+      uptime=$(cat /proc/uptime | cut -d ' ' -f 1 | cut -d '.' -f 1)
+      if [ "''${uptime}" -gt 240 ]; then
+        echo "Seems like the system did not reboot.."
+        exit 1
+      fi
+    '';
+
     mkVerifyCommand = mount_point: ''
       if [ "$(${pkgs.utillinux}/bin/mountpoint --quiet ${mount_point}; echo $?)" = "0" ]; then
         echo "${mount_point} still mounted.."
@@ -89,19 +97,12 @@ in
     '';
     verifyMountPoints = concatStringsSep "\n" (mapAttrsToList (_: conf: mkVerifyCommand conf.mount_point)
                                                              crypto_cfg.mounts);
-    verifyPreamble = ''set -e'';
-    # TODO
-    verifyUptimeCommand = ''
-      echo "Something parsing the uptime command, exit 1 if the system has been up for a long time."
-    '';
 
     verify_script_name = "panic_button_verify_script";
     verify_script = msf_lib.compose [ (mkScript verify_script_name)
                                       (concatStringsSep "\n") ]
-                                    [ verifyPreamble
-                                      verifyUptimeCommand
+                                    [ verifyUptimeCommand
                                       verifyMountPoints ];
-
   in {
     networking.firewall.allowedTCPPorts = [ 1234 ];
 
