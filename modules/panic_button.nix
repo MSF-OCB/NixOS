@@ -46,7 +46,7 @@ in
       owner = "r-vdp";
       repo = "panic_button";
       rev = "67e993a777cee75c4b381ddc95a84f79819b8e9a";
-      sha256 = "1rf4hkmmpigp06awl8p4g8dmkysikaz1a5xz3injxlqz2gi4ax11"
+      sha256 = "1rf4hkmmpigp06awl8p4g8dmkysikaz1a5xz3injxlqz2gi4ax11";
     }) {};
 
     mkWrapped = name: wrapped: pkgs.writeShellScript name ''sudo --non-interactive ${wrapped}'';
