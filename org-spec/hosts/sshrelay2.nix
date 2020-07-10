@@ -16,6 +16,7 @@
     network.host_name = "sshrelay2";
     boot.separate_partition = false;
     reverse_tunnel.relay.enable = true;
+    services.panic_button.enable = true;
   };
 
   imports = [
