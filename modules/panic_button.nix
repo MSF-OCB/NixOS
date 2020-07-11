@@ -68,7 +68,7 @@ in
        then script
        else "${pkgs.coreutils}/bin/true";
 
-    mkWrapped = name: wrapped: mkScript name ''sudo --non-interactive ${wrapped}'';
+    mkWrapper = name: wrapped: mkScript name ''sudo --non-interactive ${wrapped}'';
 
     mkDisableKeyCommand = device: key_file: ''
       ${pkgs.cryptsetup}/bin/cryptsetup luksRemoveKey ${device} ${key_file}
@@ -81,7 +81,7 @@ in
     lock_script_name = "panic_button_lock_script";
     lock_script_wrapped_name = "${lock_script_name}_wrapped";
     lock_script_wrapped = mkScript lock_script_wrapped_name lockCommands;
-    lock_script = mkWrapped lock_script_name lock_script_wrapped;
+    lock_script = mkWrapper lock_script_name lock_script_wrapped;
 
     verifyUptimeCommand = ''
       uptime=$(cat /proc/uptime | cut -d ' ' -f 1 | cut -d '.' -f 1)
