@@ -97,12 +97,12 @@ in
         exit 1
       fi
     '';
-    verifyMountPoints = concatStringsSep "\n" (mapAttrsToList (_: conf: mkVerifyCommand conf.mount_point)
-                                                             crypto_cfg.mounts);
+    verifyMountPoints = mapAttrsToList (_: conf: mkVerifyCommand conf.mount_point)
+                                       crypto_cfg.mounts;
 
     verify_script_name = "panic_button_verify_script";
-    verify_script = mkScript verify_script_name (concatStringsSep "\n" [ verifyUptimeCommand
-                                                                         verifyMountPoints ]);
+    verify_script = mkScript verify_script_name (concatStringsSep "\n" ([ verifyUptimeCommand ] ++
+                                                                          verifyMountPoints));
   in {
     networking.firewall.allowedTCPPorts = [ cfg.listen_port ];
 
