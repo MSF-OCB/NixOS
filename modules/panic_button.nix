@@ -84,7 +84,7 @@ in
     lock_script = mkWrapper lock_script_name lock_script_wrapped;
 
     verifyUptimeCommand = ''
-      uptime=$(cut -d '.' -f 1 /proc/uptime)
+      uptime=$(${pkgs.coreutils}/bin/cut -d '.' -f 1 /proc/uptime)
       if [ "''${uptime}" -gt 240 ]; then
         echo "Seems like the system did not reboot.."
         exit 1
