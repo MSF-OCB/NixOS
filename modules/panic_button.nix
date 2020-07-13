@@ -70,39 +70,51 @@ in
 
     mkWrapper = name: wrapped: mkScript name ''sudo --non-interactive ${wrapped}'';
 
-    mkDisableKeyCommand = device: key_file: ''
-      ${pkgs.cryptsetup}/bin/cryptsetup luksRemoveKey ${device} ${key_file}
-    '';
-    disableKeyCommands = mapAttrsToList (_: conf: mkDisableKeyCommand conf.device conf.key_file)
-                                        crypto_cfg.mounts;
-    rebootCommand = ''${pkgs.systemd}/bin/systemctl reboot'';
-    lockCommands = concatStringsSep "\n" (disableKeyCommands ++ [ rebootCommand ]);
+    lock_script = let
 
-    lock_script_name = "panic_button_lock_script";
-    lock_script_wrapped_name = "${lock_script_name}_wrapped";
-    lock_script_wrapped = mkScript lock_script_wrapped_name lockCommands;
-    lock_script = mkWrapper lock_script_name lock_script_wrapped;
+      script_name  = "panic_button_lock_script";
+      wrapped_name = "${script_name}_wrapped";
 
-    verifyUptimeCommand = ''
-      uptime=$(${pkgs.coreutils}/bin/cut -d '.' -f 1 /proc/uptime)
-      if [ "''${uptime}" -gt 240 ]; then
-        echo "Seems like the system did not reboot.."
-        exit 1
-      fi
-    '';
+      disableKeyCommands = let
+        mkDisable = device: key_file: ''
+          ${pkgs.cryptsetup}/bin/cryptsetup luksRemoveKey ${device} ${key_file}
+        '';
+      in mapAttrsToList (_: conf: mkDisable conf.device conf.key_file)
+                        crypto_cfg.mounts;
 
-    mkVerifyCommand = mount_point: ''
-      if [ "$(${pkgs.utillinux}/bin/mountpoint --quiet ${mount_point}; echo $?)" = "0" ]; then
-        echo "${mount_point} still mounted.."
-        exit 1
-      fi
-    '';
-    verifyMountPoints = mapAttrsToList (_: conf: mkVerifyCommand conf.mount_point)
-                                       crypto_cfg.mounts;
+      rebootCommand = ''${pkgs.systemd}/bin/systemctl reboot'';
 
-    verify_script_name = "panic_button_verify_script";
-    verify_script = mkScript verify_script_name (concatStringsSep "\n" ([ verifyUptimeCommand ] ++
-                                                                          verifyMountPoints));
+      wrapped = let
+        commands = concatStringsSep "\n" (disableKeyCommands ++ [ rebootCommand ]);
+      in mkScript wrapped_name commands;
+
+    in mkWrapper script_name wrapped;
+
+    verify_script = let
+
+      script_name = "panic_button_verify_script";
+
+      verifyUptime = ''
+        uptime=$(${pkgs.coreutils}/bin/cut -d '.' -f 1 /proc/uptime)
+        if [ "''${uptime}" -gt 240 ]; then
+          echo "Seems like the system did not reboot.."
+          exit 1
+        fi
+      '';
+
+      verifyMountPoints = let
+        mkVerify = mount_point: ''
+          if [ "$(${pkgs.utillinux}/bin/mountpoint --quiet ${mount_point}; echo $?)" = "0" ]; then
+            echo "${mount_point} still mounted.."
+            exit 1
+          fi
+        '';
+      in mapAttrsToList (_: conf: mkVerify conf.mount_point) crypto_cfg.mounts;
+
+      commands = concatStringsSep "\n" ( [ verifyUptime ] ++ verifyMountPoints);
+
+    in mkScript script_name commands;
+
   in {
     networking.firewall.allowedTCPPorts = [ cfg.listen_port ];
 
