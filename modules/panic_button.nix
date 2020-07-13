@@ -125,6 +125,7 @@ in
         description = "Web interface to lock the encrypted data partition";
         # Include the path to the security wrappers to make sudo available
         path = [ "/run/wrappers/" ];
+        environment = { PYTHONUNBUFFERED = "1"; };
         wantedBy = [ "multi-user.target" ];
         serviceConfig = {
           User    = panic_button_user;
