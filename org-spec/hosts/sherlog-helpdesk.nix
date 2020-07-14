@@ -8,6 +8,8 @@
 #                                                                      #
 ########################################################################
 
+{ config, pkgs, ... }:
+
 {
   time.timeZone = "Europe/Brussels";
 
@@ -28,6 +30,29 @@
         gateway = "192.168.50.1";
         fallback = false;
       };
+    };
+  };
+
+  systemd.services = {
+    update_osticket_config = let
+      osticket_dir = "/opt/osticket";
+      osticket_config_dir = "${osticket_dir}/osticket-config";
+    in {
+      serviceConfig.Type = "oneshot";
+      environment = let
+        inherit (config.settings.reverse_tunnel) private_key;
+      in {
+        GIT_SSH_COMMAND = "ssh -i ${private_key} -o IdentitiesOnly=yes";
+      };
+      script = ''
+          ${pkgs.git}/bin/git -C ${osticket_config_dir} fetch origin master
+          ${pkgs.git}/bin/git -C ${osticket_config_dir} checkout master
+          ${pkgs.git}/bin/git -C ${osticket_config_dir} reset --hard origin/master
+          ${pkgs.git}/bin/git -C ${osticket_config_dir} clean -d --force
+          ${pkgs.git}/bin/git -C ${osticket_config_dir} pull
+
+          ${pkgs.docker-compose}/bin/docker-compose --project-directory ${osticket_dir} restart
+      '';
     };
   };
 }
