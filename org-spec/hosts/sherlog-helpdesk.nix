@@ -42,7 +42,10 @@
       environment = let
         inherit (config.settings.reverse_tunnel) private_key;
       in {
-        GIT_SSH_COMMAND = "${pkgs.openssh}/bin/ssh -i ${private_key} -o IdentitiesOnly=yes";
+        GIT_SSH_COMMAND = "${pkgs.openssh}/bin/ssh " +
+                          "-i ${private_key} " +
+                          "-o IdentitiesOnly=yes" +
+                          "-o StrictHostKeyChecking=no";
       };
       script = ''
           ${pkgs.git}/bin/git -C ${osticket_config_dir} fetch origin master
@@ -51,7 +54,10 @@
           ${pkgs.git}/bin/git -C ${osticket_config_dir} clean -d --force
           ${pkgs.git}/bin/git -C ${osticket_config_dir} pull
 
-          ${pkgs.docker-compose}/bin/docker-compose --project-directory ${osticket_dir} restart
+          ${pkgs.docker-compose}/bin/docker-compose --project-directory ${osticket_dir} \
+                                                    --file ${osticket_dir}/docker-compose.yml \
+                                                    --no-ansi \
+                                                    restart
       '';
     };
   };
