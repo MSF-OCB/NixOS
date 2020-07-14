@@ -68,6 +68,11 @@
           "tnl_ua_zhytomyr"
         ]
       },
+      "benuc019": {
+        "enable": [
+          "damien"
+        ]
+      },      
       "benuc020": {
         "enable": [
           "tnl_pk_karachi",
