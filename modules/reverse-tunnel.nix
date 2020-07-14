@@ -98,12 +98,10 @@ in {
 
       tunnels = mkOption {
         type    = with types; attrsOf (submodule tunnelOpts);
-        default = {};
       };
 
       relay_servers = mkOption {
         type    = with types; attrsOf (submodule relayServerOpts);
-        default = {};
       };
 
       prometheus_tunnel_port_prefix = mkOption {
