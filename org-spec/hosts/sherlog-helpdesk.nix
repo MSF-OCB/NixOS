@@ -42,7 +42,7 @@
       environment = let
         inherit (config.settings.reverse_tunnel) private_key;
       in {
-        GIT_SSH_COMMAND = "ssh -i ${private_key} -o IdentitiesOnly=yes";
+        GIT_SSH_COMMAND = "${pkgs.openssh}/bin/ssh -i ${private_key} -o IdentitiesOnly=yes";
       };
       script = ''
           ${pkgs.git}/bin/git -C ${osticket_config_dir} fetch origin master
