@@ -14,9 +14,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: msf-ocb/nixos-deploy@master
-      env:
-        NIXOS_ROBOT_KEY: ${{ secrets.NIXOS_ROBOT_KEY }}
-        NIXOS_DEPLOY_FIXED_HOSTS: 'sshrelay1.msf.be sshrelay2.msf.be'
-        NIXOS_DEPLOY_SERVICE: 'nixos_rebuild_config.service'
+      - uses: msf-ocb/nixos-deploy@master
+        env:
+          NIXOS_ROBOT_KEY: ${{ secrets.NIXOS_ROBOT_KEY }}
+          NIXOS_DEPLOY_FIXED_HOSTS: 'sshrelay1.msf.be sshrelay2.msf.be'
+          NIXOS_DEPLOY_SERVICE: 'nixos_rebuild_config.service'
 
