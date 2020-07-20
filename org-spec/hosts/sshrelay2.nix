@@ -26,6 +26,7 @@
     {
       device = "/swap.img";
       size   = 4096;
+      randomEncryption.enable = true;
     }
   ];
 
