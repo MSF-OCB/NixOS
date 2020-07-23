@@ -72,7 +72,7 @@
         "enable": [
           "damien"
         ]
-      },      
+      },
       "benuc020": {
         "enable": [
           "tnl_pk_karachi",
@@ -203,6 +203,7 @@
       },
       "bevm014": {
         "enable": [
+          "tnl_ve_anzoategui",
           "tnl_ve_bolivar"
         ]
       },
