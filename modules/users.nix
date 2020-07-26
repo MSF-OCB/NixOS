@@ -95,12 +95,28 @@ in {
         default  = "ssh-rev-tun-users";
         readOnly = true;
       };
+
+      robot = {
+        enable = mkEnableOption "the robot user";
+
+        username = mkOption {
+          type     = types.str;
+          default  = "robot";
+          readOnly = true;
+          description = ''
+            User used for automated access (eg. Ansible)
+          '';
+        };
+      };
     };
   };
 
   config = let
     toKeyPath = user: org_cfg.keys_path + ("/" + user.keyFileName);
   in {
+    settings.users.users."${cfg.robot.username}" =
+      mkIf cfg.robot.enable msf_lib.user_roles.admin;
+
     users = {
       mutableUsers = false;
 
