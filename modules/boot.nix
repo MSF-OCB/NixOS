@@ -2,6 +2,7 @@
 
 let
   cfg = config.settings.boot;
+  nodev = "nodev";
 in
 
 with lib;
@@ -16,7 +17,7 @@ with lib;
 
       device = mkOption {
         type    = types.str;
-        default = "nodev";
+        default = nodev;
         description = "The device to install GRUB to in legacy mode.";
       };
 
@@ -36,8 +37,14 @@ with lib;
 
   config = {
 
-    # memtest86-efi has an unfree licence...
-    #nixpkgs.config.allowUnfree = (cfg.mode == cfg.modes.uefi);
+    assertions = [
+      {
+        assertion = (cfg.mode == cfg.modes.uefi) -> (cfg.device == nodev);
+        message   = ''
+          For UEFI installations, the boot device (settings.boot.device) should be set to "${nodev}", but I got "${cfg.device}" instead.
+        '';
+      }
+    ];
 
     boot = {
       growPartition = true;
@@ -45,24 +52,23 @@ with lib;
       tmpOnTmpfs    = true;
 
       loader = let
-        mode = cfg.mode;
+        inherit (cfg) mode;
         grub_common = {
           enable  = true;
           version = 2;
+          inherit (cfg) device;
           memtest86.enable = false;
         };
       in mkIf (mode != cfg.modes.none) (mkMerge [
         (mkIf (mode == cfg.modes.legacy) {
           grub = grub_common // {
             efiSupport = false;
-            device = cfg.device;
           };
         })
         (mkIf (mode == cfg.modes.uefi) {
           grub = grub_common // {
             efiSupport = true;
             efiInstallAsRemovable = true;
-            device = "nodev";
             extraEntries = ''
               menuentry 'Firmware Setup' --class settings {
                 fwsetup
