@@ -13,7 +13,7 @@ in
       enable = mkEnableOption "the panic button service";
 
       listen_port = mkOption {
-        type = types.ints.between 1 65535;
+        type = types.port;
         default = 1234;
       };
 

@@ -113,7 +113,7 @@ in {
         enable = mkEnableOption "the relay server functionality";
 
         ports = mkOption {
-          type    = with types; listOf (ints.between 0 65535);
+          type    = with types; listOf port;
           default = [ 22 80 443 ];
         };
 
