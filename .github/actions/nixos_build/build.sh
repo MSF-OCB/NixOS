@@ -1,14 +1,16 @@
 #! /usr/bin/env sh
 
-nix-channel --add https://nixos.org/channels/nixos-20.03 nixpkgs
+nixos_channel=${NIXOS_CHANNEL:-'nixos-20.03'}
+
+nix-channel --add https://nixos.org/channels/${nixos_channel} nixpkgs
 nix-channel --update
 
 # If we are not running in a github action, we need to clone the repo ourselves
-if [ -z "$(ls -A ." ]; then
+if [ -f "configuration.nix" ]; then
+  dir="."
+else
   dir="/nixos_repo"
   nix-shell --packages git --run "git clone https://github.com/msf-ocb/nixos ${dir}"
-else
-  dir="."
 fi
 
 touch "${dir}/local/id_tunnel"
