@@ -1,0 +1,8 @@
+---
+
+name: 'NixOS Build'
+description: 'Build all server configs.'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+
