@@ -293,7 +293,7 @@
         "remote_forward_port": 9017,
         "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMD7wFJgxWdBOnqyuNpqzvCXZ/GTz2UIOP56oUI/gmXD"
       },
-      "bevm017": {
+      "bevm018": {
         "remote_forward_port": 9018,
         "public_key": ""
       }
