@@ -15,20 +15,13 @@
   settings = {
     network.host_name = "sshrelay2";
     boot.separate_partition = false;
+    system.diskSwap.size = 4;
     reverse_tunnel.relay.enable = true;
     services.panic_button = {
       enable = true;
       armed  = false;
     };
   };
-
-  swapDevices = [
-    {
-      device = "/swap.img";
-      size   = 4096;
-      randomEncryption.enable = true;
-    }
-  ];
 
   imports = [
     ../../modules/aws.nix
