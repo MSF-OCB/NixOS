@@ -7,9 +7,22 @@ in
 with lib;
 
 {
-  options = {
-    settings.system.nix_channel = mkOption {
+  options.settings.system = {
+    nix_channel = mkOption {
       type = types.str;
+    };
+
+    diskSwap = {
+      enable = mkOption {
+        type = types.bool;
+        default = true;
+      };
+
+      size = mkOption {
+        type = types.ints.between 0 10;
+        default = 1;
+        description = "Size of the swap partition in GiB.";
+      };
     };
   };
 
@@ -19,6 +32,15 @@ with lib;
       algorithm = "zstd";
       memoryPercent = 40;
     };
+
+    swapDevices = mkIf cfg.diskSwap.enable [
+      {
+        device   = "/swap.img";
+        size     = 1024 * cfg.diskSwap.size;
+        priority = 0;
+        randomEncryption.enable = true;
+      }
+    ];
 
     security = {
       sudo = {
