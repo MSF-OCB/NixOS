@@ -1,4 +1,4 @@
-<a href="https://github.com/MSF-OCB/NixOS/actions"><img src="https://github.com/MSF-OCB/NixOS/workflows/NixOS%20build/badge.svg?event=push" alt="NixOS build badge" /></a>
+<a href="https://github.com/MSF-OCB/NixOS/actions"><img src="https://github.com/MSF-OCB/NixOS/workflows/NixOS%20build/badge.svg" alt="NixOS build badge" /></a>
 <a href="https://github.com/MSF-OCB/NixOS/actions"><img src="https://github.com/MSF-OCB/NixOS/workflows/NixOS%20deploy/badge.svg?event=push" alt="NixOS deploy badge" /></a>
 
 ### NixOS config for field servers
