@@ -16,7 +16,30 @@ fi
 touch "${dir}/local/id_tunnel"
 echo '{}' > "${dir}/hardware-configuration.nix"
 
+
+function print_banner() (
+  msg="${1}"
+  star_length=70
+  stars="$(printf %-${star_length}s '' | tr ' ' '*')"
+
+  function print_line() {
+    _msg="${1}"
+
+    echo "$(printf %-$((star_length - 1))s "* ${_msg}" '*')"
+  }
+
+  echo
+  echo -e "\n${stars}"
+  print_line ""
+  print_line "${msg}"
+  print_line ""
+  echo -e "${stars}\n"
+)
+
 for host in ${NIXOS_BUILD_HOSTS:-$(ls ${dir}/org-spec/hosts)}; do
+
+  print_banner "Building config: ${host}"
+
   if [ -L "${dir}/settings.nix" ]; then
     unlink "${dir}/settings.nix"
   fi
