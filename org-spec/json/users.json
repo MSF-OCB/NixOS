@@ -198,8 +198,7 @@
       },
       "bevm013": {
         "enable": [
-          "tnl_ve_anzoategui",
-          "tnl_ve_caracascentsix"
+          "tnl_ve_anzoategui"
         ]
       },
       "bevm014": {
@@ -316,7 +315,6 @@
       "tnl_ua_zhytomyr",
       "tnl_ve_anzoategui",
       "tnl_ve_bolivar",
-      "tnl_ve_caracascentsix",
       "tnl_ve_coordination",
       "tnl_za_khayelitsha",
       "tnl_za_rustenburg",
