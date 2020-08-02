@@ -4,37 +4,58 @@
       "belt001": {
         "enable": [
           "tnl_za_khayelitsha"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "belt002": {
         "enable": [
           "tnl_za_rustenburg"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "benuc001": {
         "enable": [
           "tnl_mz_maputo"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "benuc004": {
         "enable_roles": [
           "mast"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "benuc006": {
         "enable": [
           "tnl_legacy"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "benuc007": {
         "enable": [
           "tnl_mz_beira",
           "yusuph"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "benuc009": {
         "enable_roles": [
           "mast"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "benuc010": {
@@ -47,7 +68,8 @@
           "tnl_ht_port_a_piment"
         ],
         "enable_roles": [
-          "mast"
+          "mast",
+          "fieldsupport"
         ]
       },
       "benuc015": {
@@ -55,38 +77,55 @@
           "tnl_cd_masisi"
         ],
         "enable_roles": [
-          "mast"
+          "mast",
+          "fieldsupport"
         ]
       },
       "benuc016": {
         "enable_roles": [
-          "mast"
+          "mast",
+          "fieldsupport"
         ]
       },
       "benuc018": {
         "enable": [
           "tnl_ua_zhytomyr"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "benuc019": {
         "enable": [
           "damien"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "benuc020": {
         "enable": [
           "tnl_pk_karachi",
           "tnl_legacy"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "benuc021": {
         "enable": [
           "tnl_legacy"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "benuc023": {
         "enable_roles": [
           "mast"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "benuc024": {
@@ -94,7 +133,8 @@
           "tnl_gn_kouroussa"
         ],
         "enable_roles": [
-          "mast"
+          "mast",
+          "fieldsupport"
         ]
       },
       "benuc025": {
@@ -102,7 +142,8 @@
           "tnl_sl_baama"
         ],
         "enable_roles": [
-          "mast"
+          "mast",
+          "fieldsupport"
         ]
       },
       "benuc026": {
@@ -110,22 +151,28 @@
           "tnl_sl_kenema"
         ],
         "enable_roles": [
-          "mast"
+          "mast",
+          "fieldsupport"
         ]
       },
       "benuc027": {
         "enable_roles": [
-          "mast"
+          "mast",
+          "fieldsupport"
         ]
       },
       "benuc030": {
         "enable": [
           "tnl_cd_puc"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "benuc035": {
         "enable_roles": [
-          "mast"
+          "mast",
+          "fieldsupport"
         ]
       },
       "benuc037": {
@@ -133,130 +180,195 @@
           "tnl_ke_embu"
         ],
         "enable_roles": [
-          "mast"
+          "mast",
+          "fieldsupport"
         ]
       },
       "bevm001": {
         "enable": [
           "tnl_cd_goma"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "bevm002": {
         "enable": [
           "tnl_bd_coxcoord"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "bevm003": {
         "enable": [
           "tnl_cd_kinshasacoord"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "bevm004": {
         "enable": [
           "tnl_sl_freetown"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "bevm005": {
         "enable": [
           "tnl_eg_maadi_annex1"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "bevm006": {
         "enable": [
           "tnl_eg_maadi_coordination"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "bevm007": {
         "enable": [
           "tnl_bi_bujumbura"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "bevm008": {
         "enable": [
           "tnl_gn_conakry"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "bevm009": {
         "enable": [
           "tnl_gn_sida"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "bevm010": {
         "enable": [
           "tnl_cf_coordination"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "bevm011": {
         "enable": [
           "tnl_cd_kinshasa_sida"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "bevm012": {
         "enable": [
           "tnl_cf_castor_bangui"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "bevm013": {
         "enable": [
           "tnl_ve_anzoategui"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "bevm014": {
         "enable": [
           "tnl_ve_anzoategui",
           "tnl_ve_bolivar"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "bevm015": {
         "enable": [
           "tnl_cm_bamenda"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "bevm016": {
         "enable": [
           "tnl_ic_abidjan"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "bevm017": {
         "enable": [
           "tnl_ke_kiambu"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "bevm018": {
         "enable": [
           "tnl_ve_coordination"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "chk-emr-a": {
         "enable": [
           "gauthier"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "dhis2-dev": {
         "enable": [
+          "mohammad",
           "yusuph",
           "damien"
         ]
       },
       "dhis2-hq-remote": {
         "enable": [
+          "mohammad",
           "yusuph",
           "damien"
         ]
       },
       "dhis2-metadata": {
         "enable": [
+          "mohammad",
           "yusuph",
           "damien"
         ]
       },
       "dhis2-prod": {
         "enable": [
+          "mohammad",
           "yusuph",
           "damien"
         ]
       },
       "dhis2-validation": {
+        "enable" : [
+          "mohammad"
+        ],
         "enable_roles": [
           "mast"
         ]
@@ -264,17 +376,50 @@
       "docker-dmz-1": {
         "enable": [
           "ian"
+        ],
+        "enable_roles": [
+          "hq"
+        ]
+      },
+      "docker-dmz-2": {
+        "enable_roles": [
+          "hq"
+        ]
+      },
+      "diggr-prod": {
+        "enable_roles": [
+          "hq"
+        ]
+      },
+      "diggr-nfs": {
+        "enable_roles": [
+          "hq"
+        ]
+      },
+      "sherlog-helpdesk": {
+        "enable_roles": [
+          "hq"
         ]
       },
       "mumbai-emr-a": {
         "enable": [
           "tnl_in_mumbai"
+        ],
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "nixos-dev": {
         "enable": [
+          "mohammad",
           "ian",
           "nicolas"
+        ]
+      },
+      "rescue-iso": {
+        "enable_roles": [
+          "fieldsupport_admin",
+          "hq"
         ]
       }
     },
@@ -329,6 +474,20 @@
         "kathy",
         "vini",
         "yusuph"
+      ],
+      "fieldsupport": [
+        "ali",
+        "deepak",
+        "paul",
+        "mohammad"
+      ],
+      "fieldsupport_admin": [
+        "ali_admin",
+        "deepak_admin",
+        "paul_admin",
+        "mohammad"
+      ],
+      "hq": [
       ]
     }
   }

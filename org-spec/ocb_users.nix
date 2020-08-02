@@ -14,19 +14,24 @@ in
     users = let
       aliasTunnel = from: remoteTunnel // { inherit (user_cfg.users."${from}") enable; keyFileName = from; };
     in {
+      # Super admins, enabled by default on all servers
+      ramses  = admin;
+      thierry = admin;
+      yves    = admin;
 
-      mohammad = admin;
-      ramses   = admin;
-      thierry  = admin;
-      xavier   = admin;
-      yves     = admin;
-
+      # Users with admin access, need to be enabled explicitly
       ian      = admin_base;
+      mohammad = admin_base;
 
       # Field support team
-      ali      = fieldSupport;
-      deepak   = fieldSupport;
-      paul     = fieldSupport;
+      ali    = fieldSupport;
+      deepak = fieldSupport;
+      paul   = fieldSupport;
+
+      # Admin access for field support team
+      ali_admin    = admin_base // { name = "ali"; };
+      deepak_admin = admin_base // { name = "deepak"; };
+      paul_admin   = admin_base // { name = "paul"; };
 
       yusuph   = remoteTunnel // {
         hasShell    = true;
@@ -38,7 +43,7 @@ in
         extraGroups = [ "docker" ];
       };
 
-      # Msfocb-kinshasa-sida-Ehmanager@brussels.msf.org
+      # Msfocb-kinshasa-sida-Ehmanager
       gauthier = localShell // {
         extraGroups = [ "docker" ];
       };
