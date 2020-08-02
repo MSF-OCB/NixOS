@@ -55,7 +55,9 @@ let
     };
     config = {
       name = mkDefault name;
-      keyFileName = mkDefault name;
+      # We need to actually resolve the name from the config,
+      # the default value above might have been overridden.
+      keyFileName = mkDefault cfg.users."${name}".name;
     };
   };
 
