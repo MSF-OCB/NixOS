@@ -78,7 +78,7 @@ in
       #                                  print(crypt.crypt(getpass.getpass(), \
       #                                                    crypt.mksalt(crypt.METHOD_SHA512)))'"
       hashedPassword = mkDefault
-        "$6$FLtTyAhwtSyaTU1T$tnDBA5S5YeUF/UdO2KZtCVNieUlKGlL4iyGYtVKPI3Vfbyiu1BIH2j.BcScXPZbBbZ1P9PwKKh5B7lNoPr9o31";
+        ''$6$VB1Kj0dbHNuvRl24$9YAgZYFHyk6Mr1xseoZGVmVjBr/FeYQ/VQZCNT7ulvyotzxlGhPTAANtA3J3BUEr4lzDf08IxN2C80vi7/CHv0'';
     };
 
     # Lock the root user
