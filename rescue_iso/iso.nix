@@ -22,6 +22,7 @@ with lib;
       private_key_source = ../local/id_tunnel_iso;
       copy_private_key_to_store = true;
     };
+    system.diskSwap.enable = false;
   };
 
   services.mingetty.helpLine = mkForce "";
