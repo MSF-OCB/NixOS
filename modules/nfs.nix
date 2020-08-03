@@ -62,17 +62,17 @@ in
   config = let
     exported_path = name: "/exports/${name}";
 
-    mkNfsCryptoMount = name: conf: {
+    mkNfsCryptoMount = _: conf: {
       enable             = true;
       device             = conf.device;
-      mount_point        = exported_path name;
+      mount_point        = exported_path conf.name;
       mount_options      = "acl,noatime,nosuid,nodev";
       dependent_services = [ "nfs-server.service" ];
     };
     mkNfsCryptoMounts = mapAttrs mkNfsCryptoMount;
 
     mkClientConf  = client: "${client}(${cfg.nfsExportOptions})";
-    mkExportEntry = name: conf: "${exported_path name} ${concatMapStringsSep " " mkClientConf conf.exportTo}";
+    mkExportEntry = _: conf: "${exported_path conf.name} ${concatMapStringsSep " " mkClientConf conf.exportTo}";
     mkExports     = confs: concatStringsSep "\n" (mapAttrsToList mkExportEntry confs);
 
     enabledCryptoMounts = msf_lib.filterEnabled cfg.server.cryptoMounts;

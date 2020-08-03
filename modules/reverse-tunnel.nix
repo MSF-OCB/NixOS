@@ -268,8 +268,8 @@ in {
         '';
       };
       tunnel_services = optionalAttrs cfg.enable (
-        mapAttrs' (name: conf: nameValuePair "autossh-reverse-tunnel-${name}"
-                                             (make_tunnel_service conf))
+        mapAttrs' (_: conf: nameValuePair "autossh-reverse-tunnel-${conf.name}"
+                                          (make_tunnel_service conf))
                   cfg.relay_servers);
 
       monitoring_services = optionalAttrs cfg.relay.enable {

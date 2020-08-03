@@ -89,21 +89,21 @@ in {
         denyInterfaces  = [ "eth*" "wlan*" "veth*" "docker*" ];
         extraConfig = let
           format_name_servers = concatStringsSep " ";
-          mkConfig = iface: conf: if conf.fallback then ''
-                                    profile static_${iface}
-                                    static ip_address=${conf.address}/${toString conf.prefix_length}
-                                    static routers=${conf.gateway}
-                                    static domain_name_servers=${format_name_servers conf.nameservers}
+          mkConfig = _: conf: if conf.fallback then ''
+                               profile static_${conf.iface}
+                               static ip_address=${conf.address}/${toString conf.prefix_length}
+                               static routers=${conf.gateway}
+                               static domain_name_servers=${format_name_servers conf.nameservers}
 
-                                    # fallback to static profile on ${iface}
-                                    interface ${iface}
-                                    fallback static_${iface}
-                                  '' else ''
-                                    interface ${iface}
-                                    static ip_address=${conf.address}/${toString conf.prefix_length}
-                                    static routers=${conf.gateway}
-                                    static domain_name_servers=${format_name_servers conf.nameservers}
-                                  '';
+                               # fallback to static profile on ${conf.iface}
+                               interface ${conf.iface}
+                               fallback static_${conf.iface}
+                             '' else ''
+                               interface ${conf.iface}
+                               static ip_address=${conf.address}/${toString conf.prefix_length}
+                               static routers=${conf.gateway}
+                               static domain_name_servers=${format_name_servers conf.nameservers}
+                             '';
           mkConfigs = msf_lib.compose [ (concatStringsSep "\n\n")
                                         (mapAttrsToList mkConfig)
                                         msf_lib.filterEnabled ];
