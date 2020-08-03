@@ -64,8 +64,7 @@ with (import <nixpkgs> {}).lib;
         canTunnel  = true;
       };
       # Users who are tunnel-only but can tunnel to all NixOS servers and query the open tunnels
-      fieldSupport = remoteTunnel // { enable = true;
-                                       forceMonitorCommand = true; };
+      fieldSupport = remoteTunnel // { forceMonitorCommand = true; };
     };
   };
 }
