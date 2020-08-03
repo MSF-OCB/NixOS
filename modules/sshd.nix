@@ -63,13 +63,22 @@ with lib;
           Match Group ${config.settings.users.fwd-tunnel-group},!wheel
             AllowTcpForwarding local
 
-        '' + optionalString reverse_tunnel.relay.enable ''
-          Match User ${concatStringsSep "," (attrNames (filterAttrs (_: user: user.enable && user.forceMonitorCommand) cfg_users))}
+        '' +
+        (
+          let
+            isEligible = _: user: user.enable && user.forceMonitorCommand;
+            users      = attrNames (filterAttrs isEligible cfg_users);
+            hasUsers   = length users != 0;
+          in optionalString (reverse_tunnel.relay.enable && hasUsers) ''
+          Match User ${concatStringsSep "," users}
             PermitTTY no
             ForceCommand ${pkgs.writeShellScript "ssh_port_monitor_command" ''
-                             ${pkgs.iproute}/bin/ss -tunl6 | ${pkgs.coreutils}/bin/sort -n | ${pkgs.gnugrep}/bin/egrep "\[::1\]:[0-9]{4}[^0-9]"
+                             ${pkgs.iproute}/bin/ss -tunl6 | \
+                               ${pkgs.coreutils}/bin/sort -n | \
+                               ${pkgs.gnugrep}/bin/egrep "\[::1\]:[0-9]{4}[^0-9]"
                            ''}
-        '';
+          ''
+        );
       };
 
       fail2ban = mkIf config.settings.fail2ban.enable {
