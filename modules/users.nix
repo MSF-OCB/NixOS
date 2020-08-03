@@ -132,8 +132,8 @@ in {
 
       users = let
         hasShell = user: user.hasShell || (user.forceMonitorCommand && reverse_tunnel.relay.enable);
-        mkUser = name: user: {
-          name         = name;
+        mkUser = _: user: {
+          name         = user.name;
           isNormalUser = user.hasShell;
           isSystemUser = user.isSystemUser;
           extraGroups  = user.extraGroups ++
