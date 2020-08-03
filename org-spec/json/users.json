@@ -421,6 +421,16 @@
           "fieldsupport_admin",
           "hq"
         ]
+      },
+      "sshrelay1": {
+        "enable_roles": [
+          "fieldsupport"
+        ]
+      },
+      "sshrelay2": {
+        "enable_roles": [
+          "fieldsupport"
+        ]
       }
     },
     "remote_tunnel": [
