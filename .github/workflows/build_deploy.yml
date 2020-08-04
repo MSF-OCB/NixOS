@@ -21,7 +21,7 @@ jobs:
       - uses: 'cachix/install-nix-action@master'
         with:
           nix_path: 'nixpkgs=channel:nixos-20.03'
-      - run: './.github/actions/nixos_build/build.sh'
+      - run: './.github/scripts/build.sh'
         env:
           INPUT_NIXOS_BUILD_GROUPS: 4
           INPUT_NIXOS_BUILD_GROUP_ID: '${{ matrix.group_id }}'
