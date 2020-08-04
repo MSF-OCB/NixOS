@@ -7,7 +7,7 @@ on:
     branches:
       - master
     paths-ignore:
-      - 'org-spec/hosts/'
+      - 'org-spec/hosts/**'
       - 'install.sh'
       - 'README.md'
       - '.gitignore'
