@@ -17,7 +17,7 @@ jobs:
       - uses: 'actions/checkout@v2'
       - uses: './.github/actions/nixos_build'
         with:
-          nixos_build_groups: 2
+          nixos_build_groups: 4
           nixos_build_group_id: 1
   build_2:
     runs-on: 'ubuntu-latest'
@@ -25,12 +25,30 @@ jobs:
       - uses: 'actions/checkout@v2'
       - uses: './.github/actions/nixos_build'
         with:
-          nixos_build_groups: 2
+          nixos_build_groups: 4
           nixos_build_group_id: 2
+  build_3:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: 'actions/checkout@v2'
+      - uses: './.github/actions/nixos_build'
+        with:
+          nixos_build_groups: 4
+          nixos_build_group_id: 3
+  build_4:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: 'actions/checkout@v2'
+      - uses: './.github/actions/nixos_build'
+        with:
+          nixos_build_groups: 4
+          nixos_build_group_id: 4
   deploy:
     needs:
       - build_1
       - build_2
+      - build_3
+      - build_4
     runs-on: 'ubuntu-latest'
     steps:
       - uses: 'msf-ocb/nixos-deploy@master'
