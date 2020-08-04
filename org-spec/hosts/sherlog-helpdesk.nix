@@ -44,7 +44,8 @@
       in {
         GIT_SSH_COMMAND = "${pkgs.openssh}/bin/ssh " +
                           "-i ${private_key} " +
-                          "-o IdentitiesOnly=yes";
+                          "-o IdentitiesOnly=yes " +
+                          "-o StrictHostKeyChecking=yes";
       };
       script = ''
           ${pkgs.git}/bin/git -C ${osticket_config_dir} fetch origin master
