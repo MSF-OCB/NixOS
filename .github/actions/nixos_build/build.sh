@@ -65,10 +65,11 @@ if [ "${group}" -eq "${group_amount}" ]; then
 else
   end="$(( ${bgn} + ${slice_size} ))"
 fi
+amount="$(( ${end} - ${bgn} ))"
 
 print_banner "Build group: ${group}; building hosts ${bgn} until ${end}."
 
-for host in ${hosts[@]:${bgn}:${end}}; do
+for host in ${hosts[@]:${bgn}:${amount}}; do
   print_banner "Building config: ${host}"
 
   if [ -L "${dir}/settings.nix" ]; then
