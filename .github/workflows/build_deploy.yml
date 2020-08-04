@@ -10,46 +10,22 @@ on:
       - 'README.md'
       - '.gitignore'
 
+defaults:
+  runs-on: 'ubuntu-latest'
+
 jobs:
-  build_1:
-    runs-on: 'ubuntu-latest'
+  build:
+    strategy:
+      matrix:
+        group_id: [ 1, 2, 3, 4 ]
     steps:
       - uses: 'actions/checkout@v2'
       - uses: './.github/actions/nixos_build'
         with:
           nixos_build_groups: 4
-          nixos_build_group_id: 1
-  build_2:
-    runs-on: 'ubuntu-latest'
-    steps:
-      - uses: 'actions/checkout@v2'
-      - uses: './.github/actions/nixos_build'
-        with:
-          nixos_build_groups: 4
-          nixos_build_group_id: 2
-  build_3:
-    runs-on: 'ubuntu-latest'
-    steps:
-      - uses: 'actions/checkout@v2'
-      - uses: './.github/actions/nixos_build'
-        with:
-          nixos_build_groups: 4
-          nixos_build_group_id: 3
-  build_4:
-    runs-on: 'ubuntu-latest'
-    steps:
-      - uses: 'actions/checkout@v2'
-      - uses: './.github/actions/nixos_build'
-        with:
-          nixos_build_groups: 4
-          nixos_build_group_id: 4
+          nixos_build_group_id: ${{ matrix.group_id }}
   deploy:
-    needs:
-      - build_1
-      - build_2
-      - build_3
-      - build_4
-    runs-on: 'ubuntu-latest'
+    needs: build
     steps:
       - uses: 'msf-ocb/nixos-deploy@master'
         with:
