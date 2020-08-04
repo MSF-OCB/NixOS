@@ -74,7 +74,7 @@ for host in ${hosts[@]:${bgn}:${end}}; do
   if [ -L "${dir}/settings.nix" ]; then
     unlink "${dir}/settings.nix"
   fi
-  ln --symbolic "${dir}/org-spec/hosts/${host}" "${dir}/settings.nix"
+  ln -s "${dir}/org-spec/hosts/${host}" "${dir}/settings.nix"
   nix-build '<nixpkgs/nixos>' -I nixos-config="${dir}/configuration.nix" -A system
   if [ "${?}" != "0" ]; then
     echo "Build failed: ${host}"
