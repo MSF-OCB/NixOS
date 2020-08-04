@@ -30,7 +30,6 @@ jobs:
         with:
           nix_path: 'nixpkgs=channel:nixos-20.03'
       - run: './.github/scripts/build.py'
-        shell: 'python'
   deploy:
     runs-on: 'ubuntu-latest'
     needs: build
