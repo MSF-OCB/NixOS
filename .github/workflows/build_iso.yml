@@ -19,5 +19,5 @@ jobs:
       - uses: 'cachix/install-nix-action@master'
         with:
           nix_path: 'nixpkgs=channel:nixos-20.03'
-      - run: './rescue_iso/build_iso.sh'
+      - run: 'touch ./local/id_tunnel_iso && ./rescue_iso/build_iso.sh'
 
