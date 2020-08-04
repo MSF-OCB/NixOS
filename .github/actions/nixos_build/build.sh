@@ -1,4 +1,4 @@
-#! /usr/bin/env sh
+#! /usr/bin/env bash
 
 if [ -z "${INPUT_NIXOS_CHANNEL}" ]; then
   echo "Please set the INPUT_NIXOS_CHANNEL environment variable"
@@ -8,6 +8,8 @@ if [ -z "${INPUT_NIXOS_CHANNEL}" ]; then
 fi
 
 nixos_channel="${INPUT_NIXOS_CHANNEL}"
+nixos_build_groups="${INPUT_NIXOS_BUILD_GROUPS:-1}"
+nixos_build_group_id="${INPUT_NIXOS_BUILD_GROUP_ID:-1}"
 
 nix-channel --add https://nixos.org/channels/${nixos_channel} nixpkgs
 nix-channel --update
@@ -43,14 +45,36 @@ function print_banner() (
   echo -e "${stars}\n"
 )
 
-for host in ${NIXOS_BUILD_HOSTS:-$(ls ${dir}/org-spec/hosts)}; do
+declare -a hosts
+hosts=($(ls ${dir}/org-spec/hosts | tr " " "\n"))
+length=${#hosts[@]}
 
+group_amount="${nixos_build_groups}"
+group="${nixos_build_group_id}"
+
+if [ "${group}" -gt "${group_amount}" ]; then
+  echo "The build group ID (${group}) cannot exceed the number of build groups (${group_amount})."
+  exit 1
+fi
+
+slice_size=$(( ${length} / ${group_amount} ))
+bgn="$(( (${group} - 1) * ${slice_size} ))"
+# We need to collect the hosts that would be forgotten due to integer divisions
+if [ "${group}" -eq "${group_amount}" ]; then
+  end="$(( ${length} ))"
+else
+  end="$(( ${bgn} + ${slice_size} ))"
+fi
+
+print_banner "Build group: ${group}; building hosts ${bgn} until ${end}."
+
+for host in ${hosts[@]:${bgn}:${end}}; do
   print_banner "Building config: ${host}"
 
   if [ -L "${dir}/settings.nix" ]; then
     unlink "${dir}/settings.nix"
   fi
-  ln -s "${dir}/org-spec/hosts/${host}" "${dir}/settings.nix"
+  ln --symbolic "${dir}/org-spec/hosts/${host}" "${dir}/settings.nix"
   nix-build '<nixpkgs/nixos>' -I nixos-config="${dir}/configuration.nix" -A system
   if [ "${?}" != "0" ]; then
     echo "Build failed: ${host}"
