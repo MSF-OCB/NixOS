@@ -50,24 +50,30 @@ hosts=($(ls ${dir}/org-spec/hosts | tr " " "\n"))
 length=${#hosts[@]}
 
 group_amount="${nixos_build_groups}"
-group="${nixos_build_group_id}"
+group_id="${nixos_build_group_id}"
 
-if [ "${group}" -gt "${group_amount}" ]; then
-  echo "The build group ID (${group}) cannot exceed the number of build groups (${group_amount})."
+if [ "${group_id}" -gt "${group_amount}" ]; then
+  echo "The build group ID (${group_id}) cannot exceed the number of build groups (${group_amount})."
+  exit 1
+fi
+if [ "${group_id}" -le "0" ]; then
+  echo "The build group ID (${group_id}) cannot be less than or equal to zero."
   exit 1
 fi
 
+# Every group will build the hosts from ((group_id - 1) * slice_size) until (group_id * slice_size)
 slice_size=$(( ${length} / ${group_amount} ))
-bgn="$(( (${group} - 1) * ${slice_size} ))"
-# We need to collect the hosts that would be forgotten due to integer divisions
-if [ "${group}" -eq "${group_amount}" ]; then
-  end="$(( ${length} ))"
+bgn="$(( (${group_id} - 1) * ${slice_size} ))"
+if [ "${group_id}" -eq "${group_amount}" ]; then
+  # For the last group, we need to include the hosts that would be forgotten due to integer divisions
+  end="${length}"
 else
   end="$(( ${bgn} + ${slice_size} ))"
 fi
+# Arrays are sliced by specifying the begin index and the amount of elements to take
 amount="$(( ${end} - ${bgn} ))"
 
-print_banner "Build group: ${group}; building hosts ${bgn} until ${end}."
+print_banner "Build group ${group_id}, building hosts ${bgn} until ${end}."
 
 for host in ${hosts[@]:${bgn}:${amount}}; do
   print_banner "Building config: ${host}"
