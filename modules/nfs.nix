@@ -11,7 +11,7 @@ let
       enable = mkEnableOption "the crypto mount";
 
       name = mkOption {
-        type = str;
+        type = types.str;
       };
 
       device = mkOption {
