@@ -11,6 +11,8 @@ on:
       - 'install.sh'
       - 'README.md'
       - '.gitignore'
+      - '.github/actions/**'
+      - '.github/workflows/build_deploy.yml'
 
 jobs:
   build_iso:
