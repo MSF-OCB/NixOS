@@ -11,13 +11,26 @@ on:
       - '.gitignore'
 
 jobs:
-  build:
+  build_1:
     runs-on: 'ubuntu-latest'
     steps:
       - uses: 'actions/checkout@v2'
       - uses: './.github/actions/nixos_build'
+        with:
+          nixos_build_groups: 2
+          nixos_build_group_id: 1
+  build_2:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: 'actions/checkout@v2'
+      - uses: './.github/actions/nixos_build'
+        with:
+          nixos_build_groups: 2
+          nixos_build_group_id: 2
   deploy:
-    needs: build
+    needs:
+      - build_1
+      - build_2
     runs-on: 'ubuntu-latest'
     steps:
       - uses: 'msf-ocb/nixos-deploy@master'
