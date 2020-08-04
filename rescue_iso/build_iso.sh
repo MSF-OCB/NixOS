@@ -7,5 +7,7 @@ nix-build '<nixpkgs/nixos>' -A config.system.build.isoImage \
 
 if [ "${?}" -eq "0" ]; then
   echo -e "\nThe ISO can be found in result/iso.\n"
+else
+  exit 1
 fi
 
