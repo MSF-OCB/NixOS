@@ -16,15 +16,13 @@ jobs:
     steps:
       - uses: 'actions/checkout@v2'
       - uses: './.github/actions/nixos_build'
-        env:
-          NIXOS_CHANNEL: 'nixos-20.03'
   deploy:
     needs: build
     runs-on: 'ubuntu-latest'
     steps:
       - uses: 'msf-ocb/nixos-deploy@master'
-        env:
-          NIXOS_ROBOT_KEY: '${{ secrets.NIXOS_ROBOT_KEY }}'
-          NIXOS_DEPLOY_FIXED_HOSTS: 'sshrelay1.msf.be sshrelay2.msf.be'
-          NIXOS_DEPLOY_SERVICE: 'nixos_rebuild_config.service'
+        with:
+          nixos_robot_key: '${{ secrets.NIXOS_ROBOT_KEY }}'
+          nixos_deploy_fixed_hosts: 'sshrelay1.msf.be sshrelay2.msf.be'
+          nixos_deploy_service: 'nixos_rebuild_config.service'
 
