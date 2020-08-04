@@ -13,17 +13,15 @@ on:
 jobs:
   build:
     runs-on: 'ubuntu-latest'
-    container:
-      image: 'nixos/nix'
     strategy:
       matrix:
         group_id: [ 1, 2, 3, 4 ]
     steps:
       - uses: 'actions/checkout@v2'
-      - run: './.github/actions/nixos_build/build.sh'
-        env:
-          INPUT_NIXOS_BUILD_GROUPS: 4
-          INPUT_NIXOS_BUILD_GROUP_ID: '${{ matrix.group_id }}'
+      - uses: './.github/actions/nixos_build'
+        with:
+          nixos_build_groups: 4
+          nixos_build_group_id: ${{ matrix.group_id }}
   deploy:
     runs-on: 'ubuntu-latest'
     needs: build
