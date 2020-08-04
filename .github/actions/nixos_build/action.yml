@@ -2,6 +2,13 @@
 
 name: 'NixOS Build'
 description: 'Build all server configs.'
+
+inputs:
+  nixos_channel:
+    description: The NixOS channel to use.
+    required: false
+    default: 'nixos-20.03'
+
 runs:
   using: 'docker'
   image: 'Dockerfile'

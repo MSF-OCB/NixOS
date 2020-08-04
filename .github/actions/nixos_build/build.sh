@@ -1,6 +1,13 @@
 #! /usr/bin/env sh
 
-nixos_channel=${NIXOS_CHANNEL:-'nixos-20.03'}
+if [ -z "${INPUT_NIXOS_CHANNEL}" ]; then
+  echo "Please set the INPUT_NIXOS_CHANNEL environment variable"
+  echo "to specify the nixos channel."
+  echo 'Example value: "nixos-20.03".'
+  exit 1
+fi
+
+nixos_channel="${INPUT_NIXOS_CHANNEL}"
 
 nix-channel --add https://nixos.org/channels/${nixos_channel} nixpkgs
 nix-channel --update
