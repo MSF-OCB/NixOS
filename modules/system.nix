@@ -1,7 +1,8 @@
 { config, lib, pkgs, ... }:
 
 let
-  cfg = config.settings.system;
+  cfg     = config.settings.system;
+  org_cfg = config.settings.org;
 in
 
 with lib;
@@ -112,6 +113,10 @@ with lib;
         # We do not have GUIs
         setXAuthLocation = false;
         hostKeyAlgorithms = [ "ssh-ed25519" "ssh-rsa" ];
+        knownHosts.github = {
+          hostNames = [ "github.com" "ssh.github.com" ];
+          publicKeyFile = org_cfg.keys_path + "/servers/github";
+        };
       };
 
       tmux = {
