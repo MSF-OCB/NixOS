@@ -1,0 +1,23 @@
+---
+
+name: 'NixOS Rescue ISO build'
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - 'install.sh'
+      - 'README.md'
+      - '.gitignore'
+
+jobs:
+  build_iso:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: 'actions/checkout@v2'
+      - uses: 'cachix/install-nix-action@master'
+        with:
+          nix_path: 'nixpkgs=channel:nixos-20.03'
+      - run: './rescue_iso/build_iso.sh'
+
