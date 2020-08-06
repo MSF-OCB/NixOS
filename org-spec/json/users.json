@@ -27,7 +27,8 @@
       },
       "benuc004": {
         "enable_roles": [
-          "fieldsupport"
+          "fieldsupport",
+          "mast"
         ]
       },
       "benuc006": {
@@ -49,7 +50,8 @@
       },
       "benuc009": {
         "enable_roles": [
-          "fieldsupport"
+          "fieldsupport",
+          "mast"
         ]
       },
       "benuc010": {
@@ -116,7 +118,8 @@
       },
       "benuc023": {
         "enable_roles": [
-          "fieldsupport"
+          "fieldsupport",
+          "mast"
         ]
       },
       "benuc024": {
