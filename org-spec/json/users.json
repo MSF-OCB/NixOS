@@ -47,6 +47,9 @@
           "yusuph"
         ],
         "enable_roles": [
+          "mast"
+        ],
+        "enable_roles": [
           "fieldsupport"
         ]
       },
