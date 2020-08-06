@@ -27,9 +27,6 @@
       },
       "benuc004": {
         "enable_roles": [
-          "mast"
-        ],
-        "enable_roles": [
           "fieldsupport"
         ]
       },
@@ -51,9 +48,6 @@
         ]
       },
       "benuc009": {
-        "enable_roles": [
-          "mast"
-        ],
         "enable_roles": [
           "fieldsupport"
         ]
@@ -121,9 +115,6 @@
         ]
       },
       "benuc023": {
-        "enable_roles": [
-          "mast"
-        ],
         "enable_roles": [
           "fieldsupport"
         ]
@@ -323,6 +314,7 @@
       },
       "bevm018": {
         "enable": [
+          "tnl_ve_caracascentsix",
           "tnl_ve_coordination"
         ],
         "enable_roles": [
@@ -366,11 +358,21 @@
         ]
       },
       "dhis2-validation": {
-        "enable" : [
+        "enable": [
           "mohammad"
         ],
         "enable_roles": [
           "mast"
+        ]
+      },
+      "diggr-nfs": {
+        "enable_roles": [
+          "hq"
+        ]
+      },
+      "diggr-prod": {
+        "enable_roles": [
+          "hq"
         ]
       },
       "docker-dmz-1": {
@@ -382,21 +384,6 @@
         ]
       },
       "docker-dmz-2": {
-        "enable_roles": [
-          "hq"
-        ]
-      },
-      "diggr-prod": {
-        "enable_roles": [
-          "hq"
-        ]
-      },
-      "diggr-nfs": {
-        "enable_roles": [
-          "hq"
-        ]
-      },
-      "sherlog-helpdesk": {
         "enable_roles": [
           "hq"
         ]
@@ -419,6 +406,11 @@
       "rescue-iso": {
         "enable_roles": [
           "fieldsupport_admin",
+          "hq"
+        ]
+      },
+      "sherlog-helpdesk": {
+        "enable_roles": [
           "hq"
         ]
       },
@@ -470,21 +462,13 @@
       "tnl_ua_zhytomyr",
       "tnl_ve_anzoategui",
       "tnl_ve_bolivar",
+      "tnl_ve_caracascentsix",
       "tnl_ve_coordination",
       "tnl_za_khayelitsha",
       "tnl_za_rustenburg",
       "vini"
     ],
     "roles": {
-      "mast": [
-        "damien",
-        "didier",
-        "godfried",
-        "joana",
-        "kathy",
-        "vini",
-        "yusuph"
-      ],
       "fieldsupport": [
         "ali",
         "deepak",
@@ -497,7 +481,15 @@
         "paul_admin",
         "mohammad"
       ],
-      "hq": [
+      "hq": [],
+      "mast": [
+        "damien",
+        "didier",
+        "godfried",
+        "joana",
+        "kathy",
+        "vini",
+        "yusuph"
       ]
     }
   }
