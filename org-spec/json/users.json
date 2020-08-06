@@ -43,7 +43,7 @@
       },
       "benuc007": {
         "enable": [
-          "tnl_mz_beira",
+          "tnl_mz_beira"
         ],
         "enable_roles": [
           "mast",
