@@ -44,12 +44,9 @@
       "benuc007": {
         "enable": [
           "tnl_mz_beira",
-          "yusuph"
         ],
         "enable_roles": [
-          "mast"
-        ],
-        "enable_roles": [
+          "mast",
           "fieldsupport"
         ]
       },
