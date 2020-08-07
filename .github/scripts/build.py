@@ -33,7 +33,6 @@ def validate_json(build_dir):
   def no_duplicates(filename):
     def check_duplicates(l):
       if not has_duplicates(l):
-      #len(set((map(lambda t: t[0], l)))) == len(l):
         return dict(l)
       else:
         msg = f"Duplicate JSON key in {filename}."
