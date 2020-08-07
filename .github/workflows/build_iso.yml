@@ -11,7 +11,7 @@ on:
       - 'install.sh'
       - 'README.md'
       - '.gitignore'
-      - '.github/actions/**'
+      - '.github/scripts/**'
       - '.github/workflows/build_deploy.yml'
 
 jobs:
