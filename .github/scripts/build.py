@@ -3,6 +3,7 @@
 import argparse
 import glob
 import itertools
+import json
 import os
 import shutil
 import subprocess
@@ -17,6 +18,34 @@ def args_parser():
   parser.add_argument('--host_dir',     type = str, dest = 'host_dir',     required = False,
                       default = os.path.join('.', 'org-spec', 'hosts'))
   return parser
+
+def validate_json(build_dir):
+  def has_duplicates(l):
+    seen = set()
+    for e in l:
+      key = e[0]
+      if key in seen:
+        return True
+      else:
+        seen |= { key }
+    return False
+
+  def no_duplicates(filename):
+    def check_duplicates(l):
+      if not has_duplicates(l):
+      #len(set((map(lambda t: t[0], l)))) == len(l):
+        return dict(l)
+      else:
+        msg = f"Duplicate JSON key in {filename}."
+        raise ValueError(msg)
+    return check_duplicates
+
+  for root, _, files in os.walk(build_dir):
+    for f in files:
+      filename = os.path.join(root, f)
+      if filename.endswith('json'):
+        with open(filename, 'r') as fp:
+          json.load(fp, object_pairs_hook = no_duplicates(filename))
 
 def init_tree(build_dir):
   if os.path.isdir(build_dir):
@@ -48,6 +77,7 @@ def build_config(build_dir, hostname):
 
 def do_build_configs(build_dir, configs):
   init_tree(build_dir)
+  validate_json(build_dir)
   for config in configs:
     p = build_config(build_dir, config)
     print(p.stderr.decode())
