@@ -15,7 +15,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     strategy:
       matrix:
-        group_id: [ 1, 2, 3, 4 ]
+        group_id: [ 0, 1, 2, 3 ]
     steps:
       - uses: 'actions/checkout@v2'
       - uses: 'cachix/install-nix-action@master'
