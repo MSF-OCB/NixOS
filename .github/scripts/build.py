@@ -12,7 +12,7 @@ import tempfile
 from subprocess import PIPE
 
 def args_parser():
-  parser = argparse.ArgumentParser(description='Disable the encryption key')
+  parser = argparse.ArgumentParser(description='Build all NixOS configs.')
   parser.add_argument('--group_amount', type = int, dest = 'group_amount', required = True)
   parser.add_argument('--group_id',     type = int, dest = 'group_id',     required = True)
   parser.add_argument('--host_dir',     type = str, dest = 'host_dir',     required = False,
