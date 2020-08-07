@@ -8,6 +8,8 @@ import shutil
 import subprocess
 import tempfile
 
+from subprocess import PIPE
+
 def args_parser():
   parser = argparse.ArgumentParser(description='Disable the encryption key')
   parser.add_argument('--group_amount', type = int, dest = 'group_amount', required = True)
@@ -40,7 +42,7 @@ def build_config(build_dir, hostname):
                           '<nixpkgs/nixos>',
                           '-I', f'nixos-config={build_dir}/configuration.nix',
                           '-A', 'system' ],
-                        capture_output = True)
+                        stdout = PIPE, stderr = PIPE)
 
 def do_build_configs(build_dir, configs):
   init_tree(build_dir)
