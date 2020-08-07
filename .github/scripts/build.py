@@ -25,18 +25,16 @@ def validate_json(build_dir):
     for e in l:
       key = e[0]
       if key in seen:
-        return True
+        return key
       else:
         seen |= { key }
-    return False
+    return None
 
   def no_duplicates(filename):
     def check_duplicates(l):
-      if not has_duplicates(l):
-        return dict(l)
-      else:
-        msg = f"Duplicate JSON key in {filename}."
-        raise ValueError(msg)
+      duplicate_key = has_duplicates(l)
+      if duplicate_key:
+        raise ValueError(f"Duplicate JSON key ({duplicate_key}) in {filename}.")
     return check_duplicates
 
   for root, _, files in os.walk(build_dir):
