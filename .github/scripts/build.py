@@ -19,12 +19,14 @@ def args_parser():
   return parser
 
 def init_tree(build_dir):
+  if os.path.isdir(build_dir):
+    shutil.rmtree(build_dir)
   shutil.copytree(os.getcwd(), build_dir,
                   symlinks = True,
                   ignore = shutil.ignore_patterns('.git', 'result', 'id_tunnel', 'settings.nix'))
   with open(os.path.join(build_dir, 'hardware-configuration.nix'), 'w') as fp:
     fp.write('{}')
-  with open(os.path.join(build_dir, 'local', 'id_tunnel'), 'w') as fp:
+  with open(os.path.join(build_dir, 'local', 'id_tunnel'), 'w') as _:
     pass
 
 def prepare_tree(build_dir, config_name):
@@ -53,11 +55,6 @@ def do_build_configs(build_dir, configs):
     p.check_returncode()
 
 def build_configs(build_dir, group_amount, group_id):
-  if group_id > group_amount:
-    raise ValueError(f"The build group ID ({group_id}) cannot exceed the number of build groups ({group_amount}).")
-  if group_id < 0:
-    raise ValueError(f"The build group ID ({group_id}) cannot be less than or equal to zero.")
-
   configs = sorted(glob.glob('./org-spec/hosts/*.nix'))
   length = len(configs)
 
@@ -72,11 +69,18 @@ def build_configs(build_dir, group_amount, group_id):
 
   do_build_configs(build_dir, configs[begin:end])
 
+def validate_args(args):
+  if args.group_amount < 1:
+    raise ValueError(f"The group amount ({args.group_amount}) should be at least 1.")
+  if args.group_id > args.group_amount:
+    raise ValueError(f"The build group ID ({args.group_id}) cannot exceed the number of build groups ({args.group_amount}).")
+  if args.group_id < 0:
+    raise ValueError(f"The build group ID ({args.group_id}) cannot be less than or equal to zero.")
+  return args
+
 def main():
+  args = validate_args(args_parser().parse_args())
   build_dir = os.path.join(tempfile.gettempdir(), 'nix_config_build')
-  if os.path.isdir(build_dir):
-    shutil.rmtree(build_dir)
-  args = args_parser().parse_args()
   build_configs(build_dir, args.group_amount, args.group_id)
 
 if __name__ == '__main__':
