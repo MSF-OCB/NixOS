@@ -52,7 +52,11 @@ in
   config = mkIf cfg.enable (let
     panic_button_user = "panic_button";
 
-    # Use the prefetch_git script in the NixOS repo to update the values below
+    # Use scripts/prefetch_git.sh to update the values below:
+    #   ./scripts/prefetch_git.sh panic_button HEAD
+    # then copy the rev and sha256 values.
+    # TODO: we could store the JSON output directly and parse the values
+    #       using builtins.fromJSON
     panic_button = let
       rev    = "aca99d1c88518a4cd760a5c413d916f96f714f52";
       sha256 = "05f8pdyv60vlrjjvhcyx3z8710kqm1kzh9f1vlnbwp867wyxfri0";
