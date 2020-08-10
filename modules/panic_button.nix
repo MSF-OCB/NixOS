@@ -54,8 +54,8 @@ in
 
     # Use the prefetch_git script in the NixOS repo to update the values below
     panic_button = let
-      rev    = "9ade1e622abe384c71c6c638f9d061a664dd65ba";
-      sha256 = "110gxyjxgknzbgdac3743s1xmfgq590zcpcx5i8sw6yafidfr22y";
+      rev    = "aca99d1c88518a4cd760a5c413d916f96f714f52";
+      sha256 = "05f8pdyv60vlrjjvhcyx3z8710kqm1kzh9f1vlnbwp867wyxfri0";
     in pkgs.callPackage (pkgs.fetchFromGitHub {
       owner = "msf-ocb";
       repo  = "panic_button";
