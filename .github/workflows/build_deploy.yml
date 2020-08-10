@@ -21,6 +21,10 @@ jobs:
       - uses: 'cachix/install-nix-action@master'
         with:
           nix_path: 'nixpkgs=channel:nixos-20.03'
+      - uses: cachix/cachix-action@master
+        with:
+          name: 'panic-button'
+          skipPush: true
       - run: './.github/scripts/build.py --group_amount 4 --group_id ${{ matrix.group_id }}'
   deploy:
     runs-on: 'ubuntu-latest'
