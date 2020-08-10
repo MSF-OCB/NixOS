@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-iso_dir="$(dirname "${BASH_SOURCE}")"
+iso_dir="$(dirname "${BASH_SOURCE}")/../rescue_iso"
 
 nix-build '<nixpkgs/nixos>' -A config.system.build.isoImage \
                             -I nixos-config="${iso_dir}/iso.nix"
