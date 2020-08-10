@@ -9,6 +9,8 @@ on:
     paths-ignore:
       - 'org-spec/hosts/**'
       - 'install.sh'
+      - 'scripts/configure_cachix.sh'
+      - 'scripts/prefetch_git.sh'
       - 'README.md'
       - '.gitignore'
       - '.github/scripts/**'

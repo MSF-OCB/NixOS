@@ -6,9 +6,11 @@ on:
       - 'master'
     paths-ignore:
       - 'install.sh'
+      - 'scripts/**'
       - 'rescue_iso/**'
       - 'README.md'
       - '.gitignore'
+      - '.github/workflows/build_iso.yml'
 
 jobs:
   build:
