@@ -19,6 +19,10 @@
     reverse_tunnel.enable = true;
     vmware.enable = true;
     docker.enable = true;
+    services.traefik = {
+      enable = true;
+      network_name = "web";
+    };
     network = {
       host_name = "dhis2-prod";
       static_ifaces.ens160 = {
