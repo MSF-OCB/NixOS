@@ -22,7 +22,7 @@
       inDMZ = true;
     };
     docker.enable = true;
-    service.traefik = {
+    services.traefik = {
       enable = true;
       network_name = "web";
     };
