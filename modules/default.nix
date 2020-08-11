@@ -10,6 +10,7 @@
     ./reverse-tunnel.nix
     ./sshd.nix
     ./system.nix
+    ./traefik.nix
     ./users.nix
     ../org-spec
   ];
