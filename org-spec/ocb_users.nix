@@ -22,6 +22,7 @@ in
       # Users with admin access, need to be enabled explicitly
       ian      = admin_base;
       mohammad = admin_base;
+      nicolas  = admin_base;
 
       # Field support team
       ali    = fieldSupport;

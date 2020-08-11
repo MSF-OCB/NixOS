@@ -387,6 +387,9 @@
         ]
       },
       "docker-dmz-2": {
+        "enable": [
+          "nicolas"
+        ],
         "enable_roles": [
           "hq"
         ]
@@ -434,7 +437,6 @@
       "godfried",
       "joana",
       "kathy",
-      "nicolas",
       "tnl_bd_coxcoord",
       "tnl_bi_bujumbura",
       "tnl_cd_goma",
