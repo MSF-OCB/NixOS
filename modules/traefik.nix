@@ -67,12 +67,11 @@ in
           "--providers.docker=true"
           "--providers.docker.network=${cfg.network_name}"
           "--providers.docker.exposedbydefault=false"
-          # We redirect HTTP to HTTPS
-          "--entrypoints.web.address=:80"
-          "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-          "--entrypoints.web.http.redirections.entrypoint.scheme=https"
           "--entrypoints.web.address=:80"
           "--entrypoints.websecure.address=:443"
+          # We redirect HTTP to HTTPS
+          "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+          "--entrypoints.web.http.redirections.entrypoint.scheme=https"
           "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
           "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
           # "--certificatesresolvers.letsencrypt.acme.caserver=http://acme-staging-v02.api.letsencrypt.org/directory"
