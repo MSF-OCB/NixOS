@@ -22,6 +22,10 @@
       inDMZ = true;
     };
     docker.enable = true;
+    service.traefik = {
+      enable = true;
+      network_name = "web";
+    };
     network = {
       host_name = "sherlog-helpdesk";
       static_ifaces.ens192 = {
