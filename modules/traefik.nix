@@ -17,6 +17,12 @@ in
       readOnly = true;
     };
 
+    image = mkOption {
+      type = types.str;
+      default = "traefik";
+      readOnly = true;
+    };
+
     service_name = mkOption {
       type = types.str;
       default = "nixos-traefik";
@@ -50,7 +56,7 @@ in
   config = mkIf cfg.enable {
     docker-containers = {
       "${cfg.service_name}" = {
-        image = "traefik:${cfg.version}";
+        image = "${cfg.image}:${cfg.version}";
         cmd = [
           "--api.insecure=false"
           "--ping"
@@ -94,16 +100,33 @@ in
     };
 
     # We add an additional pre-start script to create the Traefik Docker network.
-    systemd.services = {
-      "docker-${cfg.service_name}" = {
+    systemd.services = let
+      docker    = "${pkgs.docker}/bin/docker";
+      systemctl = "${pkgs.systemd}/bin/systemctl";
+      traefik_docker_service = "docker-${cfg.service_name}";
+    in {
+      "${traefik_docker_service}" = {
         serviceConfig.ExecStartPre = let
-          docker = "${pkgs.docker}/bin/docker";
           script = pkgs.writeShellScript "${cfg.service_name}-create-network" ''
             if [ -z $(${docker} network list --filter "name=^${cfg.network_name}$" --quiet) ]; then
               ${docker} network create ${cfg.network_name}
             fi
           '';
         in [ script ];
+      };
+
+      #TODO: how can we cleanup old images?
+      "${cfg.service_name}-pull" = {
+        inherit (cfg) enable;
+        description   = "Automatically pull the latest version of the Traefik image";
+        serviceConfig = {
+          Type = "oneshot";
+        };
+        script = ''
+          ${docker} pull ${cfg.image}:${cfg.version}
+          ${systemctl} try-restart ${traefik_docker_service}.service
+        '';
+        startAt = "Wed 03:00";
       };
     };
   };
