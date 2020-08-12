@@ -110,6 +110,8 @@ in
         workdir = "/opt";
         extraDockerOptions = [
           "--network=${cfg.network_name}"
+          "--tmpfs=/tmp:rw,nodev,nosuid,noexec"
+          "--tmpfs=/run:rw,nodev,nosuid,noexec"
           "--health-cmd=traefik healthcheck --ping"
           "--health-interval=10s"
           "--health-retries=5"
