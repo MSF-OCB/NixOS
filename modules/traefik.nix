@@ -53,7 +53,25 @@ in
   # creating a YAML file in the Nix store using the nixpkgs builders and
   # by then bind-mounting these configuration files into the Traefik container.
   config = mkIf cfg.enable {
-    docker-containers = {
+    docker-containers = let
+      dynamic_config_file_name   = "traefik-dynamic.yaml";
+      dynamic_config_file_target = "/${dynamic_config_file_name}";
+      dynamic_config_file_source = pkgs.writeText dynamic_config_file_name ''
+        ---
+        tls:
+          options:
+            default:
+              minVersion: "VersionTLS12"
+              sniStrict: true
+              cipherSuites:
+                - "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+                - "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+                - "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305"
+                - "TLS_AES_128_GCM_SHA256"
+                - "TLS_AES_256_GCM_SHA384"
+                - "TLS_CHACHA20_POLY1305_SHA256"
+      '';
+    in {
       "${cfg.service_name}" = {
         image = "${cfg.image}:${cfg.version}";
         cmd = [
@@ -62,6 +80,8 @@ in
           "--log.level=INFO"
           "--accesslog=true"
           "--metrics.prometheus=true"
+          "--providers.file.watch=true"
+          "--providers.file.filename=${dynamic_config_file_target}"
           # We use the Docker provider, but do not expose containers by default
           # A container need to set the correct labels before we forward traffic to it
           "--providers.docker=true"
@@ -84,6 +104,7 @@ in
         ];
         volumes = [
           "/var/run/docker.sock:/var/run/docker.sock:ro"
+          "${dynamic_config_file_source}:${dynamic_config_file_target}:ro"
           "traefik_letsencrypt:/${cfg.acme.storage}"
         ];
         workdir = "/opt";
