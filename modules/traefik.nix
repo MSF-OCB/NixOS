@@ -114,6 +114,12 @@ in
           "--health-interval=10s"
           "--health-retries=5"
           "--health-timeout=3s"
+          # Define the security-headers middleware
+          "--label=traefik.http.middlewares.security-headers.headers.sslredirect=true"
+          "--label=traefik.http.middlewares.security-headers.headers.forceSTSHeader=true"
+          "--label=traefik.http.middlewares.security-headers.headers.stsPreload=true"
+          "--label=traefik.http.middlewares.security-headers.headers.stsSeconds=315360000"
+          "--label=traefik.http.middlewares.security-headers.headers.stsIncludeSubdomains=true"
         ];
       };
     };
