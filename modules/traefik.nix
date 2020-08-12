@@ -114,6 +114,9 @@ in
           "--health-interval=10s"
           "--health-retries=5"
           "--health-timeout=3s"
+          # Need to enable Traefik for the Traefik container
+          # otherwise these labels are not being parsed.
+          "--label=traefik.enable=true"
           # Define the security-headers middleware
           "--label=traefik.http.middlewares.security-headers.headers.sslredirect=true"
           "--label=traefik.http.middlewares.security-headers.headers.forceSTSHeader=true"
