@@ -20,7 +20,7 @@
     vmware.enable = true;
     docker.enable = true;
     network = {
-      host_name = "dhis2-hq-monitoring";
+      host_name = "nixos-monitoring";
       static_ifaces.ens160 = {
         address = "192.168.50.53";
         prefix_length = 24;

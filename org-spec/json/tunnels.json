@@ -177,10 +177,6 @@
         "remote_forward_port": 7052,
         "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP/8mX0le0REpC5dXsBQy4LdL11E+TpXqI/IvlRTg3um"
       },
-      "dhis2-hq-monitoring": {
-        "remote_forward_port": 7053,
-        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOGEOzDi8fS1SqErixkM3WtewMdguJGu2QNQ4fIQEUv8"
-      },
       "dhis2-prod": {
         "remote_forward_port": 7054,
         "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJMnoBNuvdpakfTZYQ92Ygu9IikZZedpD5lZMfKxloAv"
@@ -220,6 +216,10 @@
       "sherlog-helpdesk": {
         "remote_forward_port": 7110,
         "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEUb6X6wm81JSFublNoJgdxomB45MaK0B+ETUBysf5dR"
+      },
+      "nixos-monitoring": {
+        "remote_forward_port": 7111,
+        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOGEOzDi8fS1SqErixkM3WtewMdguJGu2QNQ4fIQEUv8"
       },
       "rescue-iso": {
         "remote_forward_port": 8000,
