@@ -49,9 +49,6 @@ in
     };
   };
 
-  # Options that cannot be defined on the command line, can be defined by
-  # creating a YAML file in the Nix store using the nixpkgs builders and
-  # by then bind-mounting these configuration files into the Traefik container.
   config = mkIf cfg.enable {
     docker-containers = let
       static_config_file_name    = "traefik-static.yml";
