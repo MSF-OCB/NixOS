@@ -54,10 +54,67 @@ in
   # by then bind-mounting these configuration files into the Traefik container.
   config = mkIf cfg.enable {
     docker-containers = let
-      dynamic_config_file_name   = "traefik-dynamic.yaml";
+      static_config_file_name    = "traefik-static.yml";
+      static_config_file_target  = "/${static_config_file_name}";
+      dynamic_config_file_name   = "traefik-dynamic.yml";
       dynamic_config_file_target = "/${dynamic_config_file_name}";
+
+      static_config_file_source  = pkgs.writeText static_config_file_name ''
+        ---
+
+        ping: {}
+        log:
+          level: INFO
+        accesslog: true
+        metrics:
+          prometheus: true
+
+        providers:
+          docker:
+            network: ${cfg.network_name}
+            exposedbydefault: false
+          file:
+            watch: true
+            filename: ${dynamic_config_file_target}
+
+        entryPoints:
+          web:
+            address: ':80'
+            http:
+              redirections:
+                entryPoint:
+                  to: websecure
+                  scheme: https
+          websecure:
+            address: ':443'
+            http:
+              middlewares:
+                - security-headers@file
+              tls:
+                certResolver: letsencrypt
+
+        http:
+          middlewares:
+            security-headers:
+              headers:
+                sslredirect: true
+                forceSTSHeader: true
+                stsPreload: true
+                stsSeconds: ${toString (365 * 24 * 60 * 60)}
+                stsIncludeSubdomains: true
+
+        certificatesresolvers:
+          letsencrypt:
+            acme:
+              email: ${cfg.acme.email_address}
+              storage: ${cfg.acme.storage}/acme.json"
+              httpchallenge:
+                entrypoint: web"
+      '';
+
       dynamic_config_file_source = pkgs.writeText dynamic_config_file_name ''
         ---
+
         tls:
           options:
             default:
@@ -75,28 +132,7 @@ in
       "${cfg.service_name}" = {
         image = "${cfg.image}:${cfg.version}";
         cmd = [
-          "--api.insecure=false"
-          "--ping"
-          "--log.level=INFO"
-          "--accesslog=true"
-          "--metrics.prometheus=true"
-          "--providers.file.watch=true"
-          "--providers.file.filename=${dynamic_config_file_target}"
-          # We use the Docker provider, but do not expose containers by default
-          # A container need to set the correct labels before we forward traffic to it
-          "--providers.docker=true"
-          "--providers.docker.network=${cfg.network_name}"
-          "--providers.docker.exposedbydefault=false"
-          "--entrypoints.web.address=:80"
-          "--entrypoints.websecure.address=:443"
-          # We redirect HTTP to HTTPS
-          "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-          "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-          "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
-          "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
-          # "--certificatesresolvers.letsencrypt.acme.caserver=http://acme-staging-v02.api.letsencrypt.org/directory"
-          "--certificatesresolvers.letsencrypt.acme.email=${cfg.acme.email_address}"
-          "--certificatesresolvers.letsencrypt.acme.storage=${cfg.acme.storage}/acme.json"
+          "--configfile=${static_config_file_target}"
         ];
         ports = [
           "80:80"
@@ -104,6 +140,7 @@ in
         ];
         volumes = [
           "/var/run/docker.sock:/var/run/docker.sock:ro"
+          "${static_config_file_source}:${static_config_file_target}:ro"
           "${dynamic_config_file_source}:${dynamic_config_file_target}:ro"
           "traefik_letsencrypt:/${cfg.acme.storage}"
         ];
@@ -116,15 +153,6 @@ in
           "--health-interval=10s"
           "--health-retries=5"
           "--health-timeout=3s"
-          # Need to enable Traefik for the Traefik container
-          # otherwise these labels are not being parsed.
-          "--label=traefik.enable=true"
-          # Define the security-headers middleware
-          "--label=traefik.http.middlewares.security-headers.headers.sslredirect=true"
-          "--label=traefik.http.middlewares.security-headers.headers.forceSTSHeader=true"
-          "--label=traefik.http.middlewares.security-headers.headers.stsPreload=true"
-          "--label=traefik.http.middlewares.security-headers.headers.stsSeconds=315360000"
-          "--label=traefik.http.middlewares.security-headers.headers.stsIncludeSubdomains=true"
         ];
       };
     };
