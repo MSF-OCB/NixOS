@@ -93,6 +93,19 @@ in
               tls:
                 certResolver: letsencrypt
 
+        certificatesresolvers:
+          letsencrypt:
+            acme:
+              email: ${cfg.acme.email_address}
+              storage: ${cfg.acme.storage}/acme.json
+              #caserver: http://acme-staging-v02.api.letsencrypt.org/directory
+              httpchallenge:
+                entrypoint: web
+      '';
+
+      dynamic_config_file_source = pkgs.writeText dynamic_config_file_name ''
+        ---
+
         http:
           middlewares:
             security-headers:
@@ -102,18 +115,6 @@ in
                 stsPreload: true
                 stsSeconds: ${toString (365 * 24 * 60 * 60)}
                 stsIncludeSubdomains: true
-
-        certificatesresolvers:
-          letsencrypt:
-            acme:
-              email: ${cfg.acme.email_address}
-              storage: ${cfg.acme.storage}/acme.json"
-              httpchallenge:
-                entrypoint: web"
-      '';
-
-      dynamic_config_file_source = pkgs.writeText dynamic_config_file_name ''
-        ---
 
         tls:
           options:
