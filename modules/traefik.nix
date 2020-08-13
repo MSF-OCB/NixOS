@@ -62,9 +62,9 @@ in
         ping: {}
         log:
           level: INFO
-        accesslog: true
-        metrics:
-          prometheus: true
+        accesslog: {}
+        #metrics:
+        #  prometheus: {}
 
         providers:
           docker:
