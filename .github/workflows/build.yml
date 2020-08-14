@@ -19,13 +19,36 @@ jobs:
       matrix:
         group_id: [ 0, 1, 2, 3 ]
     steps:
+
       - uses: 'actions/checkout@v2'
+
+      - uses: 'actions/cache@v2'
+        env:
+          cache-name: 'cache-nix-store'
+        with:
+          path: '/nix/store'
+          key: '${{ env.cache-name }}-builder-id-${{ matrix.group_id }}-${{ github.sha }}'
+          restore-keys: |
+            '${{ env.cache-name }}-builder-id-${{ matrix.group_id }}'
+            '${{ env.cache-name }}-builder-id-'
+
       - uses: 'cachix/install-nix-action@master'
         with:
           nix_path: 'nixpkgs=channel:nixos-20.03'
-      - uses: cachix/cachix-action@master
+
+      - uses: 'cachix/cachix-action@master'
         with:
           name: 'panic-button'
           skipPush: true
+
       - run: './.github/scripts/build.py --group_amount 4 --group_id ${{ matrix.group_id }}'
+
+  deploy:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: 'msf-ocb/nixos-deploy@master'
+        with:
+          nixos_robot_key: '${{ secrets.NIXOS_ROBOT_KEY }}'
+          nixos_deploy_fixed_hosts: 'sshrelay1.msf.be sshrelay2.msf.be'
+          nixos_deploy_service: 'nixos_rebuild_config.service'
 
