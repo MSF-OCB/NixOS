@@ -31,10 +31,7 @@ in
     reverse_tunnel.enable = true;
     crypto.encrypted_opt.enable = true;
     docker.enable = true;
-    services = {
-      panic_button.enable = true;
-      traefik.enable      = true;
-    };
+    services.panic_button.enable = true;
   };
 
   networking = {
