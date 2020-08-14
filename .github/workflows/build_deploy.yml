@@ -27,10 +27,10 @@ jobs:
           cache-name: 'cache-nix-store'
         with:
           path: '/nix/store'
-          key: '${{ env.cache-name }}-builder-id-${{ matrix.group_id }}-${{ github.sha }}'
+          key: ${{ env.cache-name }}-builder-id-${{ matrix.group_id }}-${{ github.sha }}
           restore-keys: |
-            '${{ env.cache-name }}-builder-id-${{ matrix.group_id }}'
-            '${{ env.cache-name }}-builder-id-'
+            ${{ env.cache-name }}-builder-id-${{ matrix.group_id }}-
+            ${{ env.cache-name }}-builder-id-
 
       - uses: 'cachix/install-nix-action@master'
         with:
