@@ -8,12 +8,9 @@ on:
       - "completed"
 
 jobs:
-  deploy:
+  dump:
     runs-on: 'ubuntu-latest'
     steps:
-      - uses: 'msf-ocb/nixos-deploy@master'
-        with:
-          nixos_robot_key: '${{ secrets.NIXOS_ROBOT_KEY }}'
-          nixos_deploy_fixed_hosts: 'sshrelay1.msf.be sshrelay2.msf.be'
-          nixos_deploy_service: 'nixos_rebuild_config.service'
+      - name: "Dump the event log"
+        run: cat "${GITHUB_EVENT_PATH}"
 
