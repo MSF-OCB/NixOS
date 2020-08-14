@@ -45,6 +45,7 @@ jobs:
 
   deploy:
     runs-on: 'ubuntu-latest'
+    needs: build
     steps:
       - uses: 'msf-ocb/nixos-deploy@master'
         with:
