@@ -83,6 +83,11 @@
           "fieldsupport"
         ]
       },
+      "benuc017": {
+        "enable_roles": [
+          "fieldsupport"
+        ]
+      },
       "benuc018": {
         "enable": [
           "tnl_ua_zhytomyr"
@@ -112,6 +117,11 @@
         "enable": [
           "tnl_legacy"
         ],
+        "enable_roles": [
+          "fieldsupport"
+        ]
+      },
+      "benuc022": {
         "enable_roles": [
           "fieldsupport"
         ]
@@ -163,9 +173,24 @@
           "fieldsupport"
         ]
       },
+      "benuc031": {
+        "enable_roles": [
+          "fieldsupport"
+        ]
+      },
+      "benuc032": {
+        "enable_roles": [
+          "fieldsupport"
+        ]
+      },
       "benuc035": {
         "enable_roles": [
           "mast",
+          "fieldsupport"
+        ]
+      },
+      "benuc036": {
+        "enable_roles": [
           "fieldsupport"
         ]
       },
@@ -392,6 +417,11 @@
         ],
         "enable_roles": [
           "hq"
+        ]
+      },
+      "maadi-emr-a": {
+        "enable_roles": [
+          "fieldsupport"
         ]
       },
       "mumbai-emr-a": {
