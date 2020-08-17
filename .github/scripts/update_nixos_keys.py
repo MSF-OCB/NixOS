@@ -29,7 +29,7 @@ def getKeysFromGithub(session, api_token):
   def doGetKeys(url):
     response = session.get(url, headers=headers(api_token))
     if 'next' in response.links:
-      return chain(response.json(), doGetKeys(session, response.links['next']['url']))
+      return chain(response.json(), doGetKeys(response.links['next']['url']))
     else:
       return response.json()
 
