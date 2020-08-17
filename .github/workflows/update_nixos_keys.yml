@@ -1,0 +1,17 @@
+name: NixOS update keys
+
+on:
+  push:
+    branches:
+      - 'master'
+    paths:
+      - 'org-spec/json/tunnel.json'
+      - 'org-spec/hosts/**'
+
+jobs:
+  update_keys:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: 'actions/checkout@v2'
+      - run: './.github/scripts/update_nixos_keys --api_token ${{ secrets.NIXOS_OCB_API_TOKEN }}'
+
