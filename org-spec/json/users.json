@@ -98,7 +98,8 @@
       },
       "benuc019": {
         "enable": [
-          "damien"
+          "damien",
+          "tnl_ua_zhytomyr"
         ],
         "enable_roles": [
           "fieldsupport"
