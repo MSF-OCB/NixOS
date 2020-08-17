@@ -7,6 +7,8 @@ on:
     paths:
       - 'org-spec/json/tunnel.json'
       - 'org-spec/hosts/**'
+      - '.github/workflows/update_nixos_keys.yml'
+      - '.github/scripts/update_nixos_keys.py'
 
 jobs:
   update_keys:
