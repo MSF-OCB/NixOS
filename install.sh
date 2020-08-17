@@ -140,6 +140,25 @@ if [ "${USE_UEFI}" = true ] && [ ! -d "/sys/firmware/efi" ]; then
   exit 1
 fi
 
+if [ ! -f "/tmp/id_tunnel" ] || [ ! -f "/tmp/id_tunnel.pub" ]; then
+  echo "Generating a new SSH key pair for this host..."
+  ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${TARGET_HOSTNAME}" -f /tmp/id_tunnel
+  echo "SSH keypair generated."
+fi
+
+ssh -F /dev/null -i /tmp/id_tunnel -o IdentitiesOnly=yes -T ssh.github.com
+retval="$?"
+if [ "${retval}" -eq "255" ]; then
+  echo -e "\nThe SSH key in /tmp/id_tunnel, does not give us access to GitHub."
+  echo    "Please add the public key (/tmp/id_tunnel.pub) to the tunnels.json file in the NixOS config repo."
+  echo -e "You can restart the installer once this is done and the GitHub deployment actions have run.\n"
+  echo    "If you want me to generate a new key pair instead, then remove /tmp/id_tunnel and /tmp/id_tunnel.pub"
+  echo    "and restart the installer."
+  echo    "You will then see this message again, and you will need to add the newly generated key to GitHub."
+
+  exit 1
+fi
+
 MP=$(mountpoint --quiet /mnt/; echo $?) || true
 if [ "${MP}" -eq 0 ]; then
   umount -R /mnt/
@@ -224,7 +243,7 @@ rm --recursive --force /mnt/etc/
 nix-shell --packages git --run "git clone ${CONFIG_REPO} /mnt/etc/nixos/"
 nixos-generate-config --root /mnt --no-filesystems
 ln --symbolic org-spec/hosts/"${TARGET_HOSTNAME}".nix /mnt/etc/nixos/settings.nix
-ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${TARGET_HOSTNAME}" -f /mnt/etc/nixos/local/id_tunnel
+mv /tmp/id_tunnel /tmp/id_tunnel.pub /mnt/etc/nixos/local/
 
 if [ "${CREATE_DATA_PART}" = true ]; then
   # Do this only after generating the hardware config
