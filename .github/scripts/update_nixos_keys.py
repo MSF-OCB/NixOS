@@ -6,7 +6,6 @@ import os
 import requests
 
 from itertools import chain
-from operator  import attrgetter
 
 def args_parser():
   parser = argparse.ArgumentParser(description='Manage the SSH keys for the NixOS GitHub account.')
