@@ -8,8 +8,6 @@ import requests
 from itertools import chain
 from operator  import attrgetter
 
-api_token = '37361ca60d0ecd16248755ed5755d0b2227540eb'
-
 def args_parser():
   parser = argparse.ArgumentParser(description='Manage the SSH keys for the NixOS GitHub account.')
   parser.add_argument('--api_token', dest = 'api_token', required = True, type = str)
@@ -77,7 +75,7 @@ def main():
   args = args_parser().parse_args()
   session = requests.Session()
 
-  gh_key_records  = getKeysFromGithub(session, api_token)
+  gh_key_records  = getKeysFromGithub(session, args.api_token)
   cfg_key_records = getKeysFromConfig()
   gh_titles  = set(gh_key_records.keys())
   cfg_titles = set(cfg_key_records.keys())
