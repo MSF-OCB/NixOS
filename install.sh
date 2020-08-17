@@ -106,6 +106,8 @@ ROOT_SIZE="${ROOT_SIZE:-25}"
 USE_UEFI="${USE_UEFI:=true}"
 CREATE_DATA_PART="${CREATE_DATA_PART:=true}"
 
+swapfile="/mnt/swapfile"
+
 if [ $EUID -ne 0 ]; then
   echo "Error this script should be run using sudo or as the root user"
   exit 1
@@ -214,6 +216,10 @@ if [ "${USE_UEFI}" = true ]; then
   mount /dev/disk/by-label/EFI /mnt/boot/efi
 fi
 
+fallocate -l 2G "${swapfile}"
+mkswap "${swapfile}"
+swapon "${swapfile}"
+
 rm --recursive --force /mnt/etc/
 nix-shell --packages git --run "git clone ${CONFIG_REPO} /mnt/etc/nixos/"
 nixos-generate-config --root /mnt --no-filesystems
@@ -253,6 +259,9 @@ if [ "${CREATE_DATA_PART}" = true ]; then
 fi
 
 nixos-install --no-root-passwd --max-jobs 4
+
+swapoff "${swapfile}"
+rm -f "${swapfile}"
 
 if [ "${CREATE_DATA_PART}" = true ]; then
   umount -R /mnt/home
