@@ -15,5 +15,5 @@ jobs:
     runs-on: 'ubuntu-latest'
     steps:
       - uses: 'actions/checkout@v2'
-      - run: './.github/scripts/update_nixos_keys --api_token ${{ secrets.NIXOS_OCB_API_TOKEN }}'
+      - run: './.github/scripts/update_nixos_keys.py --api_token ${{ secrets.NIXOS_OCB_API_TOKEN }}'
 
