@@ -5,6 +5,7 @@ with (import ../msf_lib.nix);
 
 let
   cfg     = config.settings.reverse_tunnel;
+  sys_cfg = config.settings.system;
   org_cfg = config.settings.org;
 
   tunnelOpts = { name, ... }: {
@@ -189,7 +190,7 @@ in {
                          then cfg.private_key_source
                          else toString cfg.private_key_source;
     in {
-      tunnel_key_permissions = {
+      tunnel_key_permissions = mkIf (!sys_cfg.isISO) {
         # Use toString, we do not want to change permissions
         # of files in the nix store, only of the source files, if present.
         text = let

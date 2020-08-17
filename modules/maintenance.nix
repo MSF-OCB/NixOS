@@ -10,6 +10,11 @@ in {
   imports = [ ./nixos-upgrade.nix ];
 
   options.settings.maintenance = {
+    enable = mkOption {
+      type = types.bool;
+      default = true;
+    };
+
     sync_config.enable = mkOption {
       type        = types.bool;
       default     = true;
@@ -21,7 +26,7 @@ in {
     docker_prune_timer.enable = mkEnableOption "service to periodically run docker system prune";
   };
 
-  config = {
+  config = mkIf cfg.enable {
     # We run the upgrade service once at night and once during the day, to catch the situation
     # where the server is turned off every evening.
     # When the service is being run during the day, we will be outside of the reboot window.

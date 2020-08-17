@@ -13,6 +13,11 @@ with lib;
       type = types.str;
     };
 
+    isISO = mkOption {
+      type = types.bool;
+      default = false;
+    };
+
     diskSwap = {
       enable = mkOption {
         type = types.bool;
@@ -80,6 +85,23 @@ with lib;
         # so that the additional initialisation has been performed.
         # See /run/current-system/activate for the currently defined snippets.
         deps = [ "nix" ];
+      };
+      settings_link = let
+        hostname         = config.networking.hostName;
+        settings_path    = "/etc/nixos/settings.nix";
+        destination_path = "/etc/nixos/org-spec/hosts/${hostname}.nix";
+      in mkIf (!cfg.isISO) {
+        text = ''
+          if [ -f "${settings_path}" ] && [ ! -L "${settings_path}" ]; then
+            rm --force "${settings_path}"
+          fi
+          if [ ! -f "${settings_path}" ] || \
+             [ "$(dirname $(readlink ${settings_path}))" = "hosts" ] || \
+             [ "$(realpath ${settings_path})" != "${destination_path}" ]; then
+            ln --force --symbolic "${destination_path}" "${settings_path}"
+          fi
+        '';
+        deps = [ "specialfs" ];
       };
     };
 
