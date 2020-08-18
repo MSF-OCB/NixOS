@@ -142,13 +142,14 @@ in {
     users.extraUsers = {
       tunnel = let
         stringNotEmpty = s: stringLength s != 0;
+        includeTunnel  = tunnel: stringNotEmpty tunnel.public_key && tunnel.remote_forward_port > 0;
         prefixes       = [ 0 cfg.prometheus_tunnel_port_prefix ];
         mkLimitation   = base_port: prefix: "permitlisten=\"${toString (add_port_prefix prefix base_port)}\"";
         mkKeyConfig    = tunnel:
           "${concatMapStringsSep "," (mkLimitation tunnel.remote_forward_port) prefixes} ${tunnel.public_key} tunnel@${tunnel.name}";
         mkKeyConfigs   = msf_lib.compose [ naturalSort
-                                           (mapAttrsToList (_: tunnel: mkKeyConfig tunnel))
-                                           (filterAttrs (_: tunnel: stringNotEmpty tunnel.public_key)) ];
+                                           (mapAttrsToList (_: mkKeyConfig))
+                                           (filterAttrs (_: includeTunnel)) ];
       in {
         extraGroups = mkIf cfg.relay.enable [ config.settings.users.ssh-group config.settings.users.rev-tunnel-group ];
         openssh.authorizedKeys.keys = mkIf cfg.relay.enable (mkKeyConfigs cfg.tunnels);
