@@ -52,7 +52,7 @@ in {
           Type = "oneshot";
         };
         script = let
-          git = ''${pkgs.git}/bin/git -c core.sshCommand='ssh -i ${tunnel_cfg.private_key}' '';
+          git = ''${pkgs.git}/bin/git -c core.sshCommand='${pkgs.openssh}/bin/ssh -i ${tunnel_cfg.private_key}' '';
         in ''
           function sync_repo() {
             path="''${1}"
