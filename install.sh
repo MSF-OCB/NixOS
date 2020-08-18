@@ -175,7 +175,8 @@ if [ "${retval}" -eq "255" ]; then
   exit 1
 fi
 
-if [ "$(swapon | grep "${swapfile}")" -ne 0 ]; then
+detect_swap="$(swapon | grep "${swapfile}" > /dev/null 2>&1; echo $?)"
+if [ "${detect_swap}" -eq 0 ]; then
   swapoff "${swapfile}"
   rm --force "${swapfile}"
 fi
@@ -265,10 +266,9 @@ mkswap "${swapfile}"
 swapon "${swapfile}"
 
 rm --recursive --force /mnt/etc/
-GIT_SSH_COMMAND="ssh -i ${private_key} \
-                     -o IdentitiesOnly=yes \
-                     -o StrictHostKeyChecking=yes"
-nix-shell --packages git --run "git clone ${CONFIG_REPO} /mnt/etc/nixos/"
+nix-shell --packages git --run "git -c core.sshCommand='ssh -i /tmp/id_tunnel' \
+                                    clone ${CONFIG_REPO} \
+                                    /mnt/etc/nixos/"
 nixos-generate-config --root /mnt --no-filesystems
 ln --symbolic org-spec/hosts/"${TARGET_HOSTNAME}".nix /mnt/etc/nixos/settings.nix
 mv /tmp/id_tunnel /tmp/id_tunnel.pub /mnt/etc/nixos/local/
