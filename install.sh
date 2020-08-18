@@ -51,8 +51,6 @@ function exit_missing_arg() {
   exit_usage
 }
 
-CONFIG_REPO="git@github.com:MSF-OCB/NixOS.git"
-
 while getopts ':d:h:r:lD' flag; do
   case "${flag}" in
     d  )
@@ -109,6 +107,8 @@ USE_UEFI="${USE_UEFI:=true}"
 CREATE_DATA_PART="${CREATE_DATA_PART:=true}"
 
 swapfile="/mnt/swapfile"
+main_repo="git@github.com:MSF-OCB/NixOS.git"
+config_repo="git@github.com:MSF-OCB/NixOS-OCB-config.git"
 
 if [ $EUID -ne 0 ]; then
   echo "Error this script should be run using sudo or as the root user"
@@ -267,8 +267,11 @@ swapon "${swapfile}"
 
 rm --recursive --force /mnt/etc/
 nix-shell --packages git --run "git -c core.sshCommand='ssh -i /tmp/id_tunnel' \
-                                    clone ${CONFIG_REPO} \
+                                    clone ${main_repo} \
                                     /mnt/etc/nixos/"
+nix-shell --packages git --run "git -c core.sshCommand='ssh -i /tmp/id_tunnel' \
+                                    clone ${config_repo} \
+                                    /mnt/etc/nixos/org-spec"
 nixos-generate-config --root /mnt --no-filesystems
 ln --symbolic org-spec/hosts/"${TARGET_HOSTNAME}".nix /mnt/etc/nixos/settings.nix
 cp /tmp/id_tunnel /tmp/id_tunnel.pub /mnt/etc/nixos/local/
