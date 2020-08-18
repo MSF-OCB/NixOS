@@ -28,13 +28,4 @@ jobs:
           name: 'panic-button'
           skipPush: true
       - run: './.github/scripts/build.py --group_amount 4 --group_id ${{ matrix.group_id }}'
-  deploy:
-    runs-on: 'ubuntu-latest'
-    needs: build
-    steps:
-      - uses: 'msf-ocb/nixos-deploy@master'
-        with:
-          nixos_robot_key: '${{ secrets.NIXOS_ROBOT_KEY }}'
-          nixos_deploy_fixed_hosts: 'sshrelay1.msf.be sshrelay2.msf.be'
-          nixos_deploy_service: 'nixos_rebuild_config.service'
 
