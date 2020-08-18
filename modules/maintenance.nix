@@ -64,7 +64,7 @@ in {
           }
 
           base_path="/etc/nixos"
-          config_path="/etc/nixos/org-spec"
+          config_path="/etc/nixos/ocb-config"
           sync_repo "''${base_path}"
           if [ ! -d "''${config_path}" ]; then
             ${git} clone git@github.com:MSF-OCB/NixOS-OCB-config.git "''${config_path}"

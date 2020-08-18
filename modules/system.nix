@@ -89,16 +89,26 @@ with lib;
       settings_link = let
         hostname         = config.networking.hostName;
         settings_path    = "/etc/nixos/settings.nix";
-        destination_path = "/etc/nixos/org-spec/hosts/${hostname}.nix";
+        destination_path = "/etc/nixos/ocb-config/hosts/${hostname}.nix";
+        destination_path_old = "/etc/nixos/org-spec/hosts/${hostname}.nix";
       in mkIf (!cfg.isISO) {
         text = ''
+          function create_link() {
+            destination="''${1}"
+            if [ ! -f "${settings_path}" ] || \
+               [ "$(dirname $(readlink ${settings_path}))" = "hosts" ] || \
+               [ "$(realpath ${settings_path})" != "''${destination}" ]; then
+              ln --force --symbolic "''${destination}" "${settings_path}"
+            fi
+          }
+
           if [ -f "${settings_path}" ] && [ ! -L "${settings_path}" ]; then
             rm --force "${settings_path}"
           fi
-          if [ ! -f "${settings_path}" ] || \
-             [ "$(dirname $(readlink ${settings_path}))" = "hosts" ] || \
-             [ "$(realpath ${settings_path})" != "${destination_path}" ]; then
-            ln --force --symbolic "${destination_path}" "${settings_path}"
+          if [ -f "${destination_path}" ]; then
+            create_link "${destination_path}"
+          elif [ -f "${destination_path_old}" ]; then
+            create_link "${destination_path_old}"
           fi
         '';
         deps = [ "specialfs" ];

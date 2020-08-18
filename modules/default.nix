@@ -22,7 +22,9 @@
     ./users.nix
     ./virtualbox.nix
     ./vmware.nix
-    ../org-spec
+    (if builtins.pathExists ../ocb-config
+     then ../ocb-config
+     else ../org-spec)
   ];
 }
 
