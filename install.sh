@@ -271,7 +271,7 @@ nix-shell --packages git --run "git -c core.sshCommand='ssh -i /tmp/id_tunnel' \
                                     /mnt/etc/nixos/"
 nixos-generate-config --root /mnt --no-filesystems
 ln --symbolic org-spec/hosts/"${TARGET_HOSTNAME}".nix /mnt/etc/nixos/settings.nix
-mv /tmp/id_tunnel /tmp/id_tunnel.pub /mnt/etc/nixos/local/
+cp /tmp/id_tunnel /tmp/id_tunnel.pub /mnt/etc/nixos/local/
 
 if [ "${CREATE_DATA_PART}" = true ]; then
   # Do this only after generating the hardware config
