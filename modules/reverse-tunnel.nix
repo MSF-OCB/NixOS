@@ -76,9 +76,15 @@ in {
         '';
       };
 
+      private_key_directory = mkOption {
+        type     = types.str;
+        default  = "/run/tunnel";
+        readOnly = true;
+      };
+
       private_key = mkOption {
         type     = types.str;
-        default  = "/run/tunnel/id_tunnel";
+        default  = "${cfg.private_key_directory}/id_tunnel";
         readOnly = true;
         description = ''
           Location to load the private key file for the reverse tunnels from.
@@ -133,19 +139,6 @@ in {
     add_port_prefix = prefix: base_port: 10000 * prefix + base_port;
   in mkIf (cfg.enable || cfg.relay.enable) {
 
-    assertions = [
-      {
-        assertion = cfg.enable -> hasAttr config.networking.hostName cfg.tunnels;
-        message   = "The reverse tunnel service is enabled but this host's host name is not present in the tunnel config (${toString org_cfg.tunnels_json_path}).";
-      }
-      {
-        assertion = cfg.enable -> builtins.pathExists cfg.private_key_source;
-        # Referencing the path directly, causes the file to be copied to the nix store.
-        # By converting the path to a string with toString, we can avoid the file being copied.
-        message   = "The reverse tunnel key file at ${toString cfg.private_key_source} does not exist.";
-      }
-    ];
-
     users.extraUsers = {
       tunnel = let
         stringNotEmpty = s: stringLength s != 0;
@@ -157,13 +150,7 @@ in {
                                            (mapAttrsToList (_: tunnel: mkKeyConfig tunnel))
                                            (filterAttrs (_: tunnel: stringNotEmpty tunnel.public_key)) ];
       in {
-        isNormalUser = false;
-        isSystemUser = true;
-        # The key to connect to the relays will be copied to /run/tunnel
-        home         = mkIf (cfg.enable) "/run/tunnel";
-        createHome   = mkIf (cfg.enable) true;
-        shell        = pkgs.nologin;
-        extraGroups  = mkIf cfg.relay.enable [ config.settings.users.ssh-group config.settings.users.rev-tunnel-group ];
+        extraGroups = mkIf cfg.relay.enable [ config.settings.users.ssh-group config.settings.users.rev-tunnel-group ];
         openssh.authorizedKeys.keys = mkIf cfg.relay.enable (mkKeyConfigs cfg.tunnels);
       };
 
@@ -182,45 +169,6 @@ in {
     programs.ssh.knownHosts =
       mapAttrs (_: conf: { hostNames = conf.addresses; publicKey = conf.public_key; })
                cfg.relay_servers;
-
-    system.activationScripts = mkIf cfg.enable (let
-      # Referencing the path directly, causes the file to be copied to the nix store.
-      # By converting the path to a string with toString, we can avoid the file being copied.
-      private_key_path = if cfg.copy_private_key_to_store
-                         then cfg.private_key_source
-                         else toString cfg.private_key_source;
-    in {
-      tunnel_key_permissions = mkIf (!sys_cfg.isISO) {
-        # Use toString, we do not want to change permissions
-        # of files in the nix store, only of the source files, if present.
-        text = let
-          base_files = [ private_key_path cfg.private_key_source_default];
-          files = concatStringsSep " " (unique (concatMap (f: [ f "${f}.pub" ]) base_files));
-        in ''
-          for file in ${files}; do
-            if [ -f ''${file} ]; then
-              chown root:root ''${file}
-              chmod 0400 ''${file}
-            fi
-          done
-        '';
-        deps = [ "users" ];
-      };
-      copy_tunnel_key = {
-        text = let
-          install = source: ''install -o tunnel -g nogroup -m 0400 "${source}" "${cfg.private_key}"'';
-        in ''
-          if [ -f "${private_key_path}" ]; then
-            ${install private_key_path}
-          elif [ -f "${cfg.private_key_source_default}" ]; then
-            ${install cfg.private_key_source_default}
-          else
-            exit 1;
-          fi
-        '';
-        deps = [ "specialfs" "users" ];
-      };
-    });
 
     systemd.services = let
       make_tunnel_service = conf: {

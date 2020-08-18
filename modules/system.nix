@@ -3,6 +3,7 @@
 let
   cfg     = config.settings.system;
   org_cfg = config.settings.org;
+  tnl_cfg = config.settings.reverse_tunnel;
 in
 
 with lib;
@@ -33,6 +34,20 @@ with lib;
   };
 
   config = {
+
+    assertions = [
+      {
+        assertion = hasAttr config.networking.hostName tnl_cfg.tunnels;
+        message   = "This host's host name is not present in the tunnel config (${toString org_cfg.tunnels_json_path}).";
+      }
+      {
+        assertion = builtins.pathExists tnl_cfg.private_key_source;
+        # Referencing the path directly, causes the file to be copied to the nix store.
+        # By converting the path to a string with toString, we can avoid the file being copied.
+        message   = "The private key file at ${toString tnl_cfg.private_key_source} does not exist.";
+      }
+    ];
+
     zramSwap = {
       enable = true;
       algorithm = "zstd";
@@ -75,7 +90,24 @@ with lib;
       };
     };
 
-    system.activationScripts = {
+    users.extraUsers = {
+      tunnel = {
+        isNormalUser = false;
+        isSystemUser = true;
+        # The key to connect to the relays will be copied to /run/tunnel
+        home         = tnl_cfg.private_key_directory;
+        createHome   = true;
+        shell        = pkgs.nologin;
+      };
+    };
+
+    system.activationScripts = let
+      # Referencing the path directly, causes the file to be copied to the nix store.
+      # By converting the path to a string with toString, we can avoid the file being copied.
+      private_key_path = if tnl_cfg.copy_private_key_to_store
+                         then tnl_cfg.private_key_source
+                         else toString tnl_cfg.private_key_source;
+    in {
       nix_channel_msf = {
         text = ''
           # We override the root nix channel with the one defined by settings.system.nix_channel
@@ -112,6 +144,36 @@ with lib;
           fi
         '';
         deps = [ "specialfs" ];
+      };
+      tunnel_key_permissions = mkIf (!cfg.isISO) {
+        # Use toString, we do not want to change permissions
+        # of files in the nix store, only of the source files, if present.
+        text = let
+          base_files = [ private_key_path tnl_cfg.private_key_source_default];
+          files = concatStringsSep " " (unique (concatMap (f: [ f "${f}.pub" ]) base_files));
+        in ''
+          for file in ${files}; do
+            if [ -f ''${file} ]; then
+              chown root:root ''${file}
+              chmod 0400 ''${file}
+            fi
+          done
+        '';
+        deps = [ "users" ];
+      };
+      copy_tunnel_key = {
+        text = let
+          install = source: ''install -o tunnel -g nogroup -m 0400 "${source}" "${tnl_cfg.private_key}"'';
+        in ''
+          if [ -f "${private_key_path}" ]; then
+            ${install private_key_path}
+          elif [ -f "${tnl_cfg.private_key_source_default}" ]; then
+            ${install tnl_cfg.private_key_source_default}
+          else
+            exit 1;
+          fi
+        '';
+        deps = [ "specialfs" "users" ];
       };
     };
 
