@@ -1,4 +1,4 @@
-name: NixOS build and deploy
+name: NixOS build config
 
 on:
   push:
