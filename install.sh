@@ -51,7 +51,7 @@ function exit_missing_arg() {
   exit_usage
 }
 
-CONFIG_REPO="https://github.com/msf-ocb/nixos.git"
+CONFIG_REPO="git@github.com:MSF-OCB/NixOS.git"
 
 while getopts ':d:h:r:lD' flag; do
   case "${flag}" in
@@ -260,6 +260,9 @@ mkswap "${swapfile}"
 swapon "${swapfile}"
 
 rm --recursive --force /mnt/etc/
+GIT_SSH_COMMAND="ssh -i ${private_key} \
+                     -o IdentitiesOnly=yes \
+                     -o StrictHostKeyChecking=yes"
 nix-shell --packages git --run "git clone ${CONFIG_REPO} /mnt/etc/nixos/"
 nixos-generate-config --root /mnt --no-filesystems
 ln --symbolic org-spec/hosts/"${TARGET_HOSTNAME}".nix /mnt/etc/nixos/settings.nix
