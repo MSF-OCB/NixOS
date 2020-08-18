@@ -37,10 +37,12 @@ function wait_for_devices() {
 }
 
 function exit_usage() {
-  echo -e "\nUsage:\n"
-  echo -e "  install.sh -d <install device> -h <target hostname> [-r <root partition size (GB)>] [-l] [-D]\n"
-  echo    "    -l triggers legacy installation mode instead of UEFI"
-  echo    "    -D causes the creation of an encrypted data partition to be skipped"
+  cat <<EOF
+Usage:
+  install.sh -d <device> -h <hostname> [-r <root size (GB)>] [-l] [-D]
+    -l triggers legacy installation mode instead of UEFI
+    -D causes the creation of an encrypted data partition to be skipped
+EOF
   exit 1
 }
 
@@ -126,7 +128,8 @@ if [[ ! ${ROOT_SIZE} =~ ^[0-9]+$ ]]; then
   "Error: invalid root size specified (${ROOT_SIZE})"
   exit_usage
 fi
-if [ "${ROOT_SIZE}" -gt $(($(blockdev --getsize64 "${DEVICE}")/1024/1024/1024 - 2)) ]; then
+disk_size="$(($(blockdev --getsize64 "${DEVICE}")/1024/1024/1024 - 2))"
+if [ "${ROOT_SIZE}" -gt "${disk_size}" ]; then
   echo "Error: root size bigger than the provided device, please specify a smaller root size."
   exit_usage
 fi
@@ -142,19 +145,32 @@ fi
 
 if [ ! -f "/tmp/id_tunnel" ] || [ ! -f "/tmp/id_tunnel.pub" ]; then
   echo "Generating a new SSH key pair for this host..."
-  ssh-keygen -a 100 -t ed25519 -N "" -C "tunnel@${TARGET_HOSTNAME}" -f /tmp/id_tunnel
+  ssh-keygen -a 100 \
+             -t ed25519 \
+             -N "" \
+             -C "tunnel@${TARGET_HOSTNAME}" \
+             -f /tmp/id_tunnel
   echo "SSH keypair generated."
 fi
 
-ssh -F /dev/null -i /tmp/id_tunnel -o IdentitiesOnly=yes -T ssh.github.com
-retval="$?"
+retval=$(ssh -F /dev/null \
+             -i /tmp/id_tunnel \
+             -o IdentitiesOnly=yes \
+             -o UserKnownHostsFile=/dev/null \
+             -T \
+             -l git \
+             ssh.github.com; echo "$?")
 if [ "${retval}" -eq "255" ]; then
   echo -e "\nThe SSH key in /tmp/id_tunnel, does not give us access to GitHub."
-  echo    "Please add the public key (/tmp/id_tunnel.pub) to the tunnels.json file in the NixOS config repo."
-  echo -e "You can restart the installer once this is done and the GitHub deployment actions have run.\n"
-  echo    "If you want me to generate a new key pair instead, then remove /tmp/id_tunnel and /tmp/id_tunnel.pub"
+  echo    "Please add the public key (/tmp/id_tunnel.pub) to the tunnels.json file"
+  echo    "in the NixOS config repo."
+  echo    "You can restart the installer once this is done and"
+  echo -e "the GitHub deployment actions have run.\n"
+  echo    "If you want me to generate a new key pair instead,"
+  echo    "then remove /tmp/id_tunnel and /tmp/id_tunnel.pub"
   echo    "and restart the installer."
-  echo    "You will then see this message again, and you will need to add the newly generated key to GitHub."
+  echo    "You will then see this message again,"
+  echo    "and you will need to add the newly generated key to GitHub."
 
   exit 1
 fi
@@ -181,7 +197,9 @@ if [ "${USE_UEFI}" = true ]; then
   sgdisk --new=3:0:0        --change-name=3:"nixos_lvm"  --typecode=3:8e00 "${DEVICE}"
   sgdisk --print "${DEVICE}"
 
-  wait_for_devices "/dev/disk/by-partlabel/efi" "/dev/disk/by-partlabel/nixos_boot" "/dev/disk/by-partlabel/nixos_lvm"
+  wait_for_devices "/dev/disk/by-partlabel/efi" \
+                   "/dev/disk/by-partlabel/nixos_boot" \
+                   "/dev/disk/by-partlabel/nixos_lvm"
 else
   sfdisk --wipe            always \
          --wipe-partitions always \
@@ -225,7 +243,8 @@ mkfs.ext4 -e remount-ro -L nixos_root /dev/LVMVolGroup/nixos_root
 if [ "${USE_UEFI}" = true ]; then
   wait_for_devices "/dev/disk/by-label/EFI"
 fi
-wait_for_devices "/dev/disk/by-label/nixos_boot" "/dev/disk/by-label/nixos_root"
+wait_for_devices "/dev/disk/by-label/nixos_boot" \
+                 "/dev/disk/by-label/nixos_root"
 
 mount /dev/disk/by-label/nixos_root /mnt
 mkdir --parents /mnt/boot
@@ -236,6 +255,7 @@ if [ "${USE_UEFI}" = true ]; then
 fi
 
 fallocate -l 2G "${swapfile}"
+chmod 0600 "${swapfile}"
 mkswap "${swapfile}"
 swapon "${swapfile}"
 
@@ -265,8 +285,13 @@ if [ "${CREATE_DATA_PART}" = true ]; then
              --type luks2 \
              --key-file /mnt/keyfile \
              /dev/LVMVolGroup/nixos_data
-  cryptsetup open --key-file /mnt/keyfile /dev/LVMVolGroup/nixos_data nixos_data_decrypted
-  mkfs.ext4 -e remount-ro -m 1 -L nixos_data /dev/mapper/nixos_data_decrypted
+  cryptsetup open \
+             --key-file /mnt/keyfile \
+             /dev/LVMVolGroup/nixos_data nixos_data_decrypted
+  mkfs.ext4 -e remount-ro \
+            -m 1 \
+            -L nixos_data \
+            /dev/mapper/nixos_data_decrypted
 
   wait_for_devices "/dev/disk/by-label/nixos_data"
 
@@ -290,7 +315,5 @@ fi
 
 echo -e "\nNixOS installation finished, please reboot using \"sudo systemctl reboot\""
 
-echo -e "\nDo not forget to:"
-echo    "  1. Set a recovery passphrase for the encrypted partition and add it to Keeper (see https://github.com/MSF-OCB/NixOS/wiki/Install-NixOS for the command)."
-echo -e "  2. Upload the public tunnel key to GitHub.\n"
+echo -e "\nDo not forget to set a recovery passphrase for the encrypted partition and add it to Keeper (see https://github.com/MSF-OCB/NixOS/wiki/Install-NixOS for the command)."
 
