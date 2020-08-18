@@ -15,7 +15,7 @@ def args_parser():
   parser.add_argument('--group_amount', type = int, dest = 'group_amount', required = True)
   parser.add_argument('--group_id',     type = int, dest = 'group_id',     required = True)
   parser.add_argument('--host_dir',     type = str, dest = 'host_dir',     required = False,
-                      default = os.path.join('.', 'org-spec', 'hosts'))
+                      default = os.path.join('.', 'ocb-config', 'hosts'))
   return parser
 
 def validate_json(build_dir):
@@ -58,7 +58,7 @@ def prepare_tree(build_dir, config_name):
   settings_path = os.path.join(build_dir, 'settings.nix')
   if os.path.exists(settings_path):
     os.unlink(settings_path)
-  os.symlink(os.path.join(build_dir, 'org-spec', 'hosts', config_name),
+  os.symlink(os.path.join(build_dir, 'ocb-config', 'hosts', config_name),
              settings_path)
 
 def build_config(build_dir, hostname):
@@ -81,7 +81,7 @@ def do_build_configs(build_dir, configs):
     p.check_returncode()
 
 def build_configs(build_dir, group_amount, group_id):
-  configs = sorted(glob.glob('./org-spec/hosts/*.nix'))
+  configs = sorted(glob.glob('./ocb-config/hosts/*.nix'))
   length = len(configs)
 
   slice_size = length // group_amount

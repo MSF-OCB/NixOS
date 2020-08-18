@@ -23,7 +23,7 @@ jobs:
       - uses: 'actions/checkout@v2'
         with:
           repository: 'msf-ocb/nixos-ocb-config'
-          path: 'org-spec'
+          path: 'ocb-config'
           token: '${{ secrets.NIXOS_OCB_REPO_API_TOKEN }}'
       - uses: 'cachix/install-nix-action@master'
         with:
