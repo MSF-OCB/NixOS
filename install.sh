@@ -175,6 +175,11 @@ if [ "${retval}" -eq "255" ]; then
   exit 1
 fi
 
+if [ "$(swapon | grep "${swapfile}")" -ne 0 ]; then
+  swapoff "${swapfile}"
+  rm --force "${swapfile}"
+fi
+
 MP=$(mountpoint --quiet /mnt/; echo $?) || true
 if [ "${MP}" -eq 0 ]; then
   umount -R /mnt/
