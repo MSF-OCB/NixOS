@@ -4,6 +4,7 @@ with lib;
 
 let
   cfg = config.settings.maintenance;
+  tunnel_cfg = config.settings.reverse_tunnel;
 in {
 
   # https://github.com/NixOS/nixpkgs/pull/77622
@@ -50,12 +51,27 @@ in {
         serviceConfig = {
           Type = "oneshot";
         };
-        script        = ''
-          ${pkgs.git}/bin/git -C /etc/nixos fetch origin master
-          ${pkgs.git}/bin/git -C /etc/nixos checkout master
-          ${pkgs.git}/bin/git -C /etc/nixos reset --hard origin/master
-          ${pkgs.git}/bin/git -C /etc/nixos clean -d --force
-          ${pkgs.git}/bin/git -C /etc/nixos pull
+        script = let
+          git = ''${pkgs.git}/bin/git -c core.sshCommand='ssh -i ${tunnel_cfg.private_key}' '';
+        in ''
+          function sync_repo() {
+            path="''${1}"
+            ${git} -C ''${path} fetch origin master
+            ${git} -C ''${path} checkout master
+            ${git} -C ''${path} reset --hard origin/master
+            ${git} -C ''${path} clean -d --force
+            ${git} -C ''${path} pull
+          }
+
+          base_path="/etc/nixos"
+          config_path="/etc/nixos/org-spec"
+          sync_repo "''${base_path}"
+          if [ ! -d "''${config_path}" ]; then
+            ${git} clone git@github.com:MSF-OCB/NixOS-OCB-config.git "''${config_path}"
+          fi
+          if [ -d "''${config_path}/.git" ]; then
+            sync_repo "''${config_path}"
+          fi
         '';
       };
 
