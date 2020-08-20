@@ -87,6 +87,7 @@ in
             http:
               middlewares:
                 - security-headers@file
+                - compress@file
               tls:
                 certResolver: letsencrypt
 
@@ -111,6 +112,8 @@ in
                 stsPreload: true
                 stsSeconds: ${toString (365 * 24 * 60 * 60)}
                 stsIncludeSubdomains: true
+            compress:
+              compress: {}
 
         tls:
           options:
