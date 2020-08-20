@@ -11,6 +11,12 @@ with lib;
     settings.docker = {
       enable       = mkEnableOption "the Docker service";
       swarm.enable = mkEnableOption "swarm mode";
+
+      data_dir = mkOption {
+        type = types.str;
+        default = "/opt/.docker/docker";
+        readOnly = true;
+      };
     };
   };
 
@@ -39,7 +45,7 @@ with lib;
       liveRestore  = !cfg.swarm.enable;
       extraOptions = concatStringsSep " " (
         # Do not break currently running non-encrypted set-ups.
-        (optional config.settings.crypto.encrypted_opt.enable ''--data-root  "/opt/docker"'') ++
+        (optional config.settings.crypto.encrypted_opt.enable ''--data-root  "${cfg.data_dir}"'') ++
         # Docker internal IP addressing
         # Ranges used: 172.28.0.0/16, 172.29.0.0/16
         #
@@ -61,6 +67,27 @@ with lib;
           ''--default-address-pool "base=172.29.0.0/16,size=24"''
         ]
       );
+    };
+
+    systemd.services = {
+      migrate_docker_data_dir = {
+        description   = "Migrate the Docker data dir to /opt/.docker";
+        before        = [ "docker.service" ];
+        wantedBy      = [ "docker.service" ];
+        serviceConfig = {
+          Type = "oneshot";
+        };
+        script = ''
+          if [ -d /opt/docker/ ]; then
+            mkdir --parents /opt/.docker/
+            mv /opt/docker/ ${cfg.data_dir}
+          # old, non-encrypted setups
+          elif [ -d /var/lib/docker/ ]; then
+            mkdir --parents /opt/.docker/
+            mv /var/lib/docker/ ${cfg.data_dir}
+          fi
+        '';
+      };
     };
   };
 }
