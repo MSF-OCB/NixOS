@@ -108,7 +108,6 @@ in
             security-headers:
               headers:
                 sslredirect: true
-                forceSTSHeader: true
                 stsPreload: true
                 stsSeconds: ${toString (365 * 24 * 60 * 60)}
                 stsIncludeSubdomains: true
