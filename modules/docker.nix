@@ -44,8 +44,6 @@ with lib;
       enableOnBoot = true;
       liveRestore  = !cfg.swarm.enable;
       extraOptions = concatStringsSep " " (
-        # Do not break currently running non-encrypted set-ups.
-        (optional config.settings.crypto.encrypted_opt.enable ''--data-root  "${cfg.data_dir}"'') ++
         # Docker internal IP addressing
         # Ranges used: 172.28.0.0/16, 172.29.0.0/16
         #
@@ -61,6 +59,7 @@ with lib;
         # 172.29.0.0/16 in /24 blocks
         #   -> 2^8 (256) networks 172.29.0.0/24 -> 172.29.255.0/24
         [
+          ''--data-root "${cfg.data_dir}"''
           ''--bip "172.28.0.1/18"''
           ''--default-address-pool "base=172.28.64.0/18,size=24"''
           ''--default-address-pool "base=172.28.128.0/17,size=24"''
