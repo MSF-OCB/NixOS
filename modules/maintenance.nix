@@ -45,7 +45,7 @@ in {
       };
 
       nixos_sync_config = mkIf cfg.sync_config.enable {
-        description   = "Automatically sync the config with the upstream repository.";
+        description   = "Automatically sync the config with the upstream repository";
         before        = [ "nixos-upgrade.service" ];
         wantedBy      = [ "nixos-upgrade.service" ];
         serviceConfig = {
@@ -76,7 +76,7 @@ in {
       };
 
       nixos_rebuild_config = {
-        description   = "Rebuild the NixOS config without doing an upgrade.";
+        description   = "Rebuild the NixOS config without doing an upgrade";
         after         = [ "nixos_sync_config.service" ];
         wants         = [ "nixos_sync_config.service" ];
         serviceConfig = {
