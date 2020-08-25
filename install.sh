@@ -153,13 +153,17 @@ if [ ! -f "/tmp/id_tunnel" ] || [ ! -f "/tmp/id_tunnel.pub" ]; then
   echo "SSH keypair generated."
 fi
 
-retval=$(ssh -F /dev/null \
+# Check whether we can authenticate to GitHub using this server's key
+retval=$(set +e; \
+         ssh -F /dev/null \
              -i /tmp/id_tunnel \
              -o IdentitiesOnly=yes \
              -o UserKnownHostsFile=/dev/null \
              -T \
              -l git \
-             ssh.github.com; echo "$?")
+             ssh.github.com; \
+         echo "$?")
+
 if [ "${retval}" -eq "255" ]; then
   echo -e "\nThe SSH key in /tmp/id_tunnel, does not give us access to GitHub."
   echo    "Please add the public key (/tmp/id_tunnel.pub) to the tunnels.json file"
