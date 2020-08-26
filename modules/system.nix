@@ -211,6 +211,12 @@ with lib;
           hostNames = [ "github.com" "ssh.github.com" ];
           publicKeyFile = org_cfg.keys_path + "/servers/github";
         };
+        extraConfig = ''
+          Host github.com
+            HostName ssh.github.com
+            User git
+            Port 443
+        '';
       };
 
       tmux = {
