@@ -31,7 +31,7 @@ in
 
     network_name = mkOption {
       type = types.str;
-      default = "traefik_backend";
+      default = "web";
     };
 
     acme = {
