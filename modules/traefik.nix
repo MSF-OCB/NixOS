@@ -50,6 +50,9 @@ in
   };
 
   config = mkIf cfg.enable {
+
+    settings.docker.enable = true;
+
     docker-containers = let
       static_config_file_name    = "traefik-static.yml";
       static_config_file_target  = "/${static_config_file_name}";
