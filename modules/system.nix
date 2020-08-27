@@ -212,6 +212,8 @@ with lib;
           publicKeyFile = org_cfg.keys_path + "/servers/github";
         };
         extraConfig = ''
+          # Some internet providers block port 22,
+          # so we connect to GitHub using port 443
           Host github.com
             HostName ssh.github.com
             User git
