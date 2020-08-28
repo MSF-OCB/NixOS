@@ -52,19 +52,18 @@ in
   config = mkIf cfg.enable (let
     panic_button_user = "panic_button";
 
-    # Use scripts/prefetch_git.sh to update the values below:
-    #   ./scripts/prefetch_git.sh panic_button HEAD
-    # then copy the rev and sha256 values.
-    # TODO: we could store the JSON output directly and parse the values
-    #       using builtins.fromJSON
-    panic_button = let
-      rev    = "aca99d1c88518a4cd760a5c413d916f96f714f52";
-      sha256 = "05f8pdyv60vlrjjvhcyx3z8710kqm1kzh9f1vlnbwp867wyxfri0";
-    in pkgs.callPackage (pkgs.fetchFromGitHub {
-      owner = "msf-ocb";
-      repo  = "panic_button";
-      inherit rev sha256;
-    }) { version = rev; };
+    # Use scripts/prefetch_git.sh to update the
+    # panic button version in modules/panic_button.json:
+    #   ./scripts/prefetch_git.sh panic_button HEAD > modules/panic_button.json
+    panic_button_overlay = self: super: {
+      panic_button = let
+        json_data = builtins.fromJSON (builtins.readFile ./panic_button.json);
+      in self.callPackage (self.fetchFromGitHub {
+        owner = "msf-ocb";
+        repo  = "panic_button";
+        inherit (json_data) rev sha256;
+      }) { version = json_data.rev; };
+    };
 
     mkScript = name: content: let
       script = pkgs.writeShellScript name content;
@@ -120,6 +119,9 @@ in
     in mkScript script_name commands;
 
   in {
+
+    nixpkgs.overlays = [ panic_button_overlay ];
+
     networking.firewall.allowedTCPPorts = [ cfg.listen_port ];
 
     users.users."${panic_button_user}" = {
@@ -152,13 +154,13 @@ in
           quoteString   = s: ''"${s}"'';
           formatTargets = concatMapStringsSep " " quoteString;
         in ''
-          ${panic_button}/bin/nixos_panic_button --listen_port ${toString cfg.listen_port} \
-                                                 --lock_script   ${lock_script} \
-                                                 --verify_script ${verify_script} \
-                                                 --lock_retry_max_count   ${toString cfg.lock_retry_max_count} \
-                                                 --verify_retry_max_count ${toString cfg.verify_retry_max_count} \
-                                                 --poll_interval ${toString cfg.poll_interval} \
-                                                 --disable_targets ${formatTargets cfg.disable_targets}
+          ${pkgs.panic_button}/bin/nixos_panic_button --listen_port ${toString cfg.listen_port} \
+                                                      --lock_script   ${lock_script} \
+                                                      --verify_script ${verify_script} \
+                                                      --lock_retry_max_count   ${toString cfg.lock_retry_max_count} \
+                                                      --verify_retry_max_count ${toString cfg.verify_retry_max_count} \
+                                                      --poll_interval ${toString cfg.poll_interval} \
+                                                      --disable_targets ${formatTargets cfg.disable_targets}
         '';
       };
     };
