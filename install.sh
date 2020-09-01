@@ -331,5 +331,6 @@ fi
 
 echo -e "\nNixOS installation finished, please reboot using \"sudo systemctl reboot\""
 
-echo -e "\nDo not forget to set a recovery passphrase for the encrypted partition and add it to Keeper (see https://github.com/MSF-OCB/NixOS/wiki/Install-NixOS for the command)."
+echo -e "\nDo not forget to set a recovery passphrase for the encrypted partition and add it to Keeper
+echo -e "see https://github.com/MSF-OCB/NixOS/wiki/Install-NixOS for the command."
 
