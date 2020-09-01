@@ -166,7 +166,7 @@ retval=$(set +e; \
 
 if [ "${retval}" -eq "255" ]; then
   echo -e "\nThe SSH key in /tmp/id_tunnel, does not give us access to GitHub."
-  echo    "Please add the public key (/tmp/id_tunnel.pub) to
+  echo    "Please add the public key (/tmp/id_tunnel.pub) to"
   echo    "the tunnels.json file in the NixOS-OCB-config repo."
   echo    "To view the key and copy it, run: \"cat /tmp/id_tunnel.pub\""
   echo -e "\nYou can restart the installer once this is done and"
