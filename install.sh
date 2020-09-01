@@ -154,31 +154,27 @@ if [ ! -f "/tmp/id_tunnel" ] || [ ! -f "/tmp/id_tunnel.pub" ]; then
 fi
 
 # Check whether we can authenticate to GitHub using this server's key
-retval=$(set +e; \
-         ssh -F /dev/null \
-             -i /tmp/id_tunnel \
-             -o IdentitiesOnly=yes \
-             -o UserKnownHostsFile=/dev/null \
-             -T \
-             -l git \
-             ssh.github.com; \
-         echo "$?")
-
-if [ "${retval}" -eq "255" ]; then
-  echo -e "\nThe SSH key in /tmp/id_tunnel, does not give us access to GitHub."
-  echo    "Please add the public key (/tmp/id_tunnel.pub) to"
-  echo    "the tunnels.json file in the NixOS-OCB-config repo."
-  echo    "To view the key and copy it, run: \"cat /tmp/id_tunnel.pub\""
-  echo -e "\nYou can restart the installer once this is done and"
-  echo -e "the GitHub deployment actions have run.\n"
-  echo    "If you want me to generate a new key pair instead,"
-  echo    "then remove /tmp/id_tunnel and /tmp/id_tunnel.pub"
-  echo    "and restart the installer."
-  echo    "You will then see this message again,"
-  echo    "and you will need to add the newly generated key to GitHub."
-
-  exit 1
-fi
+(
+  set +e
+  nix-shell --packages git --run "git -c core.sshCommand='ssh -i /tmp/id_tunnel' \
+                                      ls-remote ${config_repo} \
+                                      2>$1 > /dev/null"
+  retval="${?}"
+  if [ "${retval}" -ne "0" ]; then
+    echo -e "\nThe SSH key in /tmp/id_tunnel, does not give us access to GitHub."
+    echo    "Please add the public key (/tmp/id_tunnel.pub) to"
+    echo    "the tunnels.json file in the NixOS-OCB-config repo."
+    echo    "To view the key and copy it, run: \"cat /tmp/id_tunnel.pub\""
+    echo -e "\nYou can restart the installer once this is done and"
+    echo -e "the GitHub deployment actions have run.\n"
+    echo    "If you want me to generate a new key pair instead,"
+    echo    "then remove /tmp/id_tunnel and /tmp/id_tunnel.pub"
+    echo    "and restart the installer."
+    echo    "You will then see this message again,"
+    echo    "and you will need to add the newly generated key to GitHub."
+  fi
+  exit ${retval}
+)
 
 detect_swap="$(swapon | grep "${swapfile}" > /dev/null 2>&1; echo $?)"
 if [ "${detect_swap}" -eq 0 ]; then
