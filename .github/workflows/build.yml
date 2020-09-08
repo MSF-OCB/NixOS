@@ -20,51 +20,17 @@ jobs:
         group_id: [ 0, 1, 2, 3 ]
     steps:
       - uses: 'actions/checkout@v2'
-
       - uses: 'actions/checkout@v2'
         with:
           repository: 'msf-ocb/nixos-ocb-config'
           path: 'ocb-config'
           token: '${{ secrets.NIXOS_OCB_REPO_API_TOKEN }}'
-
-      - uses: 'actions/cache@v2'
-        id: 'cache-nix'
-        env:
-          cache-name: 'cache-nix-store'
-        with:
-          path: '~/nix/store'
-          key: '${{ env.cache-name }}-builder-id-${{ matrix.group_id }}-${{ github.sha }}'
-          restore-keys: |
-            ${{ env.cache-name }}-builder-id-${{ matrix.group_id }}-
-            ${{ env.cache-name }}-builder-id-
-
       - uses: 'cachix/install-nix-action@master'
         with:
           nix_path: 'nixpkgs=channel:nixos-20.03'
-
       - uses: 'cachix/cachix-action@master'
         with:
           name: 'panic-button'
           skipPush: true
-
-      - name: 'Restore the Nix cache'
-        env:
-          CACHE_HIT: ${{ steps.cache-nix.outputs.cache-hit }}
-        run: |
-          if [ "${CACHE_HIT}" = 'true' ]; then
-            sudo mkdir --parents /nix/
-            sudo cp --force --recursive ~/nix/store/ /nix/
-          fi
-
-      - name: 'Build the NixOS configs'
-        run: './.github/scripts/build.py --group_amount 4 --group_id ${{ matrix.group_id }}'
-
-      - name: 'Cache the Nix cache'
-        env:
-          CACHE_HIT: ${{ steps.cache-nix.outputs.cache-hit }}
-        run: |
-          if [ "${CACHE_HIT}" != 'true' ]; then
-            mkdir --parents ~/nix/
-            sudo cp --force --recursive /nix/store/ ~/nix/
-          fi
+      - run: './.github/scripts/build.py --group_amount 4 --group_id ${{ matrix.group_id }}'
 
