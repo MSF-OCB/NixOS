@@ -47,13 +47,13 @@ jobs:
           name: 'panic-button'
           skipPush: true
 
-      - name: 'Restor the Nix cache'
+      - name: 'Restore the Nix cache'
         env:
           CACHE_HIT: ${{ steps.cache-nix.outputs.cache-hit }}
         run: |
           if [ "${CACHE_HIT}" = 'true' ]; then
-            sudo mkdir --parents /nix/store
-            sudo cp --force --recursive ~/nix/store/* /nix/store
+            sudo mkdir --parents /nix/
+            sudo cp --force --recursive ~/nix/store/ /nix/
           fi
 
       - name: 'Build the NixOS configs'
@@ -64,7 +64,7 @@ jobs:
           CACHE_HIT: ${{ steps.cache-nix.outputs.cache-hit }}
         run: |
           if [ "${CACHE_HIT}" != 'true' ]; then
-            mkdir --parents ~/nix/store
-            sudo cp --force --recursive /nix/store/* ~/nix/store/
+            mkdir --parents ~/nix/
+            sudo cp --force --recursive /nix/store/ ~/nix/
           fi
 
