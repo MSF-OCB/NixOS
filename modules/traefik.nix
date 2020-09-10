@@ -102,6 +102,13 @@ in
               #caserver: http://acme-staging-v02.api.letsencrypt.org/directory
               httpchallenge:
                 entrypoint: web
+          letsencrypt_dns:
+            acme:
+              email: ${cfg.acme.email_address}
+              storage: ${cfg.acme.storage}/acme.json
+              #caserver: http://acme-staging-v02.api.letsencrypt.org/directory
+              dnschallenge:
+                provider: 'route53'
       '';
 
       dynamic_config_file_source = pkgs.writeText dynamic_config_file_name ''
@@ -147,6 +154,7 @@ in
         ];
         workdir = "/opt";
         extraDockerOptions = [
+          "--env=LEGO_EXPERIMENTAL_CNAME_SUPPORT=true"
           "--network=${cfg.network_name}"
           "--tmpfs=/tmp:rw,nodev,nosuid,noexec"
           "--tmpfs=/run:rw,nodev,nosuid,noexec"
@@ -154,7 +162,10 @@ in
           "--health-interval=10s"
           "--health-retries=5"
           "--health-timeout=3s"
-        ];
+        ] ++
+        (let
+           file = "/opt/.secrets/route53";
+         in optional (builtins.pathExists file) "--env-file=${file}");
       };
     };
 
