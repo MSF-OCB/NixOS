@@ -185,7 +185,6 @@ in
         in [ script ];
       };
 
-      #TODO: how can we cleanup old images?
       "${cfg.service_name}-pull" = {
         inherit (cfg) enable;
         description   = "Automatically pull the latest version of the Traefik image";
@@ -195,11 +194,17 @@ in
         script = ''
           ${docker} pull ${cfg.image}:${cfg.version}
           ${systemctl} try-restart ${traefik_docker_service}.service
+          prev_images="$(${docker} image ls \
+            --quiet \
+            --filter 'reference=${cfg.image}' \
+            --filter 'before=${cfg.image}:${cfg.version}')"
+          if [ ! -z "''${prev_images}" ]; then
+            ${docker} image rm ''${prev_images}
+          fi
         '';
         startAt = "Wed 03:00";
       };
     };
   };
-
 }
 
