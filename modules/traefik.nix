@@ -99,6 +99,7 @@ in
             acme:
               email: ${cfg.acme.email_address}
               storage: ${cfg.acme.storage}/acme.json
+              keyType: EC256
               #caserver: http://acme-staging-v02.api.letsencrypt.org/directory
               httpchallenge:
                 entrypoint: web
