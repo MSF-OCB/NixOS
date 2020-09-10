@@ -161,8 +161,8 @@ in
           "--tmpfs=/tmp:rw,nodev,nosuid,noexec"
           "--tmpfs=/run:rw,nodev,nosuid,noexec"
           "--health-cmd=traefik healthcheck --ping"
-          "--health-interval=10s"
-          "--health-retries=5"
+          "--health-interval=60s"
+          "--health-retries=3"
           "--health-timeout=3s"
         ] ++
         (let
