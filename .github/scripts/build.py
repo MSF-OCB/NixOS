@@ -101,7 +101,7 @@ def validate_args(args):
   if args.group_id > args.group_amount:
     raise ValueError(f"The build group ID ({args.group_id}) cannot exceed the number of build groups ({args.group_amount}).")
   if args.group_id < 0:
-    raise ValueError(f"The build group ID ({args.group_id}) cannot be less than or equal to zero.")
+    raise ValueError(f"The build group ID ({args.group_id}) cannot be less than zero.")
   return args
 
 def main():
