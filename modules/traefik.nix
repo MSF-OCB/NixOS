@@ -4,6 +4,7 @@ with lib;
 
 let
   cfg = config.settings.services.traefik;
+  docker_cfg = config.settings.docker;
 in
 
 {
@@ -72,6 +73,7 @@ in
         providers:
           docker:
             network: ${cfg.network_name}
+            swarmMode: ${if docker_cfg.swarm.enable then "true" else "false"}
             exposedbydefault: false
           file:
             watch: true
