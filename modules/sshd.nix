@@ -44,6 +44,10 @@ with lib;
                  "hmac-sha2-256-etm@openssh.com"
                  "umac-128-etm@openssh.com" ];
         extraConfig = ''
+          ${let
+             hostkey_v2 = "/etc/ssh/ssh_host_ed25519_key_v2";
+            in optionalString (builtins.pathExists hostkey_v2) "HostKey ${hostkey_v2}"
+          }
           StrictModes yes
           AllowAgentForwarding no
           TCPKeepAlive yes
