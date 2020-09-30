@@ -35,6 +35,11 @@ in
       default = "web";
     };
 
+    logging_level = mkOption {
+      type = types.enum [ "INFO" "DEBUG" "TRACE" ];
+      default = "INFO";
+    };
+
     acme = {
       storage = mkOption {
         type = types.str;
@@ -63,9 +68,12 @@ in
       static_config_file_source  = pkgs.writeText static_config_file_name ''
         ---
 
+        global:
+          sendAnonymousUsage: true
+
         ping: {}
         log:
-          level: INFO
+          level: ${cfg.logging_level}
         accesslog: {}
         #metrics:
         #  prometheus: {}
@@ -91,8 +99,7 @@ in
             address: ':443'
             http:
               middlewares:
-                - security-headers@file
-                - compress@file
+                - default_middleware@file
               tls:
                 certResolver: letsencrypt
 
@@ -120,12 +127,22 @@ in
 
         http:
           middlewares:
+            default_middleware:
+              chain:
+                middlewares:
+                  - security-headers
+                  - compress
             security-headers:
               headers:
                 sslredirect: true
                 stsPreload: true
                 stsSeconds: ${toString (365 * 24 * 60 * 60)}
                 stsIncludeSubdomains: true
+                customResponseHeaders:
+                  Expect-CT: "max-age=${toString (24 * 60 * 60)}, enforce"
+                  Server: ""
+                  X-Powered-By: ""
+                  X-AspNet-Version: ""
             compress:
               compress: {}
 
