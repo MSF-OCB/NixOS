@@ -41,6 +41,17 @@ in
     };
 
     acme = {
+      staging = mkOption {
+        type = types.bool;
+        default = false;
+      };
+
+      keytype = mkOption {
+        type = types.str;
+        default = "EC256";
+        readOnly = true;
+      };
+
       storage = mkOption {
         type = types.str;
         default = "/letsencrypt";
@@ -49,8 +60,10 @@ in
 
       email_address = mkOption {
         type = types.str;
-        default = "dr.watson@brussels.msf.org";
-        readOnly = true;
+      };
+
+      dns_provider = mkOption {
+        type = types.enum [ "azure" "route53" ];
       };
     };
   };
@@ -65,7 +78,10 @@ in
       dynamic_config_file_name   = "traefik-dynamic.yml";
       dynamic_config_file_target = "/${dynamic_config_file_name}";
 
-      static_config_file_source  = pkgs.writeText static_config_file_name ''
+      static_config_file_source  = let
+        staging_url = "http://acme-staging-v02.api.letsencrypt.org/directory";
+        caserver_option = optionalString cfg.acme.staging "caserver: ${staging_url}";
+      in pkgs.writeText static_config_file_name ''
         ---
 
         global:
@@ -103,23 +119,23 @@ in
               tls:
                 certResolver: letsencrypt
 
+        _acme: &acme_cfg
+          email: ${cfg.acme.email_address}
+          storage: ${cfg.acme.storage}/acme.json
+          keyType: ${cfg.acme.keytype}
+          ${caserver_option}
+
         certificatesresolvers:
           letsencrypt:
             acme:
-              email: ${cfg.acme.email_address}
-              storage: ${cfg.acme.storage}/acme.json
-              keyType: EC256
-              #caserver: http://acme-staging-v02.api.letsencrypt.org/directory
+              <<: *acme_cfg
               httpchallenge:
                 entrypoint: web
           letsencrypt_dns:
             acme:
-              email: ${cfg.acme.email_address}
-              storage: ${cfg.acme.storage}/acme.json
-              keyType: EC256
-              #caserver: http://acme-staging-v02.api.letsencrypt.org/directory
+              <<: *acme_cfg
               dnschallenge:
-                provider: 'route53'
+                provider: '${cfg.acme.dns_provider}'
       '';
 
       dynamic_config_file_source = pkgs.writeText dynamic_config_file_name ''
@@ -154,10 +170,10 @@ in
               cipherSuites:
                 # https://godoc.org/crypto/tls#pkg-constants
                 # TLS 1.2
-                - "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256"
-                - "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256"
                 - "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384"
+                - "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256"
                 - "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+                - "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256"
                 # TLS 1.3
                 - "TLS_AES_256_GCM_SHA384"
                 - "TLS_CHACHA20_POLY1305_SHA256"
@@ -190,7 +206,7 @@ in
           "--health-timeout=3s"
         ] ++
         (let
-           file = "/opt/.secrets/route53";
+           file = "/opt/.secrets/${cfg.acme.dns_provider}";
          in optional (builtins.pathExists file) "--env-file=${file}");
       };
     };
