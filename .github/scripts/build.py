@@ -75,10 +75,10 @@ def do_build_configs(build_dir, configs):
   init_tree(build_dir)
   validate_json(build_dir)
   for config in configs:
-    p = build_config(build_dir, config)
-    print(p.stderr.decode())
-    print(p.stdout.decode())
-    p.check_returncode()
+    proc = build_config(build_dir, config)
+    print(proc.stderr.decode())
+    print(proc.stdout.decode())
+    proc.check_returncode()
 
 def build_configs(build_dir, group_amount, group_id):
   configs = sorted(glob.glob('./ocb-config/hosts/*.nix'))
