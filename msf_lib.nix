@@ -36,17 +36,42 @@ with (import <nixpkgs> {}).lib;
 
     importIfExists = path: optional (builtins.pathExists path) path;
 
-    user_roles = rec {
-      # admin_base users have shell access, belong to the wheel group, but are not enabled by default
-      admin_base = {
+    user_roles = let
+
+      # Set of functions manipulating user roles that can be imported
+      # This is a function which takes a config and returns the set of functions
+      user_lib = config: let
+        user_cfg = config.settings.users;
+
+        # Function to define a user but override the name instead of taking the variable name
+        withName = name: role: role // { inherit name; };
+
+        # Function to create a user with a given role as an alias of an existing user
+        alias = role: from:
+          role //
+          {
+            inherit (user_cfg.users."${from}") enable;
+            keyFileName = from;
+          };
+
+        # Function to create a tunnel user as an alias of an existing user
+        aliasTunnel = alias remoteTunnel;
+      in {
+        inherit withName alias aliasTunnel;
+      };
+
+      # Admin users have shell access and belong to the wheel group
+      # These are not enabled by default and should be enabled on a by-server basis
+      admin = {
         enable      = mkDefault false;
         sshAllowed  = true;
         hasShell    = true;
         canTunnel   = true;
         extraGroups = [ "wheel" "docker" ];
       };
-      # Admin users have the same rights as admin_base users and are enabled by default
-      admin = admin_base // { enable = true; };
+
+      # Global admin users have the same rights as admin users and are enabled by default
+      globalAdmin = admin // { enable = true; };
 
       localShell = {
         enable     = mkDefault false;
@@ -63,8 +88,12 @@ with (import <nixpkgs> {}).lib;
         hasShell   = false;
         canTunnel  = true;
       };
+
       # Users who are tunnel-only but can tunnel to all NixOS servers and query the open tunnels
-      fieldSupport = remoteTunnel // { forceMonitorCommand = true; };
+      # These are not enabled by default and should be enabled on a by-server basis
+      remoteTunnelMonitor = remoteTunnel // { forceMonitorCommand = true; };
+    in {
+      inherit user_lib admin globalAdmin localShell remoteTunnel remoteTunnelMonitor;
     };
   };
 }

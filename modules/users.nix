@@ -117,7 +117,7 @@ in {
     toKeyPath = user: org_cfg.keys_path + ("/" + user.keyFileName);
   in {
     settings.users.users."${cfg.robot.username}" =
-      mkIf cfg.robot.enable msf_lib.user_roles.admin;
+      mkIf cfg.robot.enable msf_lib.user_roles.globalAdmin;
 
     users = {
       mutableUsers = false;
