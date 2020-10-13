@@ -4,6 +4,7 @@ with lib;
 
 let
   cfg = config.settings.services.traefik;
+  system_cfg = config.settings.system;
   docker_cfg = config.settings.docker;
 in
 
@@ -206,7 +207,7 @@ in
           "--health-timeout=3s"
         ] ++
         (let
-           file = "/opt/.secrets/${cfg.acme.dns_provider}";
+           file = system_cfg.secretsDirectory + cfg.acme.dns_provider;
          in optional (builtins.pathExists file) "--env-file=${file}");
       };
     };

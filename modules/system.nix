@@ -19,6 +19,12 @@ with lib;
       default = false;
     };
 
+    secretsDirectory = mkOption {
+      type = types.str;
+      default = "/opt/.secrets/";
+      readOnly = true;
+    };
+
     diskSwap = {
       enable = mkOption {
         type = types.bool;
@@ -172,6 +178,14 @@ with lib;
           else
             exit 1;
           fi
+        '';
+        deps = [ "specialfs" "users" ];
+      };
+      secrets_directory = {
+        text = ''
+          mkdir -p ${cfg.secretsDirectory}
+          chown --recursive root:root ${cfg.secretsDirectory}
+          chmod --recursive u=rX,g=rX,o= ${cfg.secretsDirectory}
         '';
         deps = [ "specialfs" "users" ];
       };
