@@ -5,7 +5,7 @@ with (import ../msf_lib.nix);
 
 let
   cfg            = config.settings.users;
-  org_cfg        = config.settings.org;
+  sys_cfg        = config.settings.system;
   reverse_tunnel = config.settings.reverse_tunnel;
 
   userOpts = { name, config, ... }: {
@@ -114,7 +114,7 @@ in {
   };
 
   config = let
-    toKeyPath = user: org_cfg.keys_path + ("/" + user.keyFileName);
+    toKeyPath = user: sys_cfg.pub_keys_path + ("/" + user.keyFileName);
   in {
     settings.users.users."${cfg.robot.username}" =
       mkIf cfg.robot.enable msf_lib.user_roles.globalAdmin;

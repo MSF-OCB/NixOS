@@ -5,8 +5,6 @@ with (import ../msf_lib.nix);
 
 let
   cfg     = config.settings.reverse_tunnel;
-  sys_cfg = config.settings.system;
-  org_cfg = config.settings.org;
 
   tunnelOpts = { name, ... }: {
     options = {

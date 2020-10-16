@@ -5,13 +5,13 @@ with (import ../msf_lib.nix);
 
 {
   config = let
-    org_cfg   = config.settings.org;
+    sys_cfg   = config.settings.system;
     host_name = config.settings.network.host_name;
     loadJSON  = msf_lib.compose [ builtins.fromJSON builtins.readFile ];
   in {
     settings = {
       users.users = let
-        users_json_path = org_cfg.users_json_path;
+        users_json_path = sys_cfg.users_json_path;
         json_data       = loadJSON users_json_path;
         remoteTunnel    = msf_lib.user_roles.remoteTunnel;
 
@@ -38,7 +38,7 @@ with (import ../msf_lib.nix);
                                (enabledRoles host_name json_data)));
 
       reverse_tunnel.tunnels = let
-        tunnel_json_path = org_cfg.tunnels_json_path;
+        tunnel_json_path = sys_cfg.tunnels_json_path;
         json_data        = loadJSON tunnel_json_path;
       in
         json_data.tunnels.per-host;

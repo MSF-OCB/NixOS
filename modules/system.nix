@@ -2,7 +2,6 @@
 
 let
   cfg     = config.settings.system;
-  org_cfg = config.settings.org;
   tnl_cfg = config.settings.reverse_tunnel;
 in
 
@@ -19,10 +18,20 @@ with lib;
       default = false;
     };
 
+    users_json_path = mkOption {
+      type     = types.path;
+    };
+
+    tunnels_json_path = mkOption {
+      type     = types.path;
+    };
+
+    pub_keys_path = mkOption {
+      type     = types.path;
+    };
+
     secretsDirectory = mkOption {
       type = types.str;
-      default = "/opt/.secrets/";
-      readOnly = true;
     };
 
     diskSwap = {
@@ -44,7 +53,7 @@ with lib;
     assertions = [
       {
         assertion = hasAttr config.networking.hostName tnl_cfg.tunnels;
-        message   = "This host's host name is not present in the tunnel config (${toString org_cfg.tunnels_json_path}).";
+        message   = "This host's host name is not present in the tunnel config (${toString cfg.tunnels_json_path}).";
       }
       {
         assertion = builtins.pathExists tnl_cfg.private_key_source;
@@ -223,7 +232,7 @@ with lib;
         hostKeyAlgorithms = [ "ssh-ed25519" "ssh-rsa" ];
         knownHosts.github = {
           hostNames = [ "github.com" "ssh.github.com" ];
-          publicKeyFile = org_cfg.keys_path + "/servers/github";
+          publicKeyFile = cfg.pub_keys_path + "/servers/github";
         };
         extraConfig = ''
           # Some internet providers block port 22,
