@@ -41,6 +41,10 @@ in
       default = "INFO";
     };
 
+    pilot_token = mkOption {
+      type = types.str;
+    };
+
     acme = {
       staging = mkOption {
         type = types.bool;
@@ -87,6 +91,9 @@ in
 
         global:
           sendAnonymousUsage: true
+
+        pilot:
+          token: ${cfg.pilot_token}
 
         ping: {}
         log:
