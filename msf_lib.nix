@@ -2,7 +2,8 @@
 #   with (import ../msf_lib.nix);
 #   msf_lib.<identifier>
 
-with (import <nixpkgs> {}).lib;
+with (import <nixpkgs> {});
+with lib;
 
 {
   msf_lib = {
@@ -91,7 +92,12 @@ with (import <nixpkgs> {}).lib;
 
       # Users who are tunnel-only but can tunnel to all NixOS servers and query the open tunnels
       # These are not enabled by default and should be enabled on a by-server basis
-      remoteTunnelMonitor = remoteTunnel // { forceMonitorCommand = true; };
+      remoteTunnelMonitor = remoteTunnel // { forceCommand = ''
+                                                ${pkgs.iproute}/bin/ss -tunl6 | \
+                                                  ${pkgs.coreutils}/bin/sort -n | \
+                                                  ${pkgs.gnugrep}/bin/egrep "\[::1\]:[0-9]{4}[^0-9]"
+                                              '';
+                                            };
     in {
       inherit user_lib admin globalAdmin localShell remoteTunnel remoteTunnelMonitor;
     };

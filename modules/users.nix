@@ -45,12 +45,9 @@ let
         type = types.str;
       };
 
-      forceMonitorCommand = mkOption {
-        type    = types.bool;
-        default = false;
-        description = ''
-          Set the port monitor command as the SSH forced command on the relays.
-        '';
+      forceCommand = mkOption {
+        type    = with types; nullOr str;
+        default = null;
       };
     };
     config = {
@@ -131,7 +128,8 @@ in {
       groups."${cfg.shell-user-group}" = { };
 
       users = let
-        hasShell = user: user.hasShell || (user.forceMonitorCommand && reverse_tunnel.relay.enable);
+        hasForceCommand = user: ! isNull user.forceCommand;
+        hasShell = user: user.hasShell || (hasForceCommand user && reverse_tunnel.relay.enable);
         mkUser = _: user: {
           name         = user.name;
           isNormalUser = user.hasShell;

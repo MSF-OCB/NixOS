@@ -7,6 +7,7 @@ let
 in
 
 with lib;
+with (import ../msf_lib.nix);
 
 {
   options = {
@@ -24,7 +25,36 @@ with lib;
 
   config = {
     services = {
-      openssh = {
+      openssh = let
+        # We define a function to build the Match section defining the
+        # configured ForceCommand settings.
+        buildForceCommandSection = let
+          hasForceCommand    = _: user: user.enable && ! (isNull user.forceCommand);
+          filterForceCommand = filterAttrs hasForceCommand;
+          # unsafeDiscardStringContext is needed such that Nix allows us
+          # to use a string derived from a store path without tracking
+          # the dependency. This is safe in this case because we will
+          # reference the original string later on in the SSHd config file.
+          hashCommand    = msf_lib.compose [ (builtins.hashString "sha256")
+                                             (builtins.unsafeDiscardStringContext) ];
+          cleanResults   = mapAttrs (_: users: { inherit (builtins.head users) forceCommand;
+                                                 users = map (user: user.name) users;
+                                               });
+          doGroupByCommand = groupBy (user: hashCommand user.forceCommand);
+          groupByCommand   = msf_lib.compose [ cleanResults doGroupByCommand attrValues ];
+
+          toCfgs = mapAttrsToList (_: res: ''
+                     Match User ${concatStringsSep "," res.users}
+                     PermitTTY no
+                     ForceCommand ${pkgs.writeShellScript "ssh_force_command" res.forceCommand}
+                   '');
+          toCfg = concatStringsSep "\n";
+
+        in msf_lib.compose [ toCfg
+                             toCfgs
+                             groupByCommand
+                             filterForceCommand ];
+      in {
         enable = true;
         # Ignore the authorized_keys files in the users' home directories,
         # keys should be added through the config.
@@ -65,22 +95,8 @@ with lib;
           Match Group ${config.settings.users.fwd-tunnel-group},!wheel
             AllowTcpForwarding local
 
-        '' +
-        (
-          let
-            isEligible = _: user: user.enable && user.forceMonitorCommand;
-            users      = attrNames (filterAttrs isEligible cfg_users);
-            hasUsers   = length users != 0;
-          in optionalString (reverse_tunnel.relay.enable && hasUsers) ''
-          Match User ${concatStringsSep "," users}
-            PermitTTY no
-            ForceCommand ${pkgs.writeShellScript "ssh_port_monitor_command" ''
-                             ${pkgs.iproute}/bin/ss -tunl6 | \
-                               ${pkgs.coreutils}/bin/sort -n | \
-                               ${pkgs.gnugrep}/bin/egrep "\[::1\]:[0-9]{4}[^0-9]"
-                           ''}
-          ''
-        );
+          ${buildForceCommandSection cfg_users}
+        '';
       };
 
       fail2ban = mkIf config.settings.fail2ban.enable {
