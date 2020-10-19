@@ -41,6 +41,13 @@ in
       default = "INFO";
     };
 
+    accesslog = {
+      enable = mkOption {
+        type = types.bool;
+        default = true;
+      };
+    };
+
     pilot_token = mkOption {
       type = types.str;
     };
@@ -98,7 +105,7 @@ in
         ping: {}
         log:
           level: ${cfg.logging_level}
-        accesslog: {}
+        ${optionalString cfg.accesslog.enable "accesslog: {}"}
         #metrics:
         #  prometheus: {}
 
