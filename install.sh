@@ -178,6 +178,7 @@ fi
       echo -e "\n"
     else
       can_authenticate=0
+      echo "Successfully authenticated to GitHub."
     fi
   done
 )
