@@ -184,13 +184,13 @@ fi
 )
 
 detect_swap="$(swapon | grep "${swapfile}" > /dev/null 2>&1; echo $?)"
-if [ "${detect_swap}" -eq 0 ]; then
+if [ "${detect_swap}" -eq "0" ]; then
   swapoff "${swapfile}"
   rm --force "${swapfile}"
 fi
 
 MP=$(mountpoint --quiet /mnt/; echo $?) || true
-if [ "${MP}" -eq 0 ]; then
+if [ "${MP}" -eq "0" ]; then
   umount -R /mnt/
 fi
 
