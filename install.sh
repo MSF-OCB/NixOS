@@ -174,7 +174,7 @@ fi
       echo    "the installer. You will then see this message again, and"
       echo -e "you will need to add the newly generated key to GitHub."
       echo -e "\nPress Enter once you have added the key to GitHub and"
-      read -s -p "the deployment actions have successfully run..."
+      read -e -s -p "the deployment actions have successfully run..."
       echo -e "\n"
     else
       can_authenticate=0
