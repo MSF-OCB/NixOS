@@ -200,27 +200,34 @@ with lib;
       };
     };
 
-    systemd.user.services.cleanup_nixenv = {
-      enable = true;
-      description = "Clean up nix-env";
-      unitConfig = {
-        ConditionUser  = "!@system";
-        ConditionGroup = config.settings.users.shell-user-group;
-      };
-      serviceConfig.Type = "oneshot";
-      script = ''
-        ${pkgs.nix}/bin/nix-env -e '.*'
+    systemd = {
+      # Given that our systems are headless, emergency mode is useless.
+      # We prefer the system to attempt to continue booting so
+      # that we can hopefully still access it remotely.
+      enableEmergencyMode = false;
+
+      sleep.extraConfig = ''
+        AllowSuspend=no
+        AllowHibernation=no
       '';
-      wantedBy = [ "default.target" ];
+
+      user.services.cleanup_nixenv = {
+        enable = true;
+        description = "Clean up nix-env";
+        unitConfig = {
+          ConditionUser  = "!@system";
+          ConditionGroup = config.settings.users.shell-user-group;
+        };
+        serviceConfig.Type = "oneshot";
+        script = ''
+          ${pkgs.nix}/bin/nix-env -e '.*'
+        '';
+        wantedBy = [ "default.target" ];
+      };
     };
 
     # No fonts needed on a headless system
     fonts.fontconfig.enable = mkForce false;
-
-    # Given that our systems are headless, emergency mode is useless.
-    # We prefer the system to attempt to continue booting so
-    # that we can hopefully still access it remotely.
-    systemd.enableEmergencyMode = false;
 
     programs = {
       bash.enableCompletion = true;
