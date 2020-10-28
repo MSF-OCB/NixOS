@@ -31,6 +31,10 @@ in
       readOnly = true;
     };
 
+    dynamic_config = mkOption {
+      type = with types; attrsOf str;
+    };
+
     network_name = mkOption {
       type = types.str;
       default = "web";
@@ -82,13 +86,58 @@ in
 
   config = mkIf cfg.enable {
 
-    settings.docker.enable = true;
+    settings = {
+      docker.enable = true;
+
+      services.traefik.dynamic_config = {
+        default_config =  ''
+          ---
+
+          http:
+            middlewares:
+              default_middleware:
+                chain:
+                  middlewares:
+                    - security-headers
+                    - compress
+              security-headers:
+                headers:
+                  sslredirect: true
+                  stsPreload: true
+                  stsSeconds: ${toString (365 * 24 * 60 * 60)}
+                  stsIncludeSubdomains: true
+                  customResponseHeaders:
+                    Expect-CT: "max-age=${toString (24 * 60 * 60)}, enforce"
+                    Server: ""
+                    X-Powered-By: ""
+                    X-AspNet-Version: ""
+              compress:
+                compress: {}
+
+          tls:
+            options:
+              default:
+                minVersion: "VersionTLS12"
+                sniStrict: true
+                cipherSuites:
+                  # https://godoc.org/crypto/tls#pkg-constants
+                  # TLS 1.2
+                  - "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384"
+                  - "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256"
+                  - "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+                  - "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256"
+                  # TLS 1.3
+                  - "TLS_AES_256_GCM_SHA384"
+                  - "TLS_CHACHA20_POLY1305_SHA256"
+        '';
+      };
+    };
 
     docker-containers = let
-      static_config_file_name    = "traefik-static.yml";
-      static_config_file_target  = "/${static_config_file_name}";
-      dynamic_config_file_name   = "traefik-dynamic.yml";
-      dynamic_config_file_target = "/${dynamic_config_file_name}";
+      static_config_file_name   = "traefik-static.yml";
+      static_config_file_target = "/${static_config_file_name}";
+      dynamic_config_directory_name   = "traefik-dynamic.conf.d";
+      dynamic_config_directory_target = "/${dynamic_config_directory_name}";
 
       static_config_file_source  = let
         staging_url = "http://acme-staging-v02.api.letsencrypt.org/directory";
@@ -116,7 +165,7 @@ in
             exposedbydefault: false
           file:
             watch: true
-            filename: ${dynamic_config_file_target}
+            directory: ${dynamic_config_directory_target}
 
         entryPoints:
           web:
@@ -153,46 +202,17 @@ in
                 provider: '${cfg.acme.dns_provider}'
       '';
 
-      dynamic_config_file_source = pkgs.writeText dynamic_config_file_name ''
-        ---
+      dynamic_config_mounts = let
+        buildConfigFile = key: text: let
+          name = "${key}.yml";
+          file = pkgs.writeText name text;
+        in "${file}:${dynamic_config_directory_target}/${name}:ro";
+      in mapAttrsToList buildConfigFile cfg.dynamic_config;
 
-        http:
-          middlewares:
-            default_middleware:
-              chain:
-                middlewares:
-                  - security-headers
-                  - compress
-            security-headers:
-              headers:
-                sslredirect: true
-                stsPreload: true
-                stsSeconds: ${toString (365 * 24 * 60 * 60)}
-                stsIncludeSubdomains: true
-                customResponseHeaders:
-                  Expect-CT: "max-age=${toString (24 * 60 * 60)}, enforce"
-                  Server: ""
-                  X-Powered-By: ""
-                  X-AspNet-Version: ""
-            compress:
-              compress: {}
+      dns_credentials_file_option = let
+        file = system_cfg.secretsDirectory + cfg.acme.dns_provider;
+      in optional (builtins.pathExists file) "--env-file=${file}";
 
-        tls:
-          options:
-            default:
-              minVersion: "VersionTLS12"
-              sniStrict: true
-              cipherSuites:
-                # https://godoc.org/crypto/tls#pkg-constants
-                # TLS 1.2
-                - "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384"
-                - "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256"
-                - "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
-                - "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256"
-                # TLS 1.3
-                - "TLS_AES_256_GCM_SHA384"
-                - "TLS_CHACHA20_POLY1305_SHA256"
-      '';
     in {
       "${cfg.service_name}" = {
         image = "${cfg.image}:${cfg.version}";
@@ -206,10 +226,9 @@ in
         volumes = [
           "/var/run/docker.sock:/var/run/docker.sock:ro"
           "${static_config_file_source}:${static_config_file_target}:ro"
-          "${dynamic_config_file_source}:${dynamic_config_file_target}:ro"
-          "traefik_letsencrypt:/${cfg.acme.storage}"
-        ];
-        workdir = "/opt";
+          "traefik_letsencrypt:${cfg.acme.storage}"
+        ] ++ dynamic_config_mounts;
+        workdir = "/";
         extraDockerOptions = [
           "--env=LEGO_EXPERIMENTAL_CNAME_SUPPORT=true"
           "--network=${cfg.network_name}"
@@ -219,10 +238,7 @@ in
           "--health-interval=60s"
           "--health-retries=3"
           "--health-timeout=3s"
-        ] ++
-        (let
-           file = system_cfg.secretsDirectory + cfg.acme.dns_provider;
-         in optional (builtins.pathExists file) "--env-file=${file}");
+        ] ++ dns_credentials_file_option;
       };
     };
 
