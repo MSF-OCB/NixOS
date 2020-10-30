@@ -193,12 +193,16 @@ in
           letsencrypt:
             acme:
               <<: *acme_cfg
-              httpchallenge:
-                entrypoint: web
+              httpChallenge:
+                entryPoint: web
           letsencrypt_dns:
             acme:
               <<: *acme_cfg
-              dnschallenge:
+              dnsChallenge:
+                resolvers:
+                  - '9.9.9.9:53'
+                  - '8.8.8.8:53'
+                  - '1.1.1.1:53'
                 provider: '${cfg.acme.dns_provider}'
       '';
 
