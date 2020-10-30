@@ -1,6 +1,7 @@
 { config, lib, pkgs, ... }:
 
 with lib;
+with (import ../msf_lib.nix);
 
 let
   cfg = config.settings.services.traefik;
@@ -32,7 +33,17 @@ in
     };
 
     dynamic_config = mkOption {
-      type = with types; attrsOf str;
+      type = with types; attrsOf (submodule {
+        options = {
+          enable = mkOption {
+            type = types.bool;
+            default = true;
+          };
+          text = mkOption {
+            type = types.str;
+          };
+        };
+      });
     };
 
     network_name = mkOption {
@@ -89,8 +100,9 @@ in
     settings = {
       docker.enable = true;
 
-      services.traefik.dynamic_config = {
-        default_config =  ''
+      services.traefik.dynamic_config.default_config = {
+        enable = true;
+        text = ''
           ---
 
           http:
@@ -207,11 +219,15 @@ in
       '';
 
       dynamic_config_mounts = let
-        buildConfigFile = key: text: let
+        buildConfigFile = key: configFile: let
           name = "${key}.yml";
-          file = pkgs.writeText name text;
+          file = pkgs.writeText name configFile.text;
         in "${file}:${dynamic_config_directory_target}/${name}:ro";
-      in mapAttrsToList buildConfigFile cfg.dynamic_config;
+        buildConfigFiles = mapAttrsToList buildConfigFile;
+      in msf_lib.compose [
+           buildConfigFiles
+           msf_lib.filterEnabled
+         ] cfg.dynamic_config;
 
       dns_credentials_file_option = let
         file = system_cfg.secretsDirectory + cfg.acme.dns_provider;
