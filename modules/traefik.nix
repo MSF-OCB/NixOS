@@ -266,16 +266,21 @@ in
     systemd.services = let
       docker    = "${pkgs.docker}/bin/docker";
       systemctl = "${pkgs.systemd}/bin/systemctl";
-      traefik_docker_service = "docker-${cfg.service_name}";
+      traefik_docker_service = "docker-${cfg.service_name}.service";
     in {
-      "${traefik_docker_service}" = {
-        serviceConfig.ExecStartPre = let
-          script = pkgs.writeShellScript "${cfg.service_name}-create-network" ''
-            if [ -z $(${docker} network list --filter "name=^${cfg.network_name}$" --quiet) ]; then
-              ${docker} network create ${cfg.network_name}
-            fi
-          '';
-        in [ script ];
+      "docker-nixos-traefik-create-network" = {
+        inherit (cfg) enable;
+        description = "Create the network for Traefik.";
+        before      = [ traefik_docker_service ];
+        requiredBy  = [ traefik_docker_service ];
+        serviceConfig = {
+          Type = "oneshot";
+        };
+        script = ''
+          if [ -z $(${docker} network list --filter "name=^${cfg.network_name}$" --quiet) ]; then
+            ${docker} network create ${cfg.network_name}
+          fi
+        '';
       };
 
       "${cfg.service_name}-pull" = {
