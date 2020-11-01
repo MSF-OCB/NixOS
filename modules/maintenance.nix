@@ -56,6 +56,9 @@ in {
         in ''
           function sync_repo() {
             path="''${1}"
+            # The following line is only used to avoid the warning emitted by git.
+            # We will reset the local repo anyway and remove all local changes.
+            ${git} -C ''${path} config pull.rebase true
             ${git} -C ''${path} fetch origin master
             ${git} -C ''${path} checkout master
             ${git} -C ''${path} reset --hard origin/master
