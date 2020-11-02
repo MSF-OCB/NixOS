@@ -126,6 +126,13 @@ in
               compress:
                 compress: {}
 
+            services:
+              black-hole-service:
+                loadBalancer:
+                  # Forward to a non-routable IP address
+                  # https://tools.ietf.org/html/rfc5737
+                  servers: 192.0.2.1
+
           tls:
             options:
               default:
