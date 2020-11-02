@@ -126,7 +126,7 @@ with lib;
       nix_channel_msf = {
         text = ''
           # We override the root nix channel with the one defined by settings.system.nix_channel
-          echo "https://nixos.org/channels/nixos-${cfg.nix_channel} nixos" > "/root/.nix-channels"
+          echo "${cfg.nix_channel} nixos" > "/root/.nix-channels"
         '';
         # We overwrite the value set by the default NixOS activation snippet, that snippet should have run first
         # so that the additional initialisation has been performed.
