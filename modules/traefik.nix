@@ -269,7 +269,7 @@ in
       };
     };
 
-    # We add an additional pre-start script to create the Traefik Docker network.
+    # We define an additional service to create the Traefik Docker network.
     systemd.services = let
       docker    = "${pkgs.docker}/bin/docker";
       systemctl = "${pkgs.systemd}/bin/systemctl";
