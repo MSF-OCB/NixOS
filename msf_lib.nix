@@ -6,12 +6,16 @@ with (import <nixpkgs> {});
 with lib;
 
 {
-  msf_lib = {
+  msf_lib = let
 
     # compose [ f g h ] x == f (g (h x))
     compose = let
       apply = f: x: f x;
     in flip (foldr apply);
+
+    applyN = n: f: compose (builtins.genList (_: f) n);
+
+    applyTwice = applyN 2;
 
     filterEnabled = filterAttrs (_: conf: conf.enable);
 
@@ -101,6 +105,10 @@ with lib;
     in {
       inherit user_lib admin globalAdmin localShell remoteTunnel remoteTunnelMonitor;
     };
+  in {
+    inherit compose applyTwice filterEnabled importIfExists
+            host_name_type empty_str_type pub_key_type
+            user_roles;
   };
 }
 
