@@ -39,8 +39,8 @@ in
             type = types.bool;
             default = true;
           };
-          text = mkOption {
-            type = types.str;
+          value = mkOption {
+            type = types.attrs;
           };
         };
       });
@@ -102,53 +102,49 @@ in
 
       services.traefik.dynamic_config.default_config = {
         enable = true;
-        text = ''
-          ---
+        value = {
+          http = {
+            middlewares = {
+              default_middleware.chain.middlewares = [
+                "security-headers"
+                "compress"
+              ];
+              security-headers.headers = {
+                sslredirect = true;
+                stsPreload = true;
+                stsSeconds = toString (365 * 24 * 60 * 60);
+                stsIncludeSubdomains = true;
+                customResponseHeaders = {
+                  Expect-CT = "max-age=${toString (24 * 60 * 60)}, enforce";
+                  Server = "";
+                  X-Powered-By = "";
+                  X-AspNet-Version = "";
+                };
+              };
+              compress.compress = {};
+            };
 
-          http:
-            middlewares:
-              default_middleware:
-                chain:
-                  middlewares:
-                    - security-headers
-                    - compress
-              security-headers:
-                headers:
-                  sslredirect: true
-                  stsPreload: true
-                  stsSeconds: ${toString (365 * 24 * 60 * 60)}
-                  stsIncludeSubdomains: true
-                  customResponseHeaders:
-                    Expect-CT: "max-age=${toString (24 * 60 * 60)}, enforce"
-                    Server: ""
-                    X-Powered-By: ""
-                    X-AspNet-Version: ""
-              compress:
-                compress: {}
+            # Forward to a non-routable IP address
+            # https://tools.ietf.org/html/rfc5737
+            services.black-hole-service.loadBalancer.servers = "192.0.2.1";
+          };
 
-            services:
-              black-hole-service:
-                loadBalancer:
-                  # Forward to a non-routable IP address
-                  # https://tools.ietf.org/html/rfc5737
-                  servers: 192.0.2.1
-
-          tls:
-            options:
-              default:
-                minVersion: "VersionTLS12"
-                sniStrict: true
-                cipherSuites:
-                  # https://godoc.org/crypto/tls#pkg-constants
-                  # TLS 1.2
-                  - "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384"
-                  - "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256"
-                  - "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
-                  - "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256"
-                  # TLS 1.3
-                  - "TLS_AES_256_GCM_SHA384"
-                  - "TLS_CHACHA20_POLY1305_SHA256"
-        '';
+          tls.options.default = {
+            minVersion = "VersionTLS12";
+            sniStrict = true;
+            cipherSuites = [
+              # https://godoc.org/crypto/tls#pkg-constants
+              # TLS 1.2
+              "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384"
+              "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256"
+              "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+              "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256"
+              # TLS 1.3
+              "TLS_AES_256_GCM_SHA384"
+              "TLS_CHACHA20_POLY1305_SHA256"
+            ];
+          };
+        };
       };
     };
 
@@ -158,77 +154,76 @@ in
       dynamic_config_directory_name   = "traefik-dynamic.conf.d";
       dynamic_config_directory_target = "/${dynamic_config_directory_name}";
 
-      static_config_file_source  = let
+      static_config_file_source = let
         staging_url = "http://acme-staging-v02.api.letsencrypt.org/directory";
-        caserver_option = optionalString cfg.acme.staging "caserver: ${staging_url}";
-      in pkgs.writeText static_config_file_name ''
-        ---
+        caserver    = optionalAttrs cfg.acme.staging { caserver = staging_url; };
+        acme_template = {
+          email = cfg.acme.email_address;
+          storage = "${cfg.acme.storage}/acme.json";
+          keyType = cfg.acme.keytype;
+        } // caserver;
+        accesslog = optionalAttrs cfg.accesslog.enable { accessLog = {}; };
+        static_config = {
+          global.sendAnonymousUsage = true;
+          pilot.token = cfg.pilot_token;
+          ping = {};
+          log.level = cfg.logging_level;
+          #metrics:
+          #  prometheus: {}
 
-        global:
-          sendAnonymousUsage: true
+          providers = {
+            docker = {
+              network = cfg.network_name;
+              swarmMode = docker_cfg.swarm.enable;
+              exposedbydefault = false;
+            };
+            file = {
+              watch = true;
+              directory = dynamic_config_directory_target;
+            };
+          };
 
-        pilot:
-          token: ${cfg.pilot_token}
+          entryPoints = {
+            web = {
+              address = ":80";
+              http.redirections.entryPoint = {
+                to = "websecure";
+                scheme = "https";
+              };
+            };
+            websecure = {
+              address = ":443";
+              http = {
+                middlewares = [ "default_middleware@file" ];
+                tls.certResolver = "letsencrypt";
+              };
+            };
+          };
 
-        ping: {}
-        log:
-          level: ${cfg.logging_level}
-        ${optionalString cfg.accesslog.enable "accesslog: {}"}
-        #metrics:
-        #  prometheus: {}
-
-        providers:
-          docker:
-            network: ${cfg.network_name}
-            swarmMode: ${if docker_cfg.swarm.enable then "true" else "false"}
-            exposedbydefault: false
-          file:
-            watch: true
-            directory: ${dynamic_config_directory_target}
-
-        entryPoints:
-          web:
-            address: ':80'
-            http:
-              redirections:
-                entryPoint:
-                  to: websecure
-                  scheme: https
-          websecure:
-            address: ':443'
-            http:
-              middlewares:
-                - default_middleware@file
-              tls:
-                certResolver: letsencrypt
-
-        _acme: &acme_cfg
-          email: ${cfg.acme.email_address}
-          storage: ${cfg.acme.storage}/acme.json
-          keyType: ${cfg.acme.keytype}
-          ${caserver_option}
-
-        certificatesresolvers:
-          letsencrypt:
-            acme:
-              <<: *acme_cfg
-              httpChallenge:
-                entryPoint: web
-          letsencrypt_dns:
-            acme:
-              <<: *acme_cfg
-              dnsChallenge:
-                resolvers:
-                  - '9.9.9.9:53'
-                  - '8.8.8.8:53'
-                  - '1.1.1.1:53'
-                provider: '${cfg.acme.dns_provider}'
-      '';
+          certificatesresolvers = {
+            letsencrypt.acme =
+              acme_template // {
+                httpChallenge.entryPoint = "web";
+              };
+            letsencrypt_dns.acme =
+              acme_template // {
+                dnsChallenge = {
+                  resolvers = [
+                    "9.9.9.9:53"
+                    "8.8.8.8:53"
+                    "1.1.1.1:53"
+                  ];
+                  provider = cfg.acme.dns_provider;
+                };
+              };
+          };
+        } // accesslog;
+      in pkgs.writeText static_config_file_name (builtins.toJSON static_config);
 
       dynamic_config_mounts = let
         buildConfigFile = key: configFile: let
           name = "${key}.yml";
-          file = pkgs.writeText name configFile.text;
+          file = pkgs.writeText name (builtins.toJSON configFile.value);
         in "${file}:${dynamic_config_directory_target}/${name}:ro";
         buildConfigFiles = mapAttrsToList buildConfigFile;
       in msf_lib.compose [
