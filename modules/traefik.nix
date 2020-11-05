@@ -268,9 +268,10 @@ in
     systemd.services = let
       docker    = "${pkgs.docker}/bin/docker";
       systemctl = "${pkgs.systemd}/bin/systemctl";
-      traefik_docker_service = "docker-${cfg.service_name}.service";
+      traefik_docker_service_name = "docker-${cfg.service_name}";
+      traefik_docker_service = "${traefik_docker_service_name}.service";
     in {
-      "docker-nixos-traefik-create-network" = {
+      docker-nixos-traefik-create-network = {
         inherit (cfg) enable;
         description = "Create the network for Traefik.";
         before      = [ traefik_docker_service ];
@@ -283,6 +284,15 @@ in
             ${docker} network create ${cfg.network_name}
           fi
         '';
+      };
+
+      # Restore the defaults to have proper logging in the systemd journal.
+      # See GitHub NixOS/nixpkgs issue #102768 and PR #102769
+      "${traefik_docker_service_name}" = {
+        serviceConfig = {
+          StandardOutput = mkForce "journal";
+          StandardError  = mkForce "inherit";
+        };
       };
 
       "${cfg.service_name}-pull" = {
