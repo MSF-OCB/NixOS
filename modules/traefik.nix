@@ -9,7 +9,13 @@ let
   docker_cfg = config.settings.docker;
 
   # https://nixos.org/manual/nixos/stable/index.html#sec-settings-nix-representable
-  traefik_config_format = pkgs.formats.yaml {};
+  traefik_config_format = let
+    # Delete when we upgraded all servers to 20.09.
+    compat = _: {
+      type = types.attrs;
+      generate = name: value: pkgs.writeText name (builtins.toJSON value);
+    };
+  in (pkgs.formats.yaml or compat) {};
 in
 
 {
