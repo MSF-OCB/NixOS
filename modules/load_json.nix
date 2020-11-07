@@ -7,12 +7,11 @@ with (import ../msf_lib.nix);
   config = let
     sys_cfg  = config.settings.system;
     hostName = config.settings.network.host_name;
-    loadJSON = msf_lib.compose [ builtins.fromJSON builtins.readFile ];
   in {
     settings = {
       users.users = let
         users_json_path = sys_cfg.users_json_path;
-        json_data       = loadJSON users_json_path;
+        json_data       = importJSON users_json_path;
         remoteTunnel    = msf_lib.user_roles.remoteTunnel;
 
         # Load the list at path in an attribute set and convert it to
@@ -63,7 +62,7 @@ with (import ../msf_lib.nix);
 
       reverse_tunnel.tunnels = let
         tunnel_json_path = sys_cfg.tunnels_json_path;
-        json_data        = loadJSON tunnel_json_path;
+        json_data        = importJSON tunnel_json_path;
       in json_data.tunnels.per-host;
     };
   };
