@@ -77,9 +77,27 @@ in
     };
 
     acme = {
-      staging = mkOption {
-        type = types.bool;
-        default = false;
+      staging = {
+        enable = mkEnableOption "the Let's Encrypt staging environment";
+
+        caserver = mkOption {
+          type = types.str;
+          default = "http://acme-staging-v02.api.letsencrypt.org/directory";
+          readOnly = true;
+        };
+      };
+
+      crossSignedChain = {
+        enable = mkEnableOption "the Let's Encrypt cross-signed certificate chain";
+
+        preferredChain = mkOption {
+          type = types.str;
+          default = "DST Root CA X3";
+          readOnly = true;
+          description = ''
+            The Common Name (CN) of the root certificate to anchor the chain on.
+          '';
+        };
       };
 
       keytype = mkOption {
@@ -109,49 +127,53 @@ in
     settings = {
       docker.enable = true;
 
-      services.traefik.dynamic_config.default_config = {
-        enable = true;
-        value = {
-          http = {
-            middlewares = {
-              default_middleware.chain.middlewares = [
-                "security-headers"
-                "compress"
-              ];
-              security-headers.headers = {
-                sslredirect = true;
-                stsPreload = true;
-                stsSeconds = toString (365 * 24 * 60 * 60);
-                stsIncludeSubdomains = true;
-                customResponseHeaders = {
-                  Expect-CT = "max-age=${toString (24 * 60 * 60)}, enforce";
-                  Server = "";
-                  X-Powered-By = "";
-                  X-AspNet-Version = "";
+      services.traefik = {
+        acme.crossSignedChain.enable = true;
+
+        dynamic_config.default_config = {
+          enable = true;
+          value = {
+            http = {
+              middlewares = {
+                default_middleware.chain.middlewares = [
+                  "security-headers"
+                  "compress"
+                ];
+                security-headers.headers = {
+                  sslredirect = true;
+                  stsPreload = true;
+                  stsSeconds = toString (365 * 24 * 60 * 60);
+                  stsIncludeSubdomains = true;
+                  customResponseHeaders = {
+                    Expect-CT = "max-age=${toString (24 * 60 * 60)}, enforce";
+                    Server = "";
+                    X-Powered-By = "";
+                    X-AspNet-Version = "";
+                  };
                 };
+                compress.compress = {};
               };
-              compress.compress = {};
+
+              # Forward to a non-routable IP address
+              # https://tools.ietf.org/html/rfc5737
+              services.black-hole-service.loadBalancer.servers = "192.0.2.1";
             };
 
-            # Forward to a non-routable IP address
-            # https://tools.ietf.org/html/rfc5737
-            services.black-hole-service.loadBalancer.servers = "192.0.2.1";
-          };
-
-          tls.options.default = {
-            minVersion = "VersionTLS12";
-            sniStrict = true;
-            cipherSuites = [
-              # https://godoc.org/crypto/tls#pkg-constants
-              # TLS 1.2
-              "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384"
-              "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256"
-              "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
-              "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256"
-              # TLS 1.3
-              "TLS_AES_256_GCM_SHA384"
-              "TLS_CHACHA20_POLY1305_SHA256"
-            ];
+            tls.options.default = {
+              minVersion = "VersionTLS12";
+              sniStrict = true;
+              cipherSuites = [
+                # https://godoc.org/crypto/tls#pkg-constants
+                # TLS 1.2
+                "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384"
+                "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256"
+                "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+                "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256"
+                # TLS 1.3
+                "TLS_AES_256_GCM_SHA384"
+                "TLS_CHACHA20_POLY1305_SHA256"
+              ];
+            };
           };
         };
       };
@@ -164,14 +186,16 @@ in
       dynamic_config_directory_target = "/${dynamic_config_directory_name}";
 
       static_config_file_source = let
-        staging_url = "http://acme-staging-v02.api.letsencrypt.org/directory";
-        caserver    = optionalAttrs cfg.acme.staging { caserver = staging_url; };
+        caserver       = optionalAttrs cfg.acme.staging.enable
+                                       { inherit (cfg.acme.staging) caserver; };
+        preferredChain = optionalAttrs cfg.acme.crossSignedChain.enable
+                                       { inherit (cfg.acme.crossSignedChain) preferredChain; };
         acme_template = {
           email = cfg.acme.email_address;
           storage = "${cfg.acme.storage}/acme.json";
           keyType = cfg.acme.keytype;
-          preferredChain = "DST Root CA X3";
-        } // caserver;
+        } // caserver
+          // preferredChain;
         accesslog = optionalAttrs cfg.accesslog.enable { accessLog = {}; };
         static_config = {
           global.sendAnonymousUsage = true;
