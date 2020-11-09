@@ -170,6 +170,7 @@ in
           email = cfg.acme.email_address;
           storage = "${cfg.acme.storage}/acme.json";
           keyType = cfg.acme.keytype;
+          preferredChain = "DST Root CA X3";
         } // caserver;
         accesslog = optionalAttrs cfg.accesslog.enable { accessLog = {}; };
         static_config = {
