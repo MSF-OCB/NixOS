@@ -39,7 +39,7 @@ with lib;
       description      = ''valid ${concatStringsSep " or " (attrNames key_patterns)} key, meaning a string matching the pattern ${pub_key_pattern}'';
     in types.strMatching pub_key_pattern // { inherit description; };
 
-    importIfExists = path: optional (builtins.pathExists path) path;
+    ifPathExists = path: optional (builtins.pathExists path) path;
 
     user_roles = let
 
@@ -106,7 +106,7 @@ with lib;
       inherit user_lib admin globalAdmin localShell remoteTunnel remoteTunnelMonitor;
     };
   in {
-    inherit compose applyTwice filterEnabled importIfExists
+    inherit compose applyTwice filterEnabled ifPathExists
             host_name_type empty_str_type pub_key_type
             user_roles;
   };
