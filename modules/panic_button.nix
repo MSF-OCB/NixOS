@@ -124,7 +124,7 @@ in
 
     networking.firewall.allowedTCPPorts = [ cfg.listen_port ];
 
-    users.users."${panic_button_user}" = {
+    users.users.${panic_button_user} = {
       isNormalUser = false;
       isSystemUser = true;
     };

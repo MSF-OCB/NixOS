@@ -55,7 +55,7 @@ with lib;
         alias = role: from:
           role //
           {
-            inherit (user_cfg.users."${from}") enable;
+            inherit (user_cfg.users.${from}) enable;
             keyFileName = from;
           };
 

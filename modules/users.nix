@@ -54,7 +54,7 @@ let
       name = mkDefault name;
       # We need to actually resolve the name from the config,
       # the default value above might have been overridden.
-      keyFileName = mkDefault cfg.users."${name}".name;
+      keyFileName = mkDefault cfg.users.${name}.name;
     };
   };
 
@@ -113,7 +113,7 @@ in {
   config = let
     toKeyPath = user: sys_cfg.pub_keys_path + ("/" + user.keyFileName);
   in {
-    settings.users.users."${cfg.robot.username}" =
+    settings.users.users.${cfg.robot.username} =
       mkIf cfg.robot.enable msf_lib.user_roles.globalAdmin;
 
     users = {
@@ -122,10 +122,10 @@ in {
       # !! This line is very important !!
       # Without it, the ssh-users group is not created
       # and no-one has SSH access to the system!
-      groups."${cfg.ssh-group}"        = { };
-      groups."${cfg.fwd-tunnel-group}" = { };
-      groups."${cfg.rev-tunnel-group}" = { };
-      groups."${cfg.shell-user-group}" = { };
+      groups.${cfg.ssh-group}        = { };
+      groups.${cfg.fwd-tunnel-group} = { };
+      groups.${cfg.rev-tunnel-group} = { };
+      groups.${cfg.shell-user-group} = { };
 
       users = let
         hasForceCommand = user: ! isNull user.forceCommand;
