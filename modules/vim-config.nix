@@ -58,10 +58,6 @@ with import <nixpkgs> {};
         autocmd VimEnter * PlugInstall --sync
       endif
 
-      call plug#begin('~/.vim/plugged')
-      Plug 'elmcast/elm-vim'
-      call plug#end()
-
       filetype on
     '';
 
