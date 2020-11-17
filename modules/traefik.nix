@@ -147,6 +147,7 @@ in
                   customResponseHeaders = {
                     Expect-CT = "max-age=${toString (24 * 60 * 60)}, enforce";
                     Server = "";
+                    X-Generator = "";
                     X-Powered-By = "";
                     X-AspNet-Version = "";
                   };
