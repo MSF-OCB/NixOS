@@ -33,10 +33,11 @@ with lib;
       key_patterns     = {
         ssh-ed25519         = "^ssh-ed25519 ${key_data_pattern}{68}$";
         ecdsa-sha2-nistp256 = "^ecdsa-sha2-nistp256 ${key_data_pattern}{139}=$";
-        ecdsa-sha2-nistp521 = "^ecdsa-sha2-nistp521 ${key_data_pattern}{230}==$";
       };
       pub_key_pattern  = concatStringsSep "|" (attrValues key_patterns);
-      description      = ''valid ${concatStringsSep " or " (attrNames key_patterns)} key, meaning a string matching the pattern ${pub_key_pattern}'';
+      description      =
+        ''valid ${concatStringsSep " or " (attrNames key_patterns)} key, '' +
+        ''meaning a string matching the pattern ${pub_key_pattern}'';
     in types.strMatching pub_key_pattern // { inherit description; };
 
     ifPathExists = path: optional (builtins.pathExists path) path;
