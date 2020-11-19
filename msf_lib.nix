@@ -106,10 +106,21 @@ with lib;
     in {
       inherit user_lib admin globalAdmin localShell remoteTunnel remoteTunnelMonitor;
     };
+
+    # Compatibility layer around
+    # https://nixos.org/manual/nixos/stable/index.html#sec-settings-nix-representable
+    # To be deleted when we upgraded all servers to 20.09.
+    formats.compat = {
+      yaml = _: {
+        type = types.attrs;
+        generate = name: value: pkgs.writeText name (builtins.toJSON value);
+      };
+    };
+
   in {
     inherit compose applyTwice filterEnabled ifPathExists
             host_name_type empty_str_type pub_key_type
-            user_roles;
+            user_roles formats;
   };
 }
 
