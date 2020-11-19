@@ -95,8 +95,9 @@ with lib;
         canTunnel  = true;
       };
 
-      # Users who are tunnel-only but can tunnel to all NixOS servers and query the open tunnels
-      # These are not enabled by default and should be enabled on a by-server basis
+      # Users who are tunnel-only but can tunnel to all NixOS servers and query
+      # the open tunnels.
+      # These are not enabled by default and should be enabled on a by-server basis.
       remoteTunnelMonitor = remoteTunnel // { forceCommand = ''
                                                 ${pkgs.iproute}/bin/ss -tunl6 | \
                                                   ${pkgs.coreutils}/bin/sort -n | \
