@@ -192,7 +192,13 @@ in
           keyType = cfg.acme.keytype;
         } // caserver
           // preferredChain;
-        accesslog = optionalAttrs cfg.accesslog.enable { accessLog = {}; };
+        accesslog = optionalAttrs cfg.accesslog.enable {
+          accessLog = {
+            # Make sure that the times are printed in local time
+            # https://doc.traefik.io/traefik/observability/access-logs/#time-zones
+            fields.names.StartUTC = "drop";
+          };
+        };
         static_config = {
           global.sendAnonymousUsage = true;
           pilot.token = cfg.pilot_token;
@@ -276,6 +282,7 @@ in
           "443:443"
         ];
         volumes = [
+          "/etc/localtime:/etc/localtime:ro"
           "/var/run/docker.sock:/var/run/docker.sock:ro"
           "${static_config_file_source}:${static_config_file_target}:ro"
           "traefik_letsencrypt:${cfg.acme.storage}"
