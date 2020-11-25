@@ -129,6 +129,12 @@ in
           enable = true;
           value = {
             http = {
+              routers.dashboard = {
+                entryPoints = [ "traefik" ];
+                rule = "PathPrefix(`/api`) || PathPrefix(`/dashboard`)";
+                service = "api@internal";
+              };
+
               middlewares = {
                 default_middleware.chain.middlewares = [
                   "security-headers"
@@ -204,6 +210,7 @@ in
           pilot.token = cfg.pilot_token;
           ping = {};
           log.level = cfg.logging_level;
+          api.dashboard = true;
           #metrics:
           #  prometheus: {}
 
@@ -280,6 +287,8 @@ in
         ports = [
           "80:80"
           "443:443"
+          "127.0.0.1:8080:8080"
+          "[::1]:8080:8080"
         ];
         volumes = [
           "/etc/localtime:/etc/localtime:ro"
