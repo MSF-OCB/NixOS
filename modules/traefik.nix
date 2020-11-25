@@ -8,7 +8,6 @@ let
   system_cfg = config.settings.system;
   docker_cfg = config.settings.docker;
 
-  # https://nixos.org/manual/nixos/stable/index.html#sec-settings-nix-representable
   # The compat version can be removed when all servers are on 20.09.
   traefik_config_format = (pkgs.formats.yaml or msf_lib.formats.compat.yaml) {};
 in
@@ -127,7 +126,11 @@ in
 
         dynamic_config.default_config = {
           enable = true;
-          value = {
+          value = let
+            security-headers   = "security-headers";
+            compress           = "compress";
+            default_middleware = "default_middleware";
+          in {
             http = {
               routers.dashboard = {
                 entryPoints = [ "traefik" ];
@@ -136,11 +139,11 @@ in
               };
 
               middlewares = {
-                default_middleware.chain.middlewares = [
-                  "security-headers"
-                  "compress"
+                ${default_middleware}.chain.middlewares = [
+                  security-headers
+                  compress
                 ];
-                security-headers.headers = {
+                ${security-headers}.headers = {
                   sslredirect = true;
                   stsPreload = true;
                   stsSeconds = toString (365 * 24 * 60 * 60);
@@ -153,7 +156,7 @@ in
                     X-AspNet-Version = "";
                   };
                 };
-                compress.compress = {};
+                ${compress}.compress = {};
               };
             };
 
@@ -184,6 +187,7 @@ in
       dynamic_config_directory_target = "/${dynamic_config_directory_name}";
 
       static_config_file_source = let
+        letsencrypt = "letsencrypt";
         caserver       = optionalAttrs cfg.acme.staging.enable
                                        { inherit (cfg.acme.staging) caserver; };
         preferredChain = optionalAttrs cfg.acme.crossSignedChain.enable
@@ -225,26 +229,29 @@ in
           entryPoints = {
             web = {
               address = ":80";
-              http.redirections.entryPoint = {
-                to = "websecure";
-                scheme = "https";
+              http = {
+                redirections.entryPoint = {
+                  to = "websecure";
+                  scheme = "https";
+                };
+                tls.certResolver = letsencrypt;
               };
             };
             websecure = {
               address = ":443";
               http = {
                 middlewares = [ "default_middleware@file" ];
-                tls.certResolver = "letsencrypt";
+                tls.certResolver = letsencrypt;
               };
             };
           };
 
           certificatesresolvers = {
-            letsencrypt.acme =
+            ${letsencrypt}.acme =
               acme_template // {
                 httpChallenge.entryPoint = "web";
               };
-            letsencrypt_dns.acme =
+            "${letsencrypt}_dns".acme =
               acme_template // {
                 dnsChallenge = {
                   resolvers = [
