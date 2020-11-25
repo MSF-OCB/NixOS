@@ -155,10 +155,6 @@ in
                 };
                 compress.compress = {};
               };
-
-              # Forward to a non-routable IP address
-              # https://tools.ietf.org/html/rfc5737
-              services.black-hole-service.loadBalancer.servers = "192.0.2.1";
             };
 
             tls.options.default = {
