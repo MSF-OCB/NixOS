@@ -148,6 +148,10 @@ in
                   stsPreload = true;
                   stsSeconds = toString (365 * 24 * 60 * 60);
                   stsIncludeSubdomains = true;
+                  contentTypeNosniff = true;
+                  browserXssFilter = true;
+                  referrerPolicy = true;
+                  customFrameOptionsValue = "SAMEORIGIN";
                   customResponseHeaders = {
                     Expect-CT = "max-age=${toString (24 * 60 * 60)}, enforce";
                     Server = "";
