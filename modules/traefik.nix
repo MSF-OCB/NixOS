@@ -234,7 +234,6 @@ in
                   to = "websecure";
                   scheme = "https";
                 };
-                tls.certResolver = letsencrypt;
               };
             };
             websecure = {
