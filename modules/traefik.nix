@@ -152,7 +152,7 @@ in
                 ${security-headers}.headers = {
                   contentTypeNosniff = true;
                   browserXssFilter = true;
-                  referrerPolicy = true;
+                  referrerPolicy = "no-referrer, strict-origin-when-cross-origin";
                   customFrameOptionsValue = "SAMEORIGIN";
                   customResponseHeaders = {
                     Expect-CT = "max-age=${toString (24 * 60 * 60)}, enforce";
