@@ -116,7 +116,13 @@ in
     };
   };
 
-  config = mkIf cfg.enable {
+  config = let
+    security-headers       = "security-headers";
+    hsts-headers           = "hsts-headers";
+    compress-middleware    = "compress-middleware";
+    default-middleware     = "default-middleware";
+    default-ssl-middleware = "default-ssl-middleware";
+  in mkIf cfg.enable {
 
     settings = {
       docker.enable = true;
@@ -126,11 +132,7 @@ in
 
         dynamic_config.default_config = {
           enable = true;
-          value = let
-            security-headers   = "security-headers";
-            compress           = "compress";
-            default_middleware = "default_middleware";
-          in {
+          value = {
             http = {
               routers.dashboard = {
                 entryPoints = [ "traefik" ];
@@ -139,15 +141,15 @@ in
               };
 
               middlewares = {
-                ${default_middleware}.chain.middlewares = [
-                  security-headers
-                  compress
+                ${default-ssl-middleware}.chain.middlewares = [
+                  "${hsts-headers}@file"
+                  "${default-middleware}@file"
+                ];
+                ${default-middleware}.chain.middlewares = [
+                  "${security-headers}@file"
+                  "${compress-middleware}@file"
                 ];
                 ${security-headers}.headers = {
-                  sslredirect = true;
-                  stsPreload = true;
-                  stsSeconds = toString (365 * 24 * 60 * 60);
-                  stsIncludeSubdomains = true;
                   contentTypeNosniff = true;
                   browserXssFilter = true;
                   referrerPolicy = true;
@@ -160,7 +162,13 @@ in
                     X-AspNet-Version = "";
                   };
                 };
-                ${compress}.compress = {};
+                ${hsts-headers}.headers = {
+                  sslredirect = true;
+                  stsPreload = true;
+                  stsSeconds = toString (365 * 24 * 60 * 60);
+                  stsIncludeSubdomains = true;
+                };
+                ${compress-middleware}.compress = {};
               };
             };
 
@@ -238,14 +246,19 @@ in
                   to = "websecure";
                   scheme = "https";
                 };
+                middlewares = [ "${default-middleware}@file" ];
               };
             };
             websecure = {
               address = ":443";
               http = {
-                middlewares = [ "default_middleware@file" ];
+                middlewares = [ "${default-ssl-middleware}@file" ];
                 tls.certResolver = letsencrypt;
               };
+            };
+            traefik = {
+              address = ":8080";
+              http.middlewares = [ "${default-middleware}@file" ];
             };
           };
 
