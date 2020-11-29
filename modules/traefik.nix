@@ -368,7 +368,7 @@ in
         };
         script = ''
           ${docker} pull ${cfg.image}:${cfg.version}
-          ${systemctl} try-restart ${traefik_docker_service}.service
+          ${systemctl} try-restart ${traefik_docker_service}
           prev_images="$(${docker} image ls \
             --quiet \
             --filter 'reference=${cfg.image}' \
