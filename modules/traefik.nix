@@ -70,6 +70,16 @@ in
       type = types.str;
     };
 
+    traefik_entrypoint_port = mkOption {
+      type = types.port;
+      default = 8080;
+    };
+
+    content_type_nosniff_enable = mkOption {
+      type = types.bool;
+      default = true;
+    };
+
     acme = {
       staging = {
         enable = mkEnableOption "the Let's Encrypt staging environment";
@@ -150,7 +160,7 @@ in
                   "${compress-middleware}@file"
                 ];
                 ${security-headers}.headers = {
-                  contentTypeNosniff = true;
+                  contentTypeNosniff = mkIf cfg.content_type_nosniff_enable true;
                   browserXssFilter = true;
                   referrerPolicy = "no-referrer, strict-origin-when-cross-origin";
                   customFrameOptionsValue = "SAMEORIGIN";
@@ -257,7 +267,7 @@ in
               };
             };
             traefik = {
-              address = ":8080";
+              address = ":${toString cfg.traefik_entrypoint_port}";
               http.middlewares = [ "${default-middleware}@file" ];
             };
           };
@@ -303,11 +313,13 @@ in
         cmd = [
           "--configfile=${static_config_file_target}"
         ];
-        ports = [
+        ports = let
+          traefik_entrypoint_port_str = toString cfg.traefik_entrypoint_port;
+        in [
           "80:80"
           "443:443"
-          "127.0.0.1:8080:8080"
-          "[::1]:8080:8080"
+          "127.0.0.1:${traefik_entrypoint_port_str}:${traefik_entrypoint_port_str}"
+          "[::1]:${traefik_entrypoint_port_str}:${traefik_entrypoint_port_str}"
         ];
         volumes = [
           "/etc/localtime:/etc/localtime:ro"
