@@ -150,7 +150,11 @@ in
                 service = "api@internal";
               };
 
-              middlewares = {
+              middlewares = let
+                content_type = optionalAttrs cfg.content_type_nosniff_enable {
+                  contentTypeNosniff = true;
+                };
+              in {
                 ${default-ssl-middleware}.chain.middlewares = [
                   "${hsts-headers}@file"
                   "${default-middleware}@file"
@@ -171,7 +175,7 @@ in
                     X-Powered-By = "";
                     X-AspNet-Version = "";
                   };
-                };
+                } // content_type;
                 ${hsts-headers}.headers = {
                   sslredirect = true;
                   stsPreload = true;
