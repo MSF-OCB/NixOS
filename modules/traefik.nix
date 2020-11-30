@@ -164,7 +164,6 @@ in
                   "${compress-middleware}@file"
                 ];
                 ${security-headers}.headers = {
-                  contentTypeNosniff = mkIf cfg.content_type_nosniff_enable true;
                   browserXssFilter = true;
                   referrerPolicy = "no-referrer, strict-origin-when-cross-origin";
                   customFrameOptionsValue = "SAMEORIGIN";
