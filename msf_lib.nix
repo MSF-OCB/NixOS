@@ -13,7 +13,7 @@ with lib;
       apply = f: x: f x;
     in flip (foldr apply);
 
-    applyN = n: f: compose (builtins.genList (_: f) n);
+    applyN = n: f: compose (genList (const f) n);
 
     applyTwice = applyN 2;
 
@@ -112,16 +112,32 @@ with lib;
     # https://nixos.org/manual/nixos/stable/index.html#sec-settings-nix-representable
     # To be deleted when we upgraded all servers to 20.09.
     formats.compat = {
-      yaml = _: {
+      yaml = const {
         type = types.attrs;
         generate = name: value: pkgs.writeText name (builtins.toJSON value);
       };
     };
 
+    reset_git = { branch, git_options, indent ? 0}: let
+      git = "${pkgs.git}/bin/git";
+      indentStr = compose [ concatStrings (genList (const " ")) ];
+      mkOptionsStr = concatStringsSep " ";
+      mkGitCommand = git_options: cmd: "${git} ${mkOptionsStr git_options} ${cmd}";
+    in concatMapStringsSep "\n${indentStr indent}" (mkGitCommand git_options) [
+      # The following line is only used to avoid the warning emitted by git.
+      # We will reset the local repo anyway and remove all local changes.
+      "config pull.rebase true"
+      "fetch origin ${branch}"
+      "checkout ${branch}"
+      "reset --hard origin/${branch}"
+      "clean -d --force"
+      "pull"
+    ];
   in {
     inherit compose applyTwice filterEnabled ifPathExists
             host_name_type empty_str_type pub_key_type
-            user_roles formats;
+            user_roles formats
+            reset_git;
   };
 }
 
