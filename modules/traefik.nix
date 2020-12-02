@@ -130,6 +130,7 @@ in
     security-headers       = "security-headers";
     hsts-headers           = "hsts-headers";
     compress-middleware    = "compress-middleware";
+    autodetect-middleware  = "autodetect-middleware";
     default-middleware     = "default-middleware";
     default-ssl-middleware = "default-ssl-middleware";
   in mkIf cfg.enable {
@@ -162,6 +163,7 @@ in
                 ${default-middleware}.chain.middlewares = [
                   "${security-headers}@file"
                   "${compress-middleware}@file"
+                  "${autodetect-middleware}@file"
                 ];
                 ${security-headers}.headers = {
                   browserXssFilter = true;
@@ -182,6 +184,7 @@ in
                   stsIncludeSubdomains = true;
                 };
                 ${compress-middleware}.compress = {};
+                ${autodetect-middleware}.contentType.autoDetect = false;
               };
             };
 
