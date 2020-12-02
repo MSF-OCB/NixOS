@@ -1,6 +1,7 @@
 { lib, config, pkgs, ... }:
 
 with lib;
+with (import ../msf_lib.nix);
 
 let
   cfg = config.settings.maintenance;
@@ -51,29 +52,22 @@ in {
         serviceConfig = {
           Type = "oneshot";
         };
+        environment = {
+          GIT_SSH_COMMAND = "${pkgs.openssh}/bin/ssh " +
+                            "-i ${tunnel_cfg.private_key} " +
+                            "-o IdentitiesOnly=yes " +
+                            "-o StrictHostKeyChecking=yes";
+        };
         script = let
-          git = ''${pkgs.git}/bin/git -c core.sshCommand='${pkgs.openssh}/bin/ssh -i ${tunnel_cfg.private_key}' '';
+          base_path = "/etc/nixos";
+          config_path = "/etc/nixos/ocb-config";
         in ''
-          function sync_repo() {
-            path="''${1}"
-            # The following line is only used to avoid the warning emitted by git.
-            # We will reset the local repo anyway and remove all local changes.
-            ${git} -C ''${path} config pull.rebase true
-            ${git} -C ''${path} fetch origin master
-            ${git} -C ''${path} checkout master
-            ${git} -C ''${path} reset --hard origin/master
-            ${git} -C ''${path} clean -d --force
-            ${git} -C ''${path} pull
-          }
-
-          base_path="/etc/nixos"
-          config_path="/etc/nixos/ocb-config"
-          sync_repo "''${base_path}"
-          if [ ! -d "''${config_path}" ]; then
-            ${git} clone git@github.com:MSF-OCB/NixOS-OCB-config.git "''${config_path}"
+          ${msf_lib.reset_git { branch = "master"; git_options = [ "-C" base_path ]; }}
+          if [ ! -d "${config_path}" ]; then
+            ${pkgs.git}/bin/git clone git@github.com:MSF-OCB/NixOS-OCB-config.git "${config_path}"
           fi
-          if [ -d "''${config_path}/.git" ]; then
-            sync_repo "''${config_path}"
+          if [ -d "${config_path}/.git" ]; then
+            ${msf_lib.reset_git { branch = "master"; git_options = [ "-C" config_path ]; indent = 2; }}
           fi
         '';
       };
