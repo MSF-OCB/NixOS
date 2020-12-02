@@ -16,7 +16,7 @@ with (import ../msf_lib.nix);
 
         # Load the list at path in an attribute set and convert it to
         # an attribute set with every list element as a key and the value
-        # set to a given constant.
+        # set to a given constant value.
         # If the given path cannot be found in the loaded JSON structure,
         # then the value of onAbsent will be used as input instead.
         #
@@ -27,8 +27,8 @@ with (import ../msf_lib.nix);
         #                     { per-host.benuc002.enable = [ "foo", "bar" ]; }
         # will yield:
         #   { foo = val; bar = val; }
-        listToAttrs_const = path: const: onAbsent:
-          msf_lib.compose [ (flip genAttrs (_: const))
+        listToAttrs_const = path: value: onAbsent:
+          msf_lib.compose [ (flip genAttrs (const value))
                             (attrByPath path onAbsent) ];
 
         # recursiveUpdate merges the two resulting attribute sets recursively
