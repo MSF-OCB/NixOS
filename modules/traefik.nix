@@ -134,6 +134,8 @@ in
     autodetect-middleware  = "autodetect-middleware";
     default-middleware     = "default-middleware";
     default-ssl-middleware = "default-ssl-middleware";
+    # https://github.com/traefik/traefik/issues/6636
+    dashboard-middleware   = "dashboard-middleware";
   in mkIf cfg.enable {
 
     settings = {
@@ -165,6 +167,10 @@ in
                   "${security-headers}@file"
                   "${compress-middleware}@file"
                   "${autodetect-middleware}@file"
+                ];
+                ${default-middleware}.chain.middlewares = [
+                  "${security-headers}@file"
+                  "${compress-middleware}@file"
                 ];
                 ${security-headers}.headers = {
                   browserXssFilter = true;
@@ -276,7 +282,7 @@ in
             };
             traefik = {
               address = ":${toString cfg.traefik_entrypoint_port}";
-              http.middlewares = [ "${default-middleware}@file" ];
+              http.middlewares = [ "${dashboard-middleware}@file" ];
             };
           };
 
