@@ -128,6 +128,7 @@ in
 
   config = let
     security-headers       = "security-headers";
+    extra-security-headers = "extra-security-headers";
     hsts-headers           = "hsts-headers";
     compress-middleware    = "compress-middleware";
     autodetect-middleware  = "autodetect-middleware";
@@ -176,7 +177,8 @@ in
                     X-Powered-By = "";
                     X-AspNet-Version = "";
                   };
-                } // content_type;
+                };
+                ${extra-security-headers}.headers = content_type;
                 ${hsts-headers}.headers = {
                   sslredirect = true;
                   stsPreload = true;
