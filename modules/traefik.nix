@@ -168,7 +168,7 @@ in
                   "${compress-middleware}@file"
                   "${autodetect-middleware}@file"
                 ];
-                ${default-middleware}.chain.middlewares = [
+                ${dashboard-middleware}.chain.middlewares = [
                   "${security-headers}@file"
                   "${compress-middleware}@file"
                 ];
