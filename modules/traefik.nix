@@ -184,7 +184,7 @@ in
                     X-AspNet-Version = "";
                   };
                 };
-                ${extra-security-headers}.headers = content_type;
+                #${extra-security-headers}.headers = content_type;
                 ${hsts-headers}.headers = {
                   sslredirect = true;
                   stsPreload = true;
