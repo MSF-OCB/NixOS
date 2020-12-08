@@ -238,7 +238,10 @@ in
           accessLog = {
             # Make sure that the times are printed in local time
             # https://doc.traefik.io/traefik/observability/access-logs/#time-zones
-            fields.names.StartUTC = "drop";
+            fields = {
+              names.StartUTC = "drop";
+              headers.names.User-Agent = "keep";
+            };
           };
         };
         static_config = {
