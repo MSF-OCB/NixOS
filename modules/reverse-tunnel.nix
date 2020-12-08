@@ -210,7 +210,8 @@ in {
                 -R ${toString prometheus_port}:localhost:9100 \
                 -i ${cfg.private_key} \
                 -p ''${port} \
-                tunnel@"''${host}"
+                -l tunnel \
+                ''${host}
             done
           done
         '';
