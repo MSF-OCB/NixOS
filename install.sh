@@ -162,7 +162,7 @@ fi
     echo "Trying to authenticate to GitHub..."
     nix-shell --packages git --run "git -c core.sshCommand='ssh -i /tmp/id_tunnel' \
                                         ls-remote ${config_repo} \
-                                        2>$1 > /dev/null"
+                                        2>&1 > /dev/null"
     retval="${?}"
     if [ "${retval}" -ne "0" ]; then
       echo -e "\nThis server's SSH key does not give us access to GitHub."
