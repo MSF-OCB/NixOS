@@ -35,7 +35,6 @@ with lib;
 
   documentation.enable            = mkOverride 10 false;
   documentation.nixos.enable      = mkOverride 10 false;
-  services.nixosManual.showManual = mkOverride 10 false;
 
   isoImage = {
     isoName = mkForce "${config.isoImage.isoBaseName}-msfocb-rescue-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}.iso";
