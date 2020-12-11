@@ -156,31 +156,36 @@ fi
 # Check whether we can authenticate to GitHub using this server's key
 (
   set +e
-  can_authenticate=1
 
-  while [ "${can_authenticate}" -ne "0" ]; do
-    echo "Trying to authenticate to GitHub..."
-    nix-shell --packages git --run "git -c core.sshCommand='ssh -i /tmp/id_tunnel' \
+  function test_auth() {
+    nix-shell --packages git --run "git -c core.sshCommand='ssh -F /dev/null -o IdentitiesOnly=yes -i /tmp/id_tunnel' \
                                         ls-remote ${config_repo} \
-                                        2>&1 > /dev/null"
-    retval="${?}"
-    if [ "${retval}" -ne "0" ]; then
-      echo -e "\nThis server's SSH key does not give us access to GitHub."
-      echo    "Please add the following public key to the json/tunnels.json"
-      echo -e "file in the NixOS-OCB-config repo:\n"
-      cat /tmp/id_tunnel.pub
-      echo -e "\nIf you want me to generate a new key pair instead, then"
-      echo    "remove /tmp/id_tunnel and /tmp/id_tunnel.pub and restart"
-      echo    "the installer. You will then see this message again, and"
-      echo -e "you will need to add the newly generated key to GitHub."
-      echo -e "\nPress Enter once you have added the key to GitHub and"
-      read -e -s -p "the deployment actions have successfully run..."
-      echo -e "\n"
-    else
-      can_authenticate=0
-      echo "Successfully authenticated to GitHub."
-    fi
-  done
+                                        2>&1 > /dev/null" 2>&1 > /dev/null
+  }
+
+  echo "Trying to authenticate to GitHub..."
+  test_auth
+  can_authenticate="${?}"
+
+  if [ "${can_authenticate}" -ne "0" ]; then
+    echo -e "\nThis server's SSH key does not give us access to GitHub."
+    echo    "Please add the following public key to the json/tunnels.json"
+    echo -e "file in the NixOS-OCB-config repo:\n"
+    cat /tmp/id_tunnel.pub
+    echo -e "\nIf you want me to generate a new key pair instead, then"
+    echo    "remove /tmp/id_tunnel and /tmp/id_tunnel.pub and restart"
+    echo    "the installer. You will then see this message again, and"
+    echo -e "you will need to add the newly generated key to GitHub."
+    echo -e "\nThe installer will continue once you have added the key"
+    echo -e "to GitHub and the deployment actions have successfully run..."
+
+    while [ "${can_authenticate}" -ne "0" ]; do
+      sleep 5
+      test_auth
+      can_authenticate="${?}"
+    done
+  fi
+  echo "Successfully authenticated to GitHub."
 )
 
 detect_swap="$(swapon | grep "${swapfile}" > /dev/null 2>&1; echo $?)"
