@@ -19,19 +19,19 @@ def args_parser():
   return parser
 
 def validate_json(build_dir):
-  def has_duplicates(l):
+  def has_duplicates(kv_pairs):
     seen = set()
-    for e in l:
-      key = e[0]
+    for kv in kv_pairs:
+      key = kv[0]
       if key in seen:
         return key
       else:
         seen |= { key }
     return None
 
-  def no_duplicates(filename):
-    def check_duplicates(l):
-      duplicate_key = has_duplicates(l)
+  def no_duplicates_hook(filename):
+    def check_duplicates(kv_pairs):
+      duplicate_key = has_duplicates(kv_pairs)
       if duplicate_key:
         raise ValueError(f"Duplicate JSON key ({duplicate_key}) in {filename}.")
     return check_duplicates
@@ -41,33 +41,37 @@ def validate_json(build_dir):
       filename = os.path.join(root, f)
       if filename.endswith('json'):
         with open(filename, 'r') as fp:
-          json.load(fp, object_pairs_hook = no_duplicates(filename))
+          json.load(fp, object_pairs_hook = no_duplicates_hook(filename))
 
 def init_tree(build_dir):
   if os.path.isdir(build_dir):
     shutil.rmtree(build_dir)
   shutil.copytree(os.getcwd(), build_dir,
                   symlinks = True,
-                  ignore = shutil.ignore_patterns('.git', 'result', 'id_tunnel', 'settings.nix'))
+                  ignore = shutil.ignore_patterns('.git', 'result',
+                                                  'id_tunnel', 'settings.nix'))
+  # Create a minimal hardware-configuration.nix file
   with open(os.path.join(build_dir, 'hardware-configuration.nix'), 'w') as fp:
     fp.write('{}')
+  # Create an empty key file
   with open(os.path.join(build_dir, 'local', 'id_tunnel'), 'w') as _:
     pass
 
 def prepare_tree(build_dir, config_name):
   settings_path = os.path.join(build_dir, 'settings.nix')
+  host_config_path = os.path.join(build_dir, 'ocb-config', 'hosts', config_name)
   if os.path.exists(settings_path):
     os.unlink(settings_path)
-  os.symlink(os.path.join(build_dir, 'ocb-config', 'hosts', config_name),
-             settings_path)
+  os.symlink(host_config_path, settings_path)
 
 def build_config(build_dir, hostname):
   print(f'Building config: {hostname}')
   config_name = os.path.basename(hostname)
   prepare_tree(build_dir, config_name)
+  config_path = os.path.join(build_dir, 'configuration.nix')
   return subprocess.run([ 'nix-build',
                           '<nixpkgs/nixos>',
-                          '-I', f'nixos-config={build_dir}/configuration.nix',
+                          '-I', f'nixos-config={config_path}',
                           '-A', 'system' ],
                         stdout = PIPE, stderr = PIPE)
 
@@ -81,7 +85,7 @@ def do_build_configs(build_dir, configs):
     proc.check_returncode()
 
 def build_configs(build_dir, group_amount, group_id):
-  configs = sorted(glob.glob('./ocb-config/hosts/*.nix'))
+  configs = sorted(glob.glob(os.path.join('.', 'ocb-config', 'hosts', '*.nix')))
   length = len(configs)
 
   slice_size = length // group_amount
@@ -90,7 +94,8 @@ def build_configs(build_dir, group_amount, group_id):
   size   = slice_size + (1 if (group_id < modulo) else 0)
   end    = begin + size
 
-  print(f"Found {length} configs, {group_amount} builders, building group ID {group_id}, starting at {begin}, building {size} configs.")
+  print(f"Found {length} configs, {group_amount} builders, " + \
+        f"building group ID {group_id}, starting at {begin}, building {size} configs.")
   print(f"Configs to build: {configs[begin:end]}")
 
   do_build_configs(build_dir, configs[begin:end])
@@ -99,7 +104,8 @@ def validate_args(args):
   if args.group_amount < 1:
     raise ValueError(f"The group amount ({args.group_amount}) should be at least 1.")
   if args.group_id > args.group_amount:
-    raise ValueError(f"The build group ID ({args.group_id}) cannot exceed the number of build groups ({args.group_amount}).")
+    raise ValueError(f"The build group ID ({args.group_id}) cannot exceed " + \
+                     f"the number of build groups ({args.group_amount}).")
   if args.group_id < 0:
     raise ValueError(f"The build group ID ({args.group_id}) cannot be less than zero.")
   return args
