@@ -143,33 +143,6 @@ with lib;
         # See /run/current-system/activate for the currently defined snippets.
         deps = [ "nix" ];
       };
-      settings_link = let
-        hostname         = config.networking.hostName;
-        settings_path    = "/etc/nixos/settings.nix";
-        destination_path = "/etc/nixos/${cfg.org_config_dir_name}/hosts/${hostname}.nix";
-        destination_path_old = "/etc/nixos/org-spec/hosts/${hostname}.nix";
-      in mkIf (!cfg.isISO) {
-        text = ''
-          function create_link() {
-            destination="''${1}"
-            if [ ! -f "${settings_path}" ] || \
-               [ "$(dirname $(readlink ${settings_path}))" = "hosts" ] || \
-               [ "$(realpath ${settings_path})" != "''${destination}" ]; then
-              ln --force --symbolic "''${destination}" "${settings_path}"
-            fi
-          }
-
-          if [ -f "${settings_path}" ] && [ ! -L "${settings_path}" ]; then
-            rm --force "${settings_path}"
-          fi
-          if [ -f "${destination_path}" ]; then
-            create_link "${destination_path}"
-          elif [ -f "${destination_path_old}" ]; then
-            create_link "${destination_path_old}"
-          fi
-        '';
-        deps = [ "specialfs" ];
-      };
       tunnel_key_permissions = mkIf (!cfg.isISO) {
         # Use toString, we do not want to change permissions
         # of files in the nix store, only of the source files, if present.
@@ -208,6 +181,27 @@ with lib;
         '';
         deps = [ "specialfs" "users" ];
       };
+#      opt_acl = {
+#        text = ''
+#          # We iterate over all directories that are not hidden.
+#          # Prefix directories with a dot to exclude them.
+#          for dir in $(ls /opt/); do
+#            if [ -d "/opt/''${dir}" ] && \
+#               [ ! "containerd" = "''${dir}" ] && \
+#               [ ! "lost+found" = "''${dir}" ]; then
+#              chown --recursive root:root "/opt/''${dir}"
+#              setfacl -R --set "u::rwX,g::r-X,o::---,\
+#                                user:root:rwX,\
+#                                group:wheel:rwX,\
+#                                d:u::rwX,d:g::r-X,d:o::---, \
+#                                d:user:root:rwX,\
+#                                d:group:wheel:rwX" \
+#                                "/opt/''${dir}"
+#            fi
+#          done
+#        '';
+#        deps = [ "specialfs" "users" ];
+#      };
     };
 
     systemd = {

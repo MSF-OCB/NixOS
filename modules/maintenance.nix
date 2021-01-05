@@ -97,12 +97,18 @@ in {
           base_path = "/etc/nixos";
           config_path = "${base_path}/${sys_cfg.org_config_dir_name}";
           old_config_path = "${base_path}/ocb-config";
+
+          hostname         = config.networking.hostName;
+          settings_path    = "/etc/nixos/settings.nix";
+          destination_path = "/etc/nixos/${sys_cfg.org_config_dir_name}/hosts/${hostname}.nix";
         in ''
           # Main repo
+
           ${msf_lib.reset_git { inherit (cfg.config_repos.main) branch;
                                 git_options = [ "-C" base_path ]; }}
 
           # Organisation-specific repo
+
           if [ ! -d "${config_path}" ] && [ -d "${old_config_path}" ]; then
             mv "${old_config_path}" "${config_path}"
           fi
@@ -118,6 +124,21 @@ in {
 
           ${msf_lib.reset_git { inherit (cfg.config_repos.org) branch;
                                 git_options = [ "-C" config_path ]; }}
+
+          # Settings link
+
+          function create_link() {
+            destination="''${1}"
+            if [ ! -f "${settings_path}" ] || \
+               [ "$(realpath ${settings_path})" != "''${destination}" ]; then
+              ln --force --symbolic "''${destination}" "${settings_path}"
+            fi
+          }
+
+          if [ -f "${settings_path}" ] && [ ! -L "${settings_path}" ]; then
+            rm --force "${settings_path}"
+          fi
+          create_link "${destination_path}"
         '';
       };
 
