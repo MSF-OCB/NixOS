@@ -45,22 +45,24 @@ in {
 
     config_repos = mkOption {
       type    = with types; attrsOf (submodule repoOpts);
-      default = {
-        main = {
-          branch = "master";
-          url = "git@github.com:MSF-OCB/NixOS-config.git";
-        };
-        org = {
-          branch = "master";
-          url = "git@github.com:MSF-OCB/NixOS-OCB-config.git";
-        };
-      };
+      default = {};
     };
 
     docker_prune_timer.enable = mkEnableOption "service to periodically run docker system prune";
   };
 
   config = mkIf cfg.enable {
+    settings.maintenance.config_repos = {
+      main = {
+        branch = "master";
+        url = "git@github.com:MSF-OCB/NixOS-config.git";
+      };
+      org = {
+        branch = "master";
+        url = "git@github.com:MSF-OCB/NixOS-OCB-config.git";
+      };
+    };
+
     # We run the upgrade service once at night and once during the day, to catch the situation
     # where the server is turned off every evening.
     # When the service is being run during the day, we will be outside of the reboot window.
