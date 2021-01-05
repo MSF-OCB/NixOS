@@ -18,16 +18,26 @@ with lib;
       default = false;
     };
 
+    org_config_dir_name = mkOption {
+      type = types.str;
+      default = "org-config";
+      readOnly = true;
+      description = ''
+        WARNING: when changing this value, you need to change the corresponding
+                 values in install.sh and modules/default.nix as well!
+      '';
+    };
+
     users_json_path = mkOption {
-      type     = types.path;
+      type = types.path;
     };
 
     tunnels_json_path = mkOption {
-      type     = types.path;
+      type = types.path;
     };
 
     pub_keys_path = mkOption {
-      type     = types.path;
+      type = types.path;
     };
 
     secretsDirectory = mkOption {
@@ -136,7 +146,7 @@ with lib;
       settings_link = let
         hostname         = config.networking.hostName;
         settings_path    = "/etc/nixos/settings.nix";
-        destination_path = "/etc/nixos/ocb-config/hosts/${hostname}.nix";
+        destination_path = "/etc/nixos/${cfg.org_config_dir_name}/hosts/${hostname}.nix";
         destination_path_old = "/etc/nixos/org-spec/hosts/${hostname}.nix";
       in mkIf (!cfg.isISO) {
         text = ''

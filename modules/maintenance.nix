@@ -5,6 +5,7 @@ with (import ../msf_lib.nix);
 
 let
   cfg = config.settings.maintenance;
+  sys_cfg = config.settings.system;
   tunnel_cfg = config.settings.reverse_tunnel;
 
   # Submodule to define repos.
@@ -94,18 +95,24 @@ in {
         };
         script = let
           base_path = "/etc/nixos";
-          config_path = "/etc/nixos/ocb-config";
+          config_path = "/etc/nixos/${sys_cfg.org_config_dir_name}";
         in ''
+          # Main repo
           ${msf_lib.reset_git { inherit (cfg.config_repos.main) branch;
                                 git_options = [ "-C" base_path ]; }}
-          if [ ! -d "${config_path}" ]; then
+
+          # Organisation-specific repo
+          if [ ! -d "${config_path}" ] && [ -d "ocb-config" ]; then
+            mv "ocb-config" "${config_path}"
+          fi
+
+          if [ ! -d "${config_path}" ] || [ ! -d "${config_path}/.git" ]; then
+            rm --recursive --force "${config_path}"
             ${pkgs.git}/bin/git clone ${cfg.config_repos.org.url} "${config_path}"
           fi
-          if [ -d "${config_path}/.git" ]; then
-            ${msf_lib.reset_git { inherit (cfg.config_repos.org) branch;
-                                  git_options = [ "-C" config_path ];
-                                  indent = 2; }}
-          fi
+
+          ${msf_lib.reset_git { inherit (cfg.config_repos.org) branch;
+                                git_options = [ "-C" config_path ]; }}
         '';
       };
 
