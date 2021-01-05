@@ -6,6 +6,24 @@ with (import ../msf_lib.nix);
 let
   cfg = config.settings.maintenance;
   tunnel_cfg = config.settings.reverse_tunnel;
+
+  # Submodule to define repos.
+  repoOpts = { name, config, ... }: {
+    options = {
+      name = mkOption {
+        type = types.str;
+      };
+      branch = mkOption {
+        type = types.str;
+      };
+      url = mkOption {
+        type = types.str;
+      };
+    };
+    config = {
+      name = mkDefault name;
+    };
+  };
 in {
 
   # https://github.com/NixOS/nixpkgs/pull/77622
@@ -21,14 +39,30 @@ in {
       type        = types.bool;
       default     = true;
       description = ''
-        Whether to pull the config from the master branch at github before running the upgrade service.
+        Whether to pull the config from the upstream branch before running the upgrade service.
       '';
+    };
+
+    config_repos = mkOption {
+      type    = with types; attrsOf (submodule repoOpts);
+      default = {};
     };
 
     docker_prune_timer.enable = mkEnableOption "service to periodically run docker system prune";
   };
 
   config = mkIf cfg.enable {
+    settings.maintenance.config_repos = {
+      main = {
+        branch = "master";
+        url = "git@github.com:MSF-OCB/NixOS-config.git";
+      };
+      org = {
+        branch = "master";
+        url = "git@github.com:MSF-OCB/NixOS-OCB-config.git";
+      };
+    };
+
     # We run the upgrade service once at night and once during the day, to catch the situation
     # where the server is turned off every evening.
     # When the service is being run during the day, we will be outside of the reboot window.
@@ -62,12 +96,15 @@ in {
           base_path = "/etc/nixos";
           config_path = "/etc/nixos/ocb-config";
         in ''
-          ${msf_lib.reset_git { branch = "master"; git_options = [ "-C" base_path ]; }}
+          ${msf_lib.reset_git { inherit (cfg.config_repos.main) branch;
+                                git_options = [ "-C" base_path ]; }}
           if [ ! -d "${config_path}" ]; then
-            ${pkgs.git}/bin/git clone git@github.com:MSF-OCB/NixOS-OCB-config.git "${config_path}"
+            ${pkgs.git}/bin/git clone ${cfg.config_repos.org.url} "${config_path}"
           fi
           if [ -d "${config_path}/.git" ]; then
-            ${msf_lib.reset_git { branch = "master"; git_options = [ "-C" config_path ]; indent = 2; }}
+            ${msf_lib.reset_git { inherit (cfg.config_repos.org) branch;
+                                  git_options = [ "-C" config_path ];
+                                  indent = 2; }}
           fi
         '';
       };
