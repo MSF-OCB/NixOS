@@ -4,7 +4,7 @@ with lib;
 with (import ../msf_lib.nix);
 
 let
-  cfg     = config.settings.reverse_tunnel;
+  cfg = config.settings.reverse_tunnel;
 
   tunnelOpts = { name, ... }: {
     options = {
@@ -135,13 +135,15 @@ in {
 
   config = let
     add_port_prefix = prefix: base_port: 10000 * prefix + base_port;
+    prometheus_enabled = config.settings.services.prometheus.enable;
   in mkIf (cfg.enable || cfg.relay.enable) {
 
     users.extraUsers = {
       tunnel = let
         stringNotEmpty = s: stringLength s != 0;
         includeTunnel  = tunnel: stringNotEmpty tunnel.public_key && tunnel.remote_forward_port > 0;
-        prefixes       = [ 0 cfg.prometheus_tunnel_port_prefix ];
+        prefixes       = (singleton 0) ++
+                         (optional prometheus_enabled cfg.prometheus_tunnel_port_prefix);
         mkLimitation   = base_port: prefix: "permitlisten=\"${toString (add_port_prefix prefix base_port)}\"";
         mkKeyConfig    = tunnel:
           "${concatMapStringsSep "," (mkLimitation tunnel.remote_forward_port) prefixes} ${tunnel.public_key} tunnel@${tunnel.name}";
@@ -188,8 +190,12 @@ in {
           RestartSec = "10min";
         };
         script = let
-          tunnel_port     = cfg.tunnels.${config.networking.hostName}.remote_forward_port;
-          prometheus_port = add_port_prefix cfg.prometheus_tunnel_port_prefix tunnel_port;
+          tunnel_port = cfg.tunnels.${config.networking.hostName}.remote_forward_port;
+          prometheus_forward_line = let
+            prometheus_port = add_port_prefix cfg.prometheus_tunnel_port_prefix
+                                              tunnel_port;
+          in optionalString prometheus_enabled
+                            ''-R ${toString prometheus_port}:localhost:9100'';
         in ''
           for host in ${concatStringsSep " " conf.addresses}; do
             for port in ${concatMapStringsSep " " toString cfg.relay.ports}; do
@@ -207,7 +213,7 @@ in {
                 -o "Compression=yes" \
                 -o "ControlMaster=no" \
                 -R ${toString tunnel_port}:localhost:22 \
-                -R ${toString prometheus_port}:localhost:9100 \
+                ${prometheus_forward_line} \
                 -i ${cfg.private_key} \
                 -p ''${port} \
                 -l tunnel \

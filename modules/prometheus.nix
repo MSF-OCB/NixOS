@@ -7,10 +7,7 @@ let
 in {
 
   options.settings.services.prometheus = {
-    enable = mkOption {
-      type = types.bool;
-      default = true;
-    };
+    enable = mkEnableOption "The Prometheus service";
   };
 
   config = mkIf cfg.enable {
@@ -32,6 +29,5 @@ in {
       openFirewall = false;
     };
   };
-
 }
 
