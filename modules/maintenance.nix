@@ -95,20 +95,25 @@ in {
         };
         script = let
           base_path = "/etc/nixos";
-          config_path = "/etc/nixos/${sys_cfg.org_config_dir_name}";
+          config_path = "${base_path}/${sys_cfg.org_config_dir_name}";
+          old_config_path = "${base_path}/ocb-config";
         in ''
           # Main repo
           ${msf_lib.reset_git { inherit (cfg.config_repos.main) branch;
                                 git_options = [ "-C" base_path ]; }}
 
           # Organisation-specific repo
-          if [ ! -d "${config_path}" ] && [ -d "ocb-config" ]; then
-            mv "ocb-config" "${config_path}"
+          if [ ! -d "${config_path}" ] && [ -d "${old_config_path}" ]; then
+            mv "${old_config_path}" "${config_path}"
           fi
 
           if [ ! -d "${config_path}" ] || [ ! -d "${config_path}/.git" ]; then
             rm --recursive --force "${config_path}"
             ${pkgs.git}/bin/git clone ${cfg.config_repos.org.url} "${config_path}"
+          fi
+
+          if [ -d "${old_config_path}" ]; then
+            rm --recursive --force "${old_config_path}"
           fi
 
           ${msf_lib.reset_git { inherit (cfg.config_repos.org) branch;
