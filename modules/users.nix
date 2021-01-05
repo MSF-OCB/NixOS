@@ -64,7 +64,7 @@ in {
     settings.users = {
       users = mkOption {
         type    = with types; attrsOf (submodule userOpts);
-        default = [];
+        default = {};
       };
 
       shell-user-group = mkOption {
