@@ -142,8 +142,9 @@ in {
       tunnel = let
         stringNotEmpty = s: stringLength s != 0;
         includeTunnel  = tunnel: stringNotEmpty tunnel.public_key && tunnel.remote_forward_port > 0;
+        # TODO: remove the true below which is only there for the transition period
         prefixes       = (singleton 0) ++
-                         (optional prometheus_enabled cfg.prometheus_tunnel_port_prefix);
+                         (optional (true || prometheus_enabled) cfg.prometheus_tunnel_port_prefix);
         mkLimitation   = base_port: prefix: "permitlisten=\"${toString (add_port_prefix prefix base_port)}\"";
         mkKeyConfig    = tunnel:
           "${concatMapStringsSep "," (mkLimitation tunnel.remote_forward_port) prefixes} ${tunnel.public_key} tunnel@${tunnel.name}";
