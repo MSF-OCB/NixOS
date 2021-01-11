@@ -21,7 +21,6 @@ from typing import Any, Dict
 
 # ---- Useful variables ----
 
-# openssh keypair info
 key_length: int = nacl.bindings.crypto_box_PUBLICKEYBYTES  #this is equal to 32
 private_key_signature: bytes = b'\x00\x00\x00\x40'
 
