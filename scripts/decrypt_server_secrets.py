@@ -51,7 +51,7 @@ def decrypt_shared_key(privkey: PrivateKey,
 
 
 # Takes a b64-encoded string encrypted with the given shared key and decrypts it.
-def decrypt_server_secrets(box_key: SigningKey,
+def decrypt_server_secrets(box_key: bytes,
                            encrypted_secrets: str) -> str:
   box = SecretBox(box_key)
   return decrypt(box, encrypted_secrets).decode('utf-8')
