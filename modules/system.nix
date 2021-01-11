@@ -40,8 +40,18 @@ with lib;
       type = types.path;
     };
 
+    secrets_src_directory = mkOption {
+      type = types.path;
+      description = ''
+        The directory containing the generated and encrypted secrets.
+      '';
+    };
+
     secretsDirectory = mkOption {
       type = types.str;
+      description = ''
+        The directory containing the decrypted secrets available to this server.
+      '';
     };
 
     diskSwap = {
