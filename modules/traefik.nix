@@ -14,7 +14,24 @@ in
 
 {
 
-  options.settings.services.traefik = {
+  options.settings.services.traefik = let
+    tls_entrypoint_opts = { name, ... }: {
+      options = {
+        name = mkOption {
+          type = types.str;
+        };
+
+        enable = mkEnableOption "the user";
+
+        address = mkOption {
+          type    = types.str;
+        };
+      };
+      config = {
+        name = mkDefault name;
+      };
+    };
+  in {
     enable = mkEnableOption "the Traefik service";
 
     version = mkOption {
@@ -47,6 +64,11 @@ in
           };
         };
       });
+    };
+
+    tls_entrypoints = mkOption {
+      type    = with types; attrsOf (submodule tls_entrypoint_opts);
+      default = {};
     };
 
     network_name = mkOption {
@@ -223,6 +245,10 @@ in
       dynamic_config_directory_target = "/${dynamic_config_directory_name}";
 
       static_config_file_source = let
+        generate_tls_entrypoints = msf_lib.compose [
+          (mapAttrs (_: value: { inherit (value) address; }))
+          msf_lib.filterEnabled
+        ];
         letsencrypt = "letsencrypt";
         caserver       = optionalAttrs cfg.acme.staging.enable
                                        { inherit (cfg.acme.staging) caserver; };
@@ -287,7 +313,7 @@ in
               address = ":${toString cfg.traefik_entrypoint_port}";
               http.middlewares = [ "${dashboard-middleware}@file" ];
             };
-          };
+          } // generate_tls_entrypoints cfg.tls_entrypoints;
 
           certificatesresolvers = {
             ${letsencrypt}.acme =
