@@ -44,16 +44,16 @@ def decrypt(box: Any,
 
 # Takes a b64-encoded string encrypted with the server's private key
 # and returns the decrypted bytes.
-def decrypt_shared_key(privkey: PrivateKey,
-                       encrypted_string: str) -> bytes:
+def decrypt_key(privkey: PrivateKey,
+                encrypted_key: str) -> bytes:
   box = SealedBox(privkey)
-  return decrypt(box, encrypted_string)
+  return decrypt(box, encrypted_key)
 
 
 # Takes a b64-encoded string encrypted with the given shared key and decrypts it.
-def decrypt_server_secrets(box_key: bytes,
-                           encrypted_secrets: str) -> str:
-  box = SecretBox(box_key)
+def decrypt_secrets(key: bytes,
+                    encrypted_secrets: str) -> str:
+  box = SecretBox(key)
   return decrypt(box, encrypted_secrets).decode('utf-8')
 
 
@@ -109,25 +109,27 @@ def main():
   args = args_parser().parse_args()
   validate_paths(args.private_key_file, args.secrets_path, args.output_path)
 
-  key_file     = os.path.join(args.secrets_path,
-                              f"{args.server_name}-key.enc")
   secrets_file = os.path.join(args.secrets_path,
-                              f"{args.server_name}-secrets.yml.enc")
+                              f"{args.server_name}-secrets.yml")
 
-  if os.path.isfile(key_file) and os.path.isfile(secrets_file):
+  if os.path.isfile(secrets_file):
     with open(args.private_key_file, 'r') as f :
       server_privk = f.read()
-    with open(key_file, 'r') as f:
-      encrypted_box_key = f.read()
     with open(secrets_file, 'r') as f:
-      encrypted_secrets = f.read()
+      secrets_data = yaml.safe_load(f)
+
+    if not secrets_data['server_name'] == args.server_name:
+      raise Exception(f'The given server name "{args.server_name}" ' +
+                       'does not correspond to the one found ' +
+                       '"{secrets_data["server_name"]}".')
 
     # decrypt the symmetric key using the server private key
-    key = decrypt_shared_key(extract_curve_private_key(server_privk),
-                             encrypted_box_key)
+    key = decrypt_key(extract_curve_private_key(server_privk),
+                      secrets_data['encrypted_key'])
     # then use it to decrypt the secrets
-    decrypted_secrets = yaml.safe_load(decrypt_server_secrets(key,
-                                                              encrypted_secrets))
+    decrypted_secrets = yaml.safe_load(
+      decrypt_secrets(key,
+                      secrets_data['encrypted_secrets']))
     write_files(args.output_path, decrypted_secrets)
 
 
