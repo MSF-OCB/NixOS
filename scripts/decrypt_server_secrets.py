@@ -96,31 +96,40 @@ def write_files(output_path_prefix: str,
       print(traceback.format_exc())
 
 
+def validate_paths(private_key_file, secrets_path, output_path):
+  if not os.path.isfile(private_key_file):
+    raise Exception(f'Cannot open the private key file ({private_key_file})')
+  if not os.path.isdir(secrets_path):
+    raise Exception(f'The secrets path is not a directory ({secrets_path})')
+  if not os.path.isdir(output_path):
+    raise Exception(f'The output path is not a directory ({output_path})')
+
+
 def main():
   args = args_parser().parse_args()
+  validate_paths(args.private_key_file, args.secrets_path, args.output_path)
 
-  server_name = args.server_name
-  secrets_path = os.fspath(args.secrets_path)
-  private_key_file = os.fspath(args.private_key_file)
-
-  key_file     = os.path.join(secrets_path, f"{server_name}-key.enc")
-  secrets_file = os.path.join(secrets_path, f"{server_name}-secrets.yml.enc")
+  key_file     = os.path.join(args.secrets_path,
+                              f"{args.server_name}-key.enc")
+  secrets_file = os.path.join(args.secrets_path,
+                              f"{args.server_name}-secrets.yml.enc")
 
   if os.path.isfile(key_file) and os.path.isfile(secrets_file):
-    with open(private_key_file, 'r') as f :
-      server_privk = '\n'.join(f.readlines())
+    with open(args.private_key_file, 'r') as f :
+      server_privk = f.read()
     with open(key_file, 'r') as f:
-      encrypted_box_key = '\n'.join(f.readlines())
+      encrypted_box_key = f.read()
     with open(secrets_file, 'r') as f:
-      encrypted_secrets = '\n'.join(f.readlines())
+      encrypted_secrets = f.read()
 
     # decrypt the symmetric key using the server private key
-    box_key = decrypt_shared_key(extract_curve_private_key(server_privk),
-                                 encrypted_box_key)
+    key = decrypt_shared_key(extract_curve_private_key(server_privk),
+                             encrypted_box_key)
     # then use it to decrypt the secrets
-    decrypted_secrets = yaml.safe_load(decrypt_server_secrets(box_key,
+    decrypted_secrets = yaml.safe_load(decrypt_server_secrets(key,
                                                               encrypted_secrets))
     write_files(args.output_path, decrypted_secrets)
+
 
 if __name__ == "__main__":
   main()
