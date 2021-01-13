@@ -11,7 +11,7 @@ from base64 import b64decode
 
 # NaCL modules
 import nacl # type: ignore
-from nacl.encoding import RawEncoder # type: ignore
+from nacl.encoding import RawEncoder, Base64Encoder # type: ignore
 from nacl.public   import PrivateKey, SealedBox  # type: ignore
 from nacl.secret   import SecretBox  # type: ignore
 from nacl.signing  import SigningKey # type: ignore
@@ -40,7 +40,7 @@ def args_parser() -> argparse.ArgumentParser:
 
 def decrypt(box: Any,
             ciphertext: str) -> bytes:
-  return box.decrypt(b64decode(ciphertext)); # type: ignore
+  return box.decrypt(ciphertext, encoder=Base64Encoder); # type: ignore
 
 # Takes a b64-encoded string encrypted with the server's private key
 # and returns the decrypted bytes.
