@@ -57,8 +57,7 @@ def decrypt_secrets(key: bytes,
   return decrypt(box, encrypted_secrets).decode('utf-8')
 
 
-# takes an ed25519 private key string
-# returns an appropriately transformed PrivateKey object, usable to create a NaCl SealedBox
+# takes an OpenSSH Ed25519 private key string and transforms it into a Curve25519 private key
 def extract_curve_private_key(priv_key) -> PrivateKey:
   # Strip off the first and last line
   openssh_priv_key = '\n'.join(priv_key.splitlines()[:-1][1:])
