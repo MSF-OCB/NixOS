@@ -151,7 +151,6 @@ in {
           Type = "oneshot";
         };
         path = with pkgs; [
-          nix
           python3
           python3Packages.pynacl
           python3Packages.pyyaml
