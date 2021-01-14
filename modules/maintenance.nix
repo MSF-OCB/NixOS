@@ -150,20 +150,19 @@ in {
         serviceConfig = {
           Type = "oneshot";
         };
-        path = with pkgs; [
-          python3
-          python3Packages.pynacl
-          python3Packages.pyyaml
-        ];
         environment = {
           # We need to set the NIX_PATH env var so that we can resolve <nixpkgs>
           inherit (config.environment.sessionVariables) NIX_PATH;
         };
-        script = ''
-          ${../scripts/decrypt_server_secrets.py} --server_name "${config.networking.hostName}" \
-                                                  --secrets_path "${sys_cfg.secrets_src_directory}" \
-                                                  --output_path "${sys_cfg.secretsDirectory}" \
-                                                  --private_key_file "${tunnel_cfg.private_key}"
+        script = let
+          python = pkgs.python3.withPackages (pkgs: with pkgs; [ pynacl pyyaml ]);
+        in ''
+          ${python.interpreter} \
+            ${../scripts/decrypt_server_secrets.py} \
+            --server_name "${config.networking.hostName}" \
+            --secrets_path "${sys_cfg.secrets_src_directory}" \
+            --output_path "${sys_cfg.secretsDirectory}" \
+            --private_key_file "${tunnel_cfg.private_key}"
         '';
       };
 
