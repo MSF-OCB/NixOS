@@ -183,14 +183,6 @@ with lib;
         '';
         deps = [ "specialfs" "users" ];
       };
-      secrets_directory = {
-        text = ''
-          mkdir -p ${cfg.secretsDirectory}
-          chown --recursive root:root ${cfg.secretsDirectory}
-          chmod --recursive u=rX,g=rX,o= ${cfg.secretsDirectory}
-        '';
-        deps = [ "specialfs" "users" ];
-      };
 #      opt_acl = {
 #        text = ''
 #          # We iterate over all directories that are not hidden.

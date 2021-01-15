@@ -163,6 +163,8 @@ in {
             --secrets_path "${sys_cfg.secrets_src_directory}" \
             --output_path "${sys_cfg.secretsDirectory}" \
             --private_key_file "${tunnel_cfg.private_key}"
+          chown --recursive root:wheel "${sys_cfg.secretsDirectory}"
+          chmod --recursive u=rwX,g=rX,o= "${sys_cfg.secretsDirectory}"
         '';
       };
 
