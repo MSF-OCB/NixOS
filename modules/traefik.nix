@@ -23,9 +23,15 @@ in
 
         enable = mkEnableOption "the user";
 
-        address = mkOption {
-          type    = types.str;
+        host = mkOption {
+          type = types.str;
+          default = "";
         };
+
+        port = mkOption {
+          type = types.port;
+        };
+
       };
       config = {
         name = mkDefault name;
@@ -246,7 +252,7 @@ in
 
       static_config_file_source = let
         generate_tls_entrypoints = msf_lib.compose [
-          (mapAttrs (_: value: { inherit (value) address; }))
+          (mapAttrs (_: value: { address = "${value.host}:${toString value.port}"; }))
           msf_lib.filterEnabled
         ];
         letsencrypt = "letsencrypt";
@@ -358,12 +364,16 @@ in
         ];
         ports = let
           traefik_entrypoint_port_str = toString cfg.traefik_entrypoint_port;
+          mk_tls_port = cfg: let
+            port = toString cfg.port;
+          in "${port}:${port}";
+          mk_tls_ports = mapAttrsToList (_: mk_tls_port);
         in [
           "80:80"
           "443:443"
           "127.0.0.1:${traefik_entrypoint_port_str}:${traefik_entrypoint_port_str}"
           "[::1]:${traefik_entrypoint_port_str}:${traefik_entrypoint_port_str}"
-        ];
+        ] ++ mk_tls_ports cfg.tls_entrypoints;
         volumes = [
           "/etc/localtime:/etc/localtime:ro"
           "/var/run/docker.sock:/var/run/docker.sock:ro"
