@@ -1,6 +1,7 @@
 name: NixOS build and deploy config
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - 'master'
