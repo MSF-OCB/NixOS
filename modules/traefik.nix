@@ -244,153 +244,156 @@ in
       };
     };
 
-    docker-containers = let
-      static_config_file_name   = "traefik-static.yml";
-      static_config_file_target = "/${static_config_file_name}";
-      dynamic_config_directory_name   = "traefik-dynamic.conf.d";
-      dynamic_config_directory_target = "/${dynamic_config_directory_name}";
+    virtualisation.oci-containers = {
+      backend = "docker";
+      containers =  let
+        static_config_file_name   = "traefik-static.yml";
+        static_config_file_target = "/${static_config_file_name}";
+        dynamic_config_directory_name   = "traefik-dynamic.conf.d";
+        dynamic_config_directory_target = "/${dynamic_config_directory_name}";
 
-      static_config_file_source = let
-        generate_tls_entrypoints = msf_lib.compose [
-          (mapAttrs (_: value: { address = "${value.host}:${toString value.port}"; }))
-          msf_lib.filterEnabled
-        ];
-        letsencrypt = "letsencrypt";
-        caserver       = optionalAttrs cfg.acme.staging.enable
-                                       { inherit (cfg.acme.staging) caserver; };
-        preferredChain = optionalAttrs cfg.acme.crossSignedChain.enable
-                                       { inherit (cfg.acme.crossSignedChain) preferredChain; };
-        acme_template = {
-          email = cfg.acme.email_address;
-          storage = "${cfg.acme.storage}/acme.json";
-          keyType = cfg.acme.keytype;
-        } // caserver
-          // preferredChain;
-        accesslog = optionalAttrs cfg.accesslog.enable {
-          accessLog = {
-            # Make sure that the times are printed in local time
-            # https://doc.traefik.io/traefik/observability/access-logs/#time-zones
-            fields = {
-              names.StartUTC = "drop";
-              headers.names.User-Agent = "keep";
+        static_config_file_source = let
+          generate_tls_entrypoints = msf_lib.compose [
+            (mapAttrs (_: value: { address = "${value.host}:${toString value.port}"; }))
+            msf_lib.filterEnabled
+          ];
+          letsencrypt = "letsencrypt";
+          caserver       = optionalAttrs cfg.acme.staging.enable
+                                         { inherit (cfg.acme.staging) caserver; };
+          preferredChain = optionalAttrs cfg.acme.crossSignedChain.enable
+                                         { inherit (cfg.acme.crossSignedChain) preferredChain; };
+          acme_template = {
+            email = cfg.acme.email_address;
+            storage = "${cfg.acme.storage}/acme.json";
+            keyType = cfg.acme.keytype;
+          } // caserver
+            // preferredChain;
+          accesslog = optionalAttrs cfg.accesslog.enable {
+            accessLog = {
+              # Make sure that the times are printed in local time
+              # https://doc.traefik.io/traefik/observability/access-logs/#time-zones
+              fields = {
+                names.StartUTC = "drop";
+                headers.names.User-Agent = "keep";
+              };
             };
           };
+          static_config = {
+            global.sendAnonymousUsage = true;
+            pilot.token = cfg.pilot_token;
+            ping = {};
+            log.level = cfg.logging_level;
+            api.dashboard = true;
+            #metrics:
+            #  prometheus: {}
+
+            providers = {
+              docker = {
+                network = cfg.network_name;
+                swarmMode = docker_cfg.swarm.enable;
+                exposedbydefault = false;
+              };
+              file = {
+                watch = true;
+                directory = dynamic_config_directory_target;
+              };
+            };
+
+            entryPoints = {
+              web = {
+                address = ":80";
+                http = {
+                  redirections.entryPoint = {
+                    to = "websecure";
+                    scheme = "https";
+                  };
+                  middlewares = [ "${default-middleware}@file" ];
+                };
+              };
+              websecure = {
+                address = ":443";
+                http = {
+                  middlewares = [ "${default-ssl-middleware}@file" ];
+                  tls.certResolver = letsencrypt;
+                };
+              };
+              traefik = {
+                address = ":${toString cfg.traefik_entrypoint_port}";
+                http.middlewares = [ "${dashboard-middleware}@file" ];
+              };
+            } // generate_tls_entrypoints cfg.tls_entrypoints;
+
+            certificatesresolvers = {
+              ${letsencrypt}.acme =
+                acme_template // {
+                  httpChallenge.entryPoint = "web";
+                };
+              "${letsencrypt}_dns".acme =
+                acme_template // {
+                  dnsChallenge = {
+                    resolvers = [
+                      "9.9.9.9:53"
+                      "8.8.8.8:53"
+                      "1.1.1.1:53"
+                    ];
+                    provider = cfg.acme.dns_provider;
+                  };
+                };
+            };
+          } // accesslog;
+        in traefik_config_format.generate static_config_file_name static_config;
+
+        dynamic_config_mounts = let
+          buildConfigFile = key: configFile: let
+            name = "${key}.yml";
+            file = traefik_config_format.generate name configFile.value;
+          in "${file}:${dynamic_config_directory_target}/${name}:ro";
+          buildConfigFiles = mapAttrsToList buildConfigFile;
+        in msf_lib.compose [
+             buildConfigFiles
+             msf_lib.filterEnabled
+           ] cfg.dynamic_config;
+
+        dns_credentials_file_option = let
+          file = system_cfg.secretsDirectory + cfg.acme.dns_provider;
+        in optional (builtins.pathExists file) "--env-file=${file}";
+
+      in {
+        "${cfg.service_name}" = {
+          image = "${cfg.image}:${cfg.version}";
+          cmd = [
+            "--configfile=${static_config_file_target}"
+          ];
+          ports = let
+            traefik_entrypoint_port_str = toString cfg.traefik_entrypoint_port;
+            mk_tls_port = cfg: let
+              port = toString cfg.port;
+            in "${port}:${port}";
+            mk_tls_ports = mapAttrsToList (_: mk_tls_port);
+          in [
+            "80:80"
+            "443:443"
+            "127.0.0.1:${traefik_entrypoint_port_str}:${traefik_entrypoint_port_str}"
+            "[::1]:${traefik_entrypoint_port_str}:${traefik_entrypoint_port_str}"
+          ] ++ mk_tls_ports cfg.tls_entrypoints;
+          volumes = [
+            "/etc/localtime:/etc/localtime:ro"
+            "/var/run/docker.sock:/var/run/docker.sock:ro"
+            "${static_config_file_source}:${static_config_file_target}:ro"
+            "traefik_letsencrypt:${cfg.acme.storage}"
+          ] ++ dynamic_config_mounts;
+          workdir = "/";
+          extraOptions = [
+            "--env=LEGO_EXPERIMENTAL_CNAME_SUPPORT=true"
+            "--network=${cfg.network_name}"
+            "--tmpfs=/tmp:rw,nodev,nosuid,noexec"
+            "--tmpfs=/run:rw,nodev,nosuid,noexec"
+            "--health-cmd=traefik healthcheck --ping"
+            "--health-interval=60s"
+            "--health-retries=3"
+            "--health-timeout=3s"
+          ] ++ dns_credentials_file_option;
         };
-        static_config = {
-          global.sendAnonymousUsage = true;
-          pilot.token = cfg.pilot_token;
-          ping = {};
-          log.level = cfg.logging_level;
-          api.dashboard = true;
-          #metrics:
-          #  prometheus: {}
-
-          providers = {
-            docker = {
-              network = cfg.network_name;
-              swarmMode = docker_cfg.swarm.enable;
-              exposedbydefault = false;
-            };
-            file = {
-              watch = true;
-              directory = dynamic_config_directory_target;
-            };
-          };
-
-          entryPoints = {
-            web = {
-              address = ":80";
-              http = {
-                redirections.entryPoint = {
-                  to = "websecure";
-                  scheme = "https";
-                };
-                middlewares = [ "${default-middleware}@file" ];
-              };
-            };
-            websecure = {
-              address = ":443";
-              http = {
-                middlewares = [ "${default-ssl-middleware}@file" ];
-                tls.certResolver = letsencrypt;
-              };
-            };
-            traefik = {
-              address = ":${toString cfg.traefik_entrypoint_port}";
-              http.middlewares = [ "${dashboard-middleware}@file" ];
-            };
-          } // generate_tls_entrypoints cfg.tls_entrypoints;
-
-          certificatesresolvers = {
-            ${letsencrypt}.acme =
-              acme_template // {
-                httpChallenge.entryPoint = "web";
-              };
-            "${letsencrypt}_dns".acme =
-              acme_template // {
-                dnsChallenge = {
-                  resolvers = [
-                    "9.9.9.9:53"
-                    "8.8.8.8:53"
-                    "1.1.1.1:53"
-                  ];
-                  provider = cfg.acme.dns_provider;
-                };
-              };
-          };
-        } // accesslog;
-      in traefik_config_format.generate static_config_file_name static_config;
-
-      dynamic_config_mounts = let
-        buildConfigFile = key: configFile: let
-          name = "${key}.yml";
-          file = traefik_config_format.generate name configFile.value;
-        in "${file}:${dynamic_config_directory_target}/${name}:ro";
-        buildConfigFiles = mapAttrsToList buildConfigFile;
-      in msf_lib.compose [
-           buildConfigFiles
-           msf_lib.filterEnabled
-         ] cfg.dynamic_config;
-
-      dns_credentials_file_option = let
-        file = system_cfg.secretsDirectory + cfg.acme.dns_provider;
-      in optional (builtins.pathExists file) "--env-file=${file}";
-
-    in {
-      "${cfg.service_name}" = {
-        image = "${cfg.image}:${cfg.version}";
-        cmd = [
-          "--configfile=${static_config_file_target}"
-        ];
-        ports = let
-          traefik_entrypoint_port_str = toString cfg.traefik_entrypoint_port;
-          mk_tls_port = cfg: let
-            port = toString cfg.port;
-          in "${port}:${port}";
-          mk_tls_ports = mapAttrsToList (_: mk_tls_port);
-        in [
-          "80:80"
-          "443:443"
-          "127.0.0.1:${traefik_entrypoint_port_str}:${traefik_entrypoint_port_str}"
-          "[::1]:${traefik_entrypoint_port_str}:${traefik_entrypoint_port_str}"
-        ] ++ mk_tls_ports cfg.tls_entrypoints;
-        volumes = [
-          "/etc/localtime:/etc/localtime:ro"
-          "/var/run/docker.sock:/var/run/docker.sock:ro"
-          "${static_config_file_source}:${static_config_file_target}:ro"
-          "traefik_letsencrypt:${cfg.acme.storage}"
-        ] ++ dynamic_config_mounts;
-        workdir = "/";
-        extraDockerOptions = [
-          "--env=LEGO_EXPERIMENTAL_CNAME_SUPPORT=true"
-          "--network=${cfg.network_name}"
-          "--tmpfs=/tmp:rw,nodev,nosuid,noexec"
-          "--tmpfs=/run:rw,nodev,nosuid,noexec"
-          "--health-cmd=traefik healthcheck --ping"
-          "--health-interval=60s"
-          "--health-retries=3"
-          "--health-timeout=3s"
-        ] ++ dns_credentials_file_option;
       };
     };
 
