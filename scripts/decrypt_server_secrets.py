@@ -1,7 +1,6 @@
 #! /usr/bin/env nix-shell
 #! nix-shell -i python3 --packages python3Packages.pynacl python3Packages.pyyaml
 
-# ---- Import needed modules ----
 import argparse
 import os
 import traceback
@@ -9,7 +8,6 @@ import yaml
 
 from base64 import b64decode
 
-# NaCL modules
 import nacl # type: ignore
 from nacl.encoding import RawEncoder, Base64Encoder # type: ignore
 from nacl.public   import PrivateKey, SealedBox  # type: ignore
@@ -19,10 +17,11 @@ from nacl.signing  import SigningKey # type: ignore
 from typing import Any, Dict
 
 
-# ---- Useful variables ----
+UTF8: str = 'utf-8'
 
-key_length: int = nacl.bindings.crypto_box_PUBLICKEYBYTES  #this is equal to 32
-private_key_signature: bytes = b'\x00\x00\x00\x40'
+PRIVATE_KEY_LENGTH: int = nacl.bindings.crypto_box_PUBLICKEYBYTES
+# Byte pattern anouncing the start of the actual private key bytes
+OPENSSH_PRIVATE_KEY_SIGNATURE: bytes = b'\x00\x00\x00\x40'
 
 
 def args_parser() -> argparse.ArgumentParser:
@@ -54,7 +53,7 @@ def decrypt_key(privkey: PrivateKey,
 def decrypt_secrets(key: bytes,
                     encrypted_secrets: str) -> str:
   box = SecretBox(key)
-  return decrypt(box, encrypted_secrets).decode('utf-8')
+  return decrypt(box, encrypted_secrets).decode(UTF8)
 
 
 # takes an OpenSSH Ed25519 private key string and transforms it into a Curve25519 private key
@@ -62,7 +61,7 @@ def extract_curve_private_key(priv_key) -> PrivateKey:
   # Strip off the first and last line
   openssh_priv_key = '\n'.join(priv_key.splitlines()[:-1][1:])
   openssh_priv_bytes = b64decode(openssh_priv_key)
-  priv_bytes = bytes_after(private_key_signature, key_length, openssh_priv_bytes)
+  priv_bytes = bytes_after(OPENSSH_PRIVATE_KEY_SIGNATURE, PRIVATE_KEY_LENGTH, openssh_priv_bytes)
   nacl_priv_ed = SigningKey(seed=priv_bytes, encoder=RawEncoder)
   return nacl_priv_ed.to_curve25519_private_key()
 
