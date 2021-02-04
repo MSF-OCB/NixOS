@@ -1,7 +1,7 @@
 settings.nix
 hardware-configuration.nix
 org-spec
-ocb-config
+org-config
 result
 *.swp
 
