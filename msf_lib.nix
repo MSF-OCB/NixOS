@@ -159,7 +159,7 @@ with lib;
                           , deploy_dir_name
                           , github_repo
                           , git_branch ? "main"
-                          , pre-compose_script ? "pre-compose.sh"
+                          , pre-compose_script ? "deploy/pre-compose.sh"
                           , extra_script ? ""
                           , restart ? false
                           , docker_compose_files ? [ "docker-compose.yml" ] }: let
