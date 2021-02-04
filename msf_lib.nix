@@ -157,7 +157,11 @@ with lib;
       };
       script = ''
         if [ ! -d "${deploy_dir}" ] || [ ! -d "${deploy_dir}/.git" ]; then
-          ${pkgs.coreutils}/bin/mkdir -p "${deploy_dir}"
+          if [ -d "${deploy_dir}" ]; then
+            # The directory exists but is not a git clone
+            ${pkgs.coreutils}/bin/rm --recursive --force "${deploy_dir}"
+          fi
+          ${pkgs.coreutils}/bin/mkdir --parent "${deploy_dir}"
           ${pkgs.git}/bin/git \
             -C "${deploy_dir}" \
             clone "git@github.com:MSF-OCB/${github_repo}.git" \
