@@ -118,7 +118,7 @@ with lib;
       };
     };
 
-    reset_git = { branch, git_options, indent ? 0}: let
+    reset_git = { branch, git_options, indent ? 0 }: let
       git = "${pkgs.git}/bin/git";
       indentStr = compose [ concatStrings (genList (const " ")) ];
       mkOptionsStr = concatStringsSep " ";
@@ -133,11 +133,62 @@ with lib;
       "clean -d --force"
       "pull"
     ];
+
+    mkDeploymentService = { config
+                          , deploy_dir_name
+                          , github_repo
+                          , git_branch ? "main"
+                          , pre-compose_script ? "pre-compose.sh" }: let
+      deploy_dir = "/opt/${deploy_dir_name}";
+      pre-compose_script_path = "${deploy_dir}/${pre-compose_script}";
+    in {
+      serviceConfig.Type = "oneshot";
+      path = with pkgs; [ nix ];
+      environment = let
+        inherit (config.settings.reverse_tunnel) private_key;
+      in {
+        # We need to set the NIX_PATH env var so that we can resolve <nixpkgs>
+        # references when using nix-shell.
+        inherit (config.environment.sessionVariables) NIX_PATH;
+        GIT_SSH_COMMAND = "${pkgs.openssh}/bin/ssh " +
+                          "-i ${private_key} " +
+                          "-o IdentitiesOnly=yes " +
+                          "-o StrictHostKeyChecking=yes";
+      };
+      script = ''
+        if [ ! -d "${deploy_dir}" ] || [ ! -d "${deploy_dir}/.git" ]; then
+          ${pkgs.coreutils}/bin/mkdir -p "${deploy_dir}"
+          ${pkgs.git}/bin/git \
+            -C "${deploy_dir}" \
+            clone "git@github.com:MSF-OCB/${github_repo}.git" \
+            "${deploy_dir}"
+        fi
+        ${reset_git { branch = git_branch; git_options = [ "-C" ''"${deploy_dir}"'' ]; }}
+
+        if [ -x "${pre-compose_script_path}" ]; then
+          # Run the script with the following additional variables in the environment
+          NIXOS_SECRETS_DIRECTORY="${config.settings.system.secretsDirectory}" \
+          NIXOS_DEPLOY_DIR="${deploy_dir}" \
+            "${pre-compose_script_path}"
+        else
+          echo "Pre-compose script (${pre-compose_script_path}) does not exist or is not executable, skipping."
+        fi
+
+        ${pkgs.docker-compose}/bin/docker-compose \
+          --project-directory "${deploy_dir}" \
+          --file "${deploy_dir}/docker-compose.yml" \
+          --file "${deploy_dir}/docker-compose.override.yml" \
+          --no-ansi \
+          up \
+          --detach \
+          --remove-orphans
+      '';
+    };
   in {
     inherit compose applyTwice filterEnabled ifPathExists
             host_name_type empty_str_type pub_key_type
             user_roles formats
-            reset_git;
+            reset_git mkDeploymentService;
   };
 }
 
