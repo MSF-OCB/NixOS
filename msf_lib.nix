@@ -201,9 +201,7 @@ with lib;
           --no-ansi \
           ${if restart
             then "restart"
-            else ''up \
-                   --detach \
-                   --remove-orphans''
+            else ''up --detach --remove-orphans''
           }
       '';
     };
