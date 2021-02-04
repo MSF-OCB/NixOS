@@ -197,7 +197,7 @@ with lib;
 
         ${pkgs.docker-compose}/bin/docker-compose \
           --project-directory "${deploy_dir}" \
-          ${concatMapStringsSep " " (s: ''--file "${s}"'') docker_compose_files} \
+          ${concatMapStringsSep " " (s: ''--file "${deploy_dir}/${s}"'') docker_compose_files} \
           --no-ansi \
           ${if restart
             then "restart"
