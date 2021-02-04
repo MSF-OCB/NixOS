@@ -118,7 +118,9 @@ with lib;
       };
     };
 
-    reset_git = { branch, git_options, indent ? 0 }: let
+    reset_git = { branch
+                , git_options
+                , indent ? 0 }: let
       git = "${pkgs.git}/bin/git";
       indentStr = compose [ concatStrings (genList (const " ")) ];
       mkOptionsStr = concatStringsSep " ";
@@ -134,11 +136,33 @@ with lib;
       "pull"
     ];
 
+    clone_and_reset_git = { clone_dir
+                          , github_repo
+                          , branch
+                          , git_options ? []
+                          , indent ? 0 }: ''
+        if [ ! -d "${clone_dir}" ] || [ ! -d "${clone_dir}/.git" ]; then
+          if [ -d "${clone_dir}" ]; then
+            # The directory exists but is not a git clone
+            ${pkgs.coreutils}/bin/rm --recursive --force "${clone_dir}"
+          fi
+          ${pkgs.coreutils}/bin/mkdir --parent "${clone_dir}"
+          ${pkgs.git}/bin/git \
+            clone "git@github.com:MSF-OCB/${github_repo}.git" \
+            "${clone_dir}"
+        fi
+        ${reset_git { inherit branch indent;
+                      git_options = git_options ++ [ "-C" ''"${clone_dir}"'' ]; }}
+    '';
+
     mkDeploymentService = { config
                           , deploy_dir_name
                           , github_repo
                           , git_branch ? "main"
-                          , pre-compose_script ? "pre-compose.sh" }: let
+                          , pre-compose_script ? "pre-compose.sh"
+                          , extra_script ? ""
+                          , restart ? false
+                          , docker_compose_files ? [ "docker-compose.yml" ] }: let
       deploy_dir = "/opt/${deploy_dir_name}";
       pre-compose_script_path = "${deploy_dir}/${pre-compose_script}";
     in {
@@ -156,18 +180,9 @@ with lib;
                           "-o StrictHostKeyChecking=yes";
       };
       script = ''
-        if [ ! -d "${deploy_dir}" ] || [ ! -d "${deploy_dir}/.git" ]; then
-          if [ -d "${deploy_dir}" ]; then
-            # The directory exists but is not a git clone
-            ${pkgs.coreutils}/bin/rm --recursive --force "${deploy_dir}"
-          fi
-          ${pkgs.coreutils}/bin/mkdir --parent "${deploy_dir}"
-          ${pkgs.git}/bin/git \
-            -C "${deploy_dir}" \
-            clone "git@github.com:MSF-OCB/${github_repo}.git" \
-            "${deploy_dir}"
-        fi
-        ${reset_git { branch = git_branch; git_options = [ "-C" ''"${deploy_dir}"'' ]; }}
+        ${clone_and_reset_git { inherit github_repo;
+                                clone_dir = deploy_dir;
+                                branch = git_branch; }}
 
         if [ -x "${pre-compose_script_path}" ]; then
           # Run the script with the following additional variables in the environment
@@ -178,21 +193,25 @@ with lib;
           echo "Pre-compose script (${pre-compose_script_path}) does not exist or is not executable, skipping."
         fi
 
+        ${extra_script}
+
         ${pkgs.docker-compose}/bin/docker-compose \
           --project-directory "${deploy_dir}" \
-          --file "${deploy_dir}/docker-compose.yml" \
-          --file "${deploy_dir}/docker-compose.override.yml" \
+          ${concatMapStringsSep " " (s: ''--file "${s}"'') docker_compose_files} \
           --no-ansi \
-          up \
-          --detach \
-          --remove-orphans
+          ${if restart
+            then "restart"
+            else ''up \
+                   --detach \
+                   --remove-orphans''
+          }
       '';
     };
   in {
     inherit compose applyTwice filterEnabled ifPathExists
             host_name_type empty_str_type pub_key_type
             user_roles formats
-            reset_git mkDeploymentService;
+            reset_git clone_and_reset_git mkDeploymentService;
   };
 }
 
