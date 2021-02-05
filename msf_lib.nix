@@ -162,6 +162,7 @@ with lib;
                           , pre-compose_script ? "deploy/pre-compose.sh"
                           , extra_script ? ""
                           , restart ? false
+                          , force_build ? false
                           , docker_compose_files ? [ "docker-compose.yml" ] }: let
       deploy_dir = "/opt/${deploy_dir_name}";
       pre-compose_script_path = "${deploy_dir}/${pre-compose_script}";
@@ -201,7 +202,7 @@ with lib;
           --no-ansi \
           ${if restart
             then "restart"
-            else ''up --detach --remove-orphans''
+            else ''up --detach --remove-orphans ${optionalString force_build "--build"}''
           }
       '';
     };
