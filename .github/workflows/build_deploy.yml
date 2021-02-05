@@ -21,27 +21,39 @@ jobs:
       matrix:
         group_id: [ 0, 1, 2, 3, 4 ]
     steps:
-      - uses: 'actions/checkout@v2'
-      - uses: 'actions/checkout@v2'
+      - name: Checkout the NixOS repo
+        uses: 'actions/checkout@v2'
+
+      - name: Checkout the Nixos-OCB-Config repo
+        uses: 'actions/checkout@v2'
         with:
           repository: 'msf-ocb/nixos-ocb-config'
           path: 'org-config'
           ssh-key: '${{ secrets.NIXOS_OCB_CONFIG_DEPLOY_KEY }}'
-      - uses: 'cachix/install-nix-action@master'
+
+      - name: Install the Nix package manager
+        uses: 'cachix/install-nix-action@master'
         with:
           nix_path: 'nixpkgs=https://nix-channel-redirect.ocb.msf.org/nixexprs.tar.xz'
-      - uses: 'cachix/cachix-action@master'
+
+      - name: Configure the Panic Button Cachix cache
+        uses: 'cachix/cachix-action@master'
         with:
           name: 'panic-button'
           skipPush: true
-      - run: './.github/scripts/build.py --group_amount 5 --group_id ${{ matrix.group_id }}'
+
+      - name: Build the NixOS configurations
+        run: './.github/scripts/build.py --group_amount 5 --group_id ${{ matrix.group_id }}'
+
 
   deploy:
     runs-on: 'ubuntu-latest'
     needs: build
     steps:
-      - uses: 'msf-ocb/nixos-deploy@master'
+      - name: Auto-deploy the NixOS config to the requested servers
+        uses: 'msf-ocb/nixos-deploy@master'
         with:
           nixos_robot_key: '${{ secrets.NIXOS_ROBOT_KEY }}'
           nixos_deploy_service: 'nixos_rebuild_config.service'
+
 
