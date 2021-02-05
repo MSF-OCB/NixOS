@@ -19,7 +19,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     strategy:
       matrix:
-        group_id: [ 0, 1, 2, 3 ]
+        group_id: [ 0, 1, 2, 3, 4 ]
     steps:
       - uses: 'actions/checkout@v2'
       - uses: 'actions/checkout@v2'
@@ -34,7 +34,7 @@ jobs:
         with:
           name: 'panic-button'
           skipPush: true
-      - run: './.github/scripts/build.py --group_amount 4 --group_id ${{ matrix.group_id }}'
+      - run: './.github/scripts/build.py --group_amount 5 --group_id ${{ matrix.group_id }}'
 
   deploy:
     runs-on: 'ubuntu-latest'
