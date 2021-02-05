@@ -64,20 +64,26 @@ in {
       };
     };
 
-    # We run the upgrade service once at night and once during the day, to catch the situation
-    # where the server is turned off every evening.
-    # When the service is being run during the day, we will be outside of the reboot window.
     system.autoUpgrade = {
       enable       = true;
       allowReboot  = true;
       rebootWindow = { lower = "01:00"; upper = "05:00"; };
-      # Run the service at 02:00 during the night and at 12:00 during the day
-      dates        = "Mon 02,12:00";
+      # We override this below, since this option does not accept
+      # a list of multiple timings.
+      dates        = "";
     };
 
     systemd.services = {
-      nixos-upgrade.serviceConfig = {
-        TimeoutStartSec = "2 days";
+      nixos-upgrade = {
+        serviceConfig = {
+          TimeoutStartSec = "2 days";
+        };
+        # We run the upgrade service once at night and twice during the day,
+        # to catch the situation where the server is turned off during the night
+        # or during the weekend (which can be anywhere from Thursday to Sunday).
+        # When the service is being run during the day, we will be outside the
+        # reboot window and the config will not be switched.
+        startAt = mkForce [ "Fri 12:00" "Sun 12:00" "Mon 02:00" ];
       };
 
       nixos_sync_config = mkIf cfg.sync_config.enable {
