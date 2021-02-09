@@ -150,8 +150,7 @@ in {
 
       nixos_decrypt_secrets = {
         description   = "Decrypt the server secrets";
-        after         = [ "nixos_sync_config.service" ];
-        before        = [ "nixos-upgrade.service" ];
+        after         = [ "nixos-upgrade.service" ];
         wantedBy      = [ "nixos-upgrade.service" ];
         serviceConfig = {
           Type = "oneshot";
@@ -176,9 +175,6 @@ in {
 
       nixos_rebuild_config = {
         description   = "Rebuild the NixOS config without doing an upgrade";
-        after         = [ "nixos_decrypt_secrets.service" ];
-        wants         = [ "nixos_decrypt_secrets.service"
-                          "nixos_sync_config.service" ];
         serviceConfig = {
           Type = "oneshot";
         };
