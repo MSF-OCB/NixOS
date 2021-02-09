@@ -186,8 +186,8 @@ with lib;
                                 branch = git_branch; }}
 
         # Include the following additional variables in the environment
-        export NIXOS_SECRETS_DIRECTORY="${config.settings.system.secretsDirectory}" \
-               NIXOS_DEPLOY_DIR="${deploy_dir}"
+        export MSFOCB_SECRETS_DIRECTORY="${config.settings.system.secretsDirectory}" \
+               MSFOCB_DEPLOY_DIR="${deploy_dir}"
 
         if [ -x "${pre-compose_script_path}" ]; then
           "${pre-compose_script_path}"
