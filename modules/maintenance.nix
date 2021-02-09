@@ -175,6 +175,7 @@ in {
 
       nixos_rebuild_config = {
         description   = "Rebuild the NixOS config without doing an upgrade";
+        wants = [ "nixos_sync_config.service" "nixos_decrypt_secrets.service" ];
         serviceConfig = {
           Type = "oneshot";
         };
