@@ -185,11 +185,12 @@ with lib;
                                 clone_dir = deploy_dir;
                                 branch = git_branch; }}
 
+        # Include the following additional variables in the environment
+        export NIXOS_SECRETS_DIRECTORY="${config.settings.system.secretsDirectory}" \
+               NIXOS_DEPLOY_DIR="${deploy_dir}"
+
         if [ -x "${pre-compose_script_path}" ]; then
-          # Run the script with the following additional variables in the environment
-          NIXOS_SECRETS_DIRECTORY="${config.settings.system.secretsDirectory}" \
-          NIXOS_DEPLOY_DIR="${deploy_dir}" \
-            "${pre-compose_script_path}"
+          "${pre-compose_script_path}"
         else
           echo "Pre-compose script (${pre-compose_script_path}) does not exist or is not executable, skipping."
         fi
