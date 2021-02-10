@@ -162,12 +162,15 @@ in {
         script = let
           python = pkgs.python3.withPackages (pkgs: with pkgs; [ pynacl pyyaml ]);
         in ''
+          ${pkgs.coreutils}/bin/mkdir --parent "${sys_cfg.secretsDirectory}"
+
           ${python.interpreter} \
             ${../scripts/decrypt_server_secrets.py} \
             --server_name "${config.networking.hostName}" \
             --secrets_path "${sys_cfg.secrets_src_directory}" \
             --output_path "${sys_cfg.secretsDirectory}" \
             --private_key_file "${tunnel_cfg.private_key}"
+
           chown --recursive root:wheel "${sys_cfg.secretsDirectory}"
           chmod --recursive u=rwX,g=rX,o= "${sys_cfg.secretsDirectory}"
         '';
