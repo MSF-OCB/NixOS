@@ -166,6 +166,9 @@ with lib;
                           , docker_compose_files ? [ "docker-compose.yml" ] }: let
       deploy_dir = "/opt/${deploy_dir_name}";
       pre-compose_script_path = "${deploy_dir}/${pre-compose_script}";
+      docker_repo_url = (builtins.readFile ${config.settings.system.secretsDirectory}/docker_private_repo_url);
+      docker_repo_user = (builtins.readFile ${config.settings.system.secretsDirectory}/docker_private_repo_user);
+      docker_repo_password = (builtins.readFile ${config.settings.system.secretsDirectory}/docker_repo_password);
     in {
       serviceConfig.Type = "oneshot";
       path = with pkgs; [ nix ];
@@ -196,6 +199,10 @@ with lib;
         fi
 
         ${extra_script}
+
+        #login to our private docker repo (hosted on github)
+
+        ${pkgs.docker-compose}/bin/docker login -u ${docker_repo_user} -p ${docker_repo_password} ${docker_repo_url}
 
         ${pkgs.docker-compose}/bin/docker-compose \
           --project-directory "${deploy_dir}" \
