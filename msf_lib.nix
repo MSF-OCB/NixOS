@@ -203,7 +203,7 @@ with lib;
           # Load private repo variables
           source ${config.settings.system.secretsDirectory}/docker_private_repo_creds
 
-          ${pkgs.docker}/bin/docker login -u ''${DOCKER_REPO_USER} -p ''${DOCKER_REPO_PASSWORD} ''${DOCKER_REPO_URL}
+          ${pkgs.docker}/bin/docker login -u ''${DOCKER_PRIVATE_REPO_USER} -p ''${DOCKER_PRIVATE_REPO_PASS} ''${DOCKER_PRIVATE_REPO_URL}
         fi
         
 
