@@ -197,6 +197,16 @@ with lib;
 
         ${extra_script}
 
+        #login to our private docker repo (hosted on github)
+
+        if [ -f ${config.settings.system.secretsDirectory}/docker_private_repo_creds ]; then
+          # Load private repo variables
+          source ${config.settings.system.secretsDirectory}/docker_private_repo_creds
+
+          ${pkgs.docker}/bin/docker login -u ''${DOCKER_REPO_USER} -p ''${DOCKER_REPO_PASSWORD} ''${DOCKER_REPO_URL}
+        fi
+        
+
         ${pkgs.docker-compose}/bin/docker-compose \
           --project-directory "${deploy_dir}" \
           ${concatMapStringsSep " " (s: ''--file "${deploy_dir}/${s}"'') docker_compose_files} \
