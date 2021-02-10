@@ -180,14 +180,30 @@ with lib;
                           "-o IdentitiesOnly=yes " +
                           "-o StrictHostKeyChecking=yes";
       };
-      script = ''
+      script = let
+        inherit (config.settings.system) secretsDirectory;
+        docker_credentials_file = "${secretsDirectory}/docker_private_repo_creds";
+      in ''
         ${clone_and_reset_git { inherit github_repo;
                                 clone_dir = deploy_dir;
                                 branch = git_branch; }}
 
         # Include the following additional variables in the environment
-        export MSFOCB_SECRETS_DIRECTORY="${config.settings.system.secretsDirectory}" \
+        export MSFOCB_SECRETS_DIRECTORY="${secretsDirectory}" \
                MSFOCB_DEPLOY_DIR="${deploy_dir}"
+
+        # Login to our private docker repo (hosted on github)
+        if [ -f ${docker_credentials_file} ]; then
+          # Load private repo variables
+          source ${docker_credentials_file}
+
+          ${pkgs.docker}/bin/docker login \
+            --username "''${DOCKER_PRIVATE_REPO_USER}" \
+            --password "''${DOCKER_PRIVATE_REPO_PASS}" \
+            "''${DOCKER_PRIVATE_REPO_URL}"
+        else
+          echo "No docker credentials file found, skipping docker login."
+        fi
 
         if [ -x "${pre-compose_script_path}" ]; then
           "${pre-compose_script_path}"
