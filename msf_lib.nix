@@ -195,8 +195,6 @@ with lib;
           echo "Pre-compose script (${pre-compose_script_path}) does not exist or is not executable, skipping."
         fi
 
-        ${extra_script}
-
         #login to our private docker repo (hosted on github)
 
         if [ -f ${config.settings.system.secretsDirectory}/docker_private_repo_creds ]; then
@@ -206,6 +204,8 @@ with lib;
           ${pkgs.docker}/bin/docker login -u ''${DOCKER_PRIVATE_REPO_USER} -p ''${DOCKER_PRIVATE_REPO_PASS} ''${DOCKER_PRIVATE_REPO_URL}
         fi
         
+
+        ${extra_script}
 
         ${pkgs.docker-compose}/bin/docker-compose \
           --project-directory "${deploy_dir}" \
