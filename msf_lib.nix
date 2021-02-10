@@ -189,12 +189,6 @@ with lib;
         export MSFOCB_SECRETS_DIRECTORY="${config.settings.system.secretsDirectory}" \
                MSFOCB_DEPLOY_DIR="${deploy_dir}"
 
-        if [ -x "${pre-compose_script_path}" ]; then
-          "${pre-compose_script_path}"
-        else
-          echo "Pre-compose script (${pre-compose_script_path}) does not exist or is not executable, skipping."
-        fi
-
         #login to our private docker repo (hosted on github)
 
         if [ -f ${config.settings.system.secretsDirectory}/docker_private_repo_creds ]; then
@@ -203,7 +197,12 @@ with lib;
 
           ${pkgs.docker}/bin/docker login -u ''${DOCKER_PRIVATE_REPO_USER} -p ''${DOCKER_PRIVATE_REPO_PASS} ''${DOCKER_PRIVATE_REPO_URL}
         fi
-        
+
+        if [ -x "${pre-compose_script_path}" ]; then
+          "${pre-compose_script_path}"
+        else
+          echo "Pre-compose script (${pre-compose_script_path}) does not exist or is not executable, skipping."
+        fi
 
         ${extra_script}
 
