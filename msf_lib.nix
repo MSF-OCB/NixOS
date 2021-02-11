@@ -224,8 +224,8 @@ with lib;
             else ''up --detach --remove-orphans ${optionalString force_build "--build"}''
           }
 
-          if [ "${docker_login_successful}" = true ]; then
-            docker logout "${DOCKER_PRIVATE_REPO_URL}"
+          if [ "''${docker_login_successful}" = true ]; then
+            ${pkgs.docker}/bin/docker logout "''${DOCKER_PRIVATE_REPO_URL}"
           fi
       '';
     };
