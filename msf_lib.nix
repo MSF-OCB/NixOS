@@ -201,6 +201,8 @@ with lib;
             --username "''${DOCKER_PRIVATE_REPO_USER}" \
             --password "''${DOCKER_PRIVATE_REPO_PASS}" \
             "''${DOCKER_PRIVATE_REPO_URL}"
+
+          docker_login_successful=true
         else
           echo "No docker credentials file found, skipping docker login."
         fi
@@ -221,6 +223,10 @@ with lib;
             then "restart"
             else ''up --detach --remove-orphans ${optionalString force_build "--build"}''
           }
+
+          if [ "${docker_login_successful}" = true ]; then
+            docker logout "${DOCKER_PRIVATE_REPO_URL}"
+          fi
       '';
     };
   in {
