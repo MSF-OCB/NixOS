@@ -213,6 +213,8 @@ with lib;
 
         ${extra_script}
 
+        ${pkgs.docker-compose}/bin/docker-compose pull
+
         ${pkgs.docker-compose}/bin/docker-compose \
           --project-directory "${deploy_dir}" \
           ${concatMapStringsSep " " (s: ''--file "${deploy_dir}/${s}"'') docker_compose_files} \
