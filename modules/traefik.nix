@@ -354,10 +354,6 @@ in
              msf_lib.filterEnabled
            ] cfg.dynamic_config;
 
-        dns_credentials_file_option = let
-          file = system_cfg.secretsDirectory + cfg.acme.dns_provider;
-        in optional (builtins.pathExists file) "--env-file=${file}";
-
       in {
         "${cfg.service_name}" = {
           image = "${cfg.image}:${cfg.version}";
@@ -384,7 +380,15 @@ in
           ] ++ dynamic_config_mounts;
           workdir = "/";
           extraOptions = [
+            # Make Lego resolve CNAMEs when creating DNS records
+            # to perform Let's Encrypt DNS challenges
             "--env=LEGO_EXPERIMENTAL_CNAME_SUPPORT=true"
+            # AWS route53 DNS zone credentials,
+            # these can be loaded through an env file, see below
+            "--env=AWS_ACCESS_KEY_ID"
+            "--env=AWS_SECRET_ACCESS_KEY"
+            "--env=AWS_HOSTED_ZONE_ID"
+
             "--network=${cfg.network_name}"
             "--tmpfs=/tmp:rw,nodev,nosuid,noexec"
             "--tmpfs=/run:rw,nodev,nosuid,noexec"
@@ -392,7 +396,7 @@ in
             "--health-interval=60s"
             "--health-retries=3"
             "--health-timeout=3s"
-          ] ++ dns_credentials_file_option;
+          ];
         };
       };
     };
@@ -404,31 +408,32 @@ in
       traefik_docker_service_name = "docker-${cfg.service_name}";
       traefik_docker_service = "${traefik_docker_service_name}.service";
     in {
-      docker-nixos-traefik-create-network = {
-        inherit (cfg) enable;
-        description = "Create the network for Traefik.";
-        before      = [ traefik_docker_service ];
-        requiredBy  = [ traefik_docker_service ];
-        serviceConfig = {
-          Type = "oneshot";
+      "${traefik_docker_service_name}" = let
+        docker    = "${pkgs.docker}/bin/docker";
+        dns_credentials_file = system_cfg.secretsDirectory + cfg.acme.dns_provider;
+      in {
+        unitConfig = {
+          # The preceding "-" means that non-existing files will be ignored
+          # See https://www.freedesktop.org/software/systemd/man/systemd.exec#EnvironmentFile=
+          EnvironmentFile = "-${dns_credentials_file}";
         };
-        script = ''
+        # Restore the defaults to have proper logging in the systemd journal.
+        # See GitHub NixOS/nixpkgs issue #102768 and PR #102769
+        # https://github.com/NixOS/nixpkgs/issues/102768
+        # https://github.com/NixOS/nixpkgs/pull/102769
+        serviceConfig = {
+          StandardOutput = mkForce "journal";
+          StandardError  = mkForce "inherit";
+        };
+        # Create the Traefik docker network in advance if it does not exist yet
+        preStart = ''
           if [ -z $(${docker} network list --filter "name=^${cfg.network_name}$" --quiet) ]; then
             ${docker} network create ${cfg.network_name}
           fi
         '';
       };
 
-      # Restore the defaults to have proper logging in the systemd journal.
-      # See GitHub NixOS/nixpkgs issue #102768 and PR #102769
-      "${traefik_docker_service_name}" = {
-        serviceConfig = {
-          StandardOutput = mkForce "journal";
-          StandardError  = mkForce "inherit";
-        };
-      };
-
-      "${cfg.service_name}-pull" = {
+      "${traefik_docker_service_name}-pull" = {
         inherit (cfg) enable;
         description   = "Automatically pull the latest version of the Traefik image";
         serviceConfig = {

@@ -162,8 +162,8 @@ with lib;
         in ''
           for file in ${files}; do
             if [ -f ''${file} ]; then
-              chown root:root ''${file}
-              chmod 0400 ''${file}
+              ${pkgs.coreutils}/bin/chown root:root ''${file}
+              ${pkgs.coreutils}/bin/chmod 0400 ''${file}
             fi
           done
         '';
@@ -182,6 +182,26 @@ with lib;
           fi
         '';
         deps = [ "specialfs" "users" ];
+      };
+      decrypt_secrets = {
+        text = let
+          python = pkgs.python3.withPackages (pkgs: with pkgs; [ pynacl pyyaml ]);
+        in ''
+          echo "decrypting the server secrets..."
+          ${pkgs.coreutils}/bin/mkdir --parent "${cfg.secretsDirectory}"
+
+          ${python.interpreter} \
+            ${../scripts/decrypt_server_secrets.py} \
+            --server_name "${config.networking.hostName}" \
+            --secrets_path "${cfg.secrets_src_directory}" \
+            --output_path "${cfg.secretsDirectory}" \
+            --private_key_file "${tnl_cfg.private_key}"
+
+          ${pkgs.coreutils}/bin/chown --recursive root:wheel "${cfg.secretsDirectory}"
+          ${pkgs.coreutils}/bin/chmod --recursive u=rwX,g=rX,o= "${cfg.secretsDirectory}"
+          echo "decrypted the server secrets."
+        '';
+        deps = [ "copy_tunnel_key" ];
       };
 #      opt_acl = {
 #        text = ''

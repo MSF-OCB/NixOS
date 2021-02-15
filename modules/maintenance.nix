@@ -148,39 +148,10 @@ in {
         '';
       };
 
-      nixos_decrypt_secrets = {
-        description   = "Decrypt the server secrets";
-        after         = [ "nixos-upgrade.service" ];
-        wantedBy      = [ "nixos-upgrade.service" ];
-        serviceConfig = {
-          Type = "oneshot";
-        };
-        environment = {
-          # We need to set the NIX_PATH env var so that we can resolve <nixpkgs>
-          inherit (config.environment.sessionVariables) NIX_PATH;
-        };
-        script = let
-          python = pkgs.python3.withPackages (pkgs: with pkgs; [ pynacl pyyaml ]);
-        in ''
-          ${pkgs.coreutils}/bin/mkdir --parent "${sys_cfg.secretsDirectory}"
-
-          ${python.interpreter} \
-            ${../scripts/decrypt_server_secrets.py} \
-            --server_name "${config.networking.hostName}" \
-            --secrets_path "${sys_cfg.secrets_src_directory}" \
-            --output_path "${sys_cfg.secretsDirectory}" \
-            --private_key_file "${tunnel_cfg.private_key}"
-
-          chown --recursive root:wheel "${sys_cfg.secretsDirectory}"
-          chmod --recursive u=rwX,g=rX,o= "${sys_cfg.secretsDirectory}"
-        '';
-      };
-
       nixos_rebuild_config = {
         description   = "Rebuild the NixOS config without doing an upgrade";
-        wants = [ "nixos_sync_config.service" "nixos_decrypt_secrets.service" ];
+        wants = [ "nixos_sync_config.service" ];
         after = [ "nixos_sync_config.service" ];
-        before = [ "nixos_decrypt_secrets.service" ];
         serviceConfig = {
           Type = "oneshot";
         };

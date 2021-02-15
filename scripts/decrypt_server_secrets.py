@@ -80,7 +80,7 @@ def do_write_file(output_path: str,
                   secret: Dict):
   with open(output_path, 'w') as f:
     f.write(secret['content'])
-    print(f"Wrote {output_path}")
+    print(f"wrote {output_path}")
 
 
 def write_files(output_path_prefix: str,
