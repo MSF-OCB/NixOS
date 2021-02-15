@@ -411,18 +411,17 @@ in
       "${traefik_docker_service_name}" = let
         dns_credentials_file = system_cfg.secretsDirectory + cfg.acme.dns_provider;
       in {
-        unitConfig = {
+        serviceConfig = {
+          # Restore the defaults to have proper logging in the systemd journal.
+          # See GitHub NixOS/nixpkgs issue #102768 and PR #102769
+          # https://github.com/NixOS/nixpkgs/issues/102768
+          # https://github.com/NixOS/nixpkgs/pull/102769
+          StandardOutput = mkForce "journal";
+          StandardError  = mkForce "inherit";
+
           # The preceding "-" means that non-existing files will be ignored
           # See https://www.freedesktop.org/software/systemd/man/systemd.exec#EnvironmentFile=
           EnvironmentFile = "-${dns_credentials_file}";
-        };
-        # Restore the defaults to have proper logging in the systemd journal.
-        # See GitHub NixOS/nixpkgs issue #102768 and PR #102769
-        # https://github.com/NixOS/nixpkgs/issues/102768
-        # https://github.com/NixOS/nixpkgs/pull/102769
-        serviceConfig = {
-          StandardOutput = mkForce "journal";
-          StandardError  = mkForce "inherit";
         };
         # Create the Traefik docker network in advance if it does not exist yet
         preStart = ''
