@@ -409,7 +409,6 @@ in
       traefik_docker_service = "${traefik_docker_service_name}.service";
     in {
       "${traefik_docker_service_name}" = let
-        docker    = "${pkgs.docker}/bin/docker";
         dns_credentials_file = system_cfg.secretsDirectory + cfg.acme.dns_provider;
       in {
         unitConfig = {
