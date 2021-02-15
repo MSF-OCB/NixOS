@@ -171,7 +171,14 @@ with lib;
       };
       copy_tunnel_key = {
         text = let
-          install = source: ''install -o tunnel -g nogroup -m 0400 "${source}" "${tnl_cfg.private_key}"'';
+          install = source: ''
+            ${pkgs.coreutils}/bin/install \
+              -o tunnel \
+              -g nogroup \
+              -m 0400 \
+              "${source}" \
+              "${tnl_cfg.private_key}"
+          '';
         in ''
           if [ -f "${private_key_path}" ]; then
             ${install private_key_path}
