@@ -206,7 +206,7 @@ with lib;
 
           ${pkgs.coreutils}/bin/chown --recursive root:wheel "${cfg.secretsDirectory}"
           ${pkgs.coreutils}/bin/chmod --recursive u=rwX,g=rX,o= "${cfg.secretsDirectory}"
-          echo "decrypted the server secrets."
+          echo "decrypted the server secrets"
         '';
         deps = [ "copy_tunnel_key" ];
       };
