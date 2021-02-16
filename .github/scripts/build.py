@@ -88,6 +88,13 @@ def build_configs(build_dir, group_amount, group_id):
   configs = sorted(glob.glob(os.path.join('.', 'org-config', 'hosts', '*.nix')))
   length = len(configs)
 
+  # Let's imagine 10 configs, and 4 builders, in that case the slice_size is 10 / 4 = 2
+  # and the module is 10 % 4 = 2. We thus need to add an additional config to the first
+  # two groups, and not to the two following ones. The below formulas do exactly that:
+  # 1: from 0 * 2 + min(0, 2) = 0, size 2 + 1 = 3 (because 0 <  2), so [0:3]  = [0, 1, 2]
+  # 2: from 1 * 2 + min(1, 2) = 3, size 2 + 1 = 3 (because 1 <  2), so [3:6]  = [3, 4, 5]
+  # 3: from 2 * 2 + min(2, 2) = 6, size 2 + 0 = 2 (because 2 >= 2), so [6:8]  = [6, 7]
+  # 4: from 3 * 2 + min(3, 2) = 8, size 2 + 0 = 2 (because 3 >= 2), so [8:10] = [8, 9]
   slice_size = length // group_amount
   modulo = length % group_amount
   begin  = group_id * slice_size + min(group_id, modulo)
