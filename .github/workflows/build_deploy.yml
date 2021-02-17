@@ -49,6 +49,11 @@ jobs:
           ps -aef | grep bash
           id
           cat /etc/group
+          for i in /home/runner/work/_temp/*.sh; do
+            echo "Printing ${i}:"
+            echo
+            cat "${i}"
+            echo
 
       - name: Restore the cached nix store
         uses: 'actions/cache@v2'
@@ -67,8 +72,8 @@ jobs:
           name: 'panic-button'
           skipPush: true
 
-      - name: Build the NixOS configurations
-        run: './.github/scripts/build.py --group_amount 5 --group_id ${{ matrix.group_id }}'
+#      - name: Build the NixOS configurations
+#        run: './.github/scripts/build.py --group_amount 5 --group_id ${{ matrix.group_id }}'
 
 
   deploy:
