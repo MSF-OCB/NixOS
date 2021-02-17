@@ -71,7 +71,7 @@ jobs:
 
       - name: Sync the new nix store back
         run: |
-          sudo rsync --archive --hard-links /nix/store/ ~/nix_store_copy
+          sudo rsync --archive --hard-links --delete /nix/store/ ~/nix_store_copy
 
 
   deploy:
