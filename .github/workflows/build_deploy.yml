@@ -39,6 +39,7 @@ jobs:
           nix_path: 'nixpkgs=https://nix-channel-redirect.ocb.msf.org/nixexprs.tar.xz'
 
       - name: Restore the cached nix store
+        id: cache-nix-store
         uses: 'actions/cache@v2'
         env:
           cache-name: 'cache-nix-store'
@@ -48,6 +49,11 @@ jobs:
           restore-keys: |
             ${{ env.cache-name }}-builder-id-${{ matrix.group_id }}-
             ${{ env.cache-name }}-builder-id-
+
+      - name: Create an empty nix store when no cache hit
+        if: steps.cache-nix-store.outputs.cache-hit != 'true'
+        run: |
+          mkdir --parent ~/nix_store_copy
 
       - name: Sync the restored nix store
         run: |
