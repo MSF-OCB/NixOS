@@ -41,10 +41,12 @@ jobs:
       - name: Add the runner user to the nixbld group
         run: |
           sudo usermod -a -G nixbld "$(whoami)"
+          newgrp nixbld
 
       - name: Inspect our user's group memberships
         run: |
           id
+          cat /etc/group
 
       - name: Restore the cached nix store
         uses: 'actions/cache@v2'
@@ -54,8 +56,8 @@ jobs:
           path: '/nix/store'
           key: ${{ env.cache-name }}-builder-id-${{ matrix.group_id }}-${{ github.run_id }}
           restore-keys: |
-            ${{ env.cache-name }}-builder-id-${{ matrix.group_id }}-
-            ${{ env.cache-name }}-builder-id-
+            ignore-${{ env.cache-name }}-builder-id-${{ matrix.group_id }}-
+            ignore-${{ env.cache-name }}-builder-id-
 
       - name: Configure the Panic Button Cachix cache
         uses: 'cachix/cachix-action@master'
