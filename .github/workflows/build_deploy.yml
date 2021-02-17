@@ -59,7 +59,7 @@ jobs:
       - name: Sync the restored nix store
         run: |
           sudo rsync --archive --hard-links ~/nix_store_copy/ /nix/store
-          find /nix/store/ -mindepth 1 | sudo xargs -d '\n' chown root:root
+          find /nix/store/ -mindepth 1 ! -type l | sudo xargs -d '\n' chown root:root
 
       - name: Configure the Panic Button Cachix cache
         uses: 'cachix/cachix-action@master'
