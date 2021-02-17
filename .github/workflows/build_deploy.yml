@@ -38,6 +38,13 @@ jobs:
         with:
           nix_path: 'nixpkgs=https://nix-channel-redirect.ocb.msf.org/nixexprs.tar.xz'
 
+      - name: Inspect the nix store permissions
+        run: |
+          id
+          ls -la /nix/
+          mount | grep store
+          findmnt
+
       - name: Restore the cached nix store
         uses: 'actions/cache@v2'
         env:
@@ -46,8 +53,8 @@ jobs:
           path: '/nix/store'
           key: ${{ env.cache-name }}-builder-id-${{ matrix.group_id }}-${{ github.run_id }}
           restore-keys: |
-            ${{ env.cache-name }}-builder-id-${{ matrix.group_id }}-
-            ${{ env.cache-name }}-builder-id-
+            norestore-${{ env.cache-name }}-builder-id-${{ matrix.group_id }}-
+            norestore-${{ env.cache-name }}-builder-id-
 
       - name: Configure the Panic Button Cachix cache
         uses: 'cachix/cachix-action@master'
