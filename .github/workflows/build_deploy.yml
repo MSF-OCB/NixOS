@@ -41,7 +41,7 @@ jobs:
       - name: Restore the cached nix store
         uses: 'actions/cache@v2'
         env:
-          cache-name: 'cache-nix-store'
+          cache-name: 'cache-nix-store-v2'
         with:
           path: '~/nix_store_copy'
           key: ${{ env.cache-name }}-builder-id-${{ matrix.group_id }}-${{ github.run_id }}
