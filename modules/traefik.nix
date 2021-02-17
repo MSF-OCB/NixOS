@@ -214,7 +214,7 @@ in
                 };
                 #${extra-security-headers}.headers = content_type;
                 ${hsts-headers}.headers = {
-                  sslredirect = true;
+                  sslRedirect = true;
                   stsPreload = true;
                   stsSeconds = toString (365 * 24 * 60 * 60);
                   stsIncludeSubdomains = true;
