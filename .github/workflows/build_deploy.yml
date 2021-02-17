@@ -59,6 +59,7 @@ jobs:
       - name: Sync the restored nix store
         run: |
           sudo rsync --archive --hard-links ~/nix_store_copy/ /nix/store
+          sudo chown --recursive root:root /nix/store/*
 
       - name: Configure the Panic Button Cachix cache
         uses: 'cachix/cachix-action@master'
@@ -66,7 +67,7 @@ jobs:
           name: 'panic-button'
           skipPush: true
 
-      - name: Sync the restored nix store
+      - name: Inspect the nix store
         run: |
           ls -la /nix/
           ls -la /nix/store/
