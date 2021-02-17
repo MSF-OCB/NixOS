@@ -66,6 +66,11 @@ jobs:
           name: 'panic-button'
           skipPush: true
 
+      - name: Sync the restored nix store
+        run: |
+          ls -la /nix/
+          ls -la /nix/store/
+
       - name: Build the NixOS configurations
         run: './.github/scripts/build.py --group_amount 5 --group_id ${{ matrix.group_id }}'
 
