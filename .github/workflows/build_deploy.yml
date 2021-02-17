@@ -38,22 +38,9 @@ jobs:
         with:
           nix_path: 'nixpkgs=https://nix-channel-redirect.ocb.msf.org/nixexprs.tar.xz'
 
-      - name: Add the runner user to the nixbld group
+      - name: Open access to the nix store
         run: |
-          ps -aef | grep bash
-          sudo usermod -a -G nixbld "$(whoami)"
-          newgrp nixbld
-
-      - name: Inspect our user's group memberships
-        run: |
-          ps -aef | grep bash
-          id
-          cat /etc/group
-          for i in /home/runner/work/_temp/*.sh; do
-            echo "Printing ${i}:"
-            echo
-            cat "${i}"
-            echo
+          sudo chmod o+rwx /nix/store/
 
       - name: Restore the cached nix store
         uses: 'actions/cache@v2'
@@ -63,8 +50,8 @@ jobs:
           path: '/nix/store'
           key: ${{ env.cache-name }}-builder-id-${{ matrix.group_id }}-${{ github.run_id }}
           restore-keys: |
-            ignore-${{ env.cache-name }}-builder-id-${{ matrix.group_id }}-
-            ignore-${{ env.cache-name }}-builder-id-
+            ${{ env.cache-name }}-builder-id-${{ matrix.group_id }}-
+            ${{ env.cache-name }}-builder-id-
 
       - name: Configure the Panic Button Cachix cache
         uses: 'cachix/cachix-action@master'
