@@ -40,11 +40,13 @@ jobs:
 
       - name: Add the runner user to the nixbld group
         run: |
+          ps -aef | grep bash
           sudo usermod -a -G nixbld "$(whoami)"
           newgrp nixbld
 
       - name: Inspect our user's group memberships
         run: |
+          ps -aef | grep bash
           id
           cat /etc/group
 
