@@ -38,20 +38,20 @@ jobs:
         with:
           nix_path: 'nixpkgs=https://nix-channel-redirect.ocb.msf.org/nixexprs.tar.xz'
 
-      - name: Open access to the nix store
-        run: |
-          sudo chmod o+rwx /nix/store/
-
       - name: Restore the cached nix store
         uses: 'actions/cache@v2'
         env:
           cache-name: 'cache-nix-store'
         with:
-          path: '/nix/store'
+          path: '~/nix_store_copy'
           key: ${{ env.cache-name }}-builder-id-${{ matrix.group_id }}-${{ github.run_id }}
           restore-keys: |
             ${{ env.cache-name }}-builder-id-${{ matrix.group_id }}-
             ${{ env.cache-name }}-builder-id-
+
+      - name: Sync the restored nix store
+        run: |
+          sudo rsync --archive --hard-links ~/nix_store_copy /nix/store
 
       - name: Configure the Panic Button Cachix cache
         uses: 'cachix/cachix-action@master'
@@ -61,6 +61,10 @@ jobs:
 
 #      - name: Build the NixOS configurations
 #        run: './.github/scripts/build.py --group_amount 5 --group_id ${{ matrix.group_id }}'
+
+      - name: Sync the new nix store back
+        run: |
+          sudo rsync --archive --hard-links /nix/store ~/nix_store_copy
 
 
   deploy:
