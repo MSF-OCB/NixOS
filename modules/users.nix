@@ -58,12 +58,36 @@ let
     };
   };
 
+  whitelistOpts = { name, config, ... }: {
+    options = {
+      enable = mkEnableOption "the whitelist";
+
+      group = mkOption {
+        type = types.str;
+      };
+
+      commands = mkOption {
+        type    = with types; listOf str;
+        default = [ ];
+      };
+
+    };
+    config = {
+      group = mkDefault name;
+    };
+  };
+
 in {
 
   options = {
     settings.users = {
       users = mkOption {
         type    = with types; attrsOf (submodule userOpts);
+        default = {};
+      };
+
+      whitelistGroups = mkOption {
+        type    = with types; attrsOf (submodule whitelistOpts);
         default = {};
       };
 
@@ -119,13 +143,20 @@ in {
     users = {
       mutableUsers = false;
 
-      # !! This line is very important !!
-      # Without it, the ssh-users group is not created
+      # !! These lines are very important !!
+      # Without it, the ssh groups are not created
       # and no-one has SSH access to the system!
-      groups.${cfg.ssh-group}        = { };
-      groups.${cfg.fwd-tunnel-group} = { };
-      groups.${cfg.rev-tunnel-group} = { };
-      groups.${cfg.shell-user-group} = { };
+      groups = {
+        ${cfg.ssh-group}        = { };
+        ${cfg.fwd-tunnel-group} = { };
+        ${cfg.rev-tunnel-group} = { };
+        ${cfg.shell-user-group} = { };
+      }
+      //
+      # Create the groups that are used for whitelisting sudo commands
+      msf_lib.compose [ (mapAttrs (_: _: {}))
+                        msf_lib.filterEnabled ]
+                      cfg.whitelistGroups;
 
       users = let
         hasForceCommand = user: ! isNull user.forceCommand;
@@ -151,6 +182,17 @@ in {
                                       (mapAttrsToList (_: user: toKeyPath user))
                                       (filterAttrs (_: user: user.canTunnel)) ];
     in mkKeyFiles cfg.users;
+
+    security.sudo.extraRules = let
+      addDenyAll = cmds: [ "!ALL" ] ++ cmds;
+      mkRule = name: opts: { groups = [ opts.group ];
+                             runAs = "root";
+                             commands = map (command: { inherit command;
+                                                        options = [ "SETENV" "NOPASSWD" ]; })
+                                            (addDenyAll opts.commands); };
+    in msf_lib.compose [ (mapAttrsToList mkRule)
+                         msf_lib.filterEnabled ]
+                       cfg.whitelistGroups;
   };
 }
 
