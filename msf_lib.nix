@@ -79,6 +79,14 @@ with lib;
       # Global admin users have the same rights as admin users and are enabled by default
       globalAdmin = admin // { enable = true; };
 
+      whitelistedAdmin = groupName: {
+        enable      = mkDefault false;
+        sshAllowed  = true;
+        hasShell    = true;
+        canTunnel   = true;
+        extraGroups = [ groupName ];
+      };
+
       localShell = {
         enable     = mkDefault false;
         sshAllowed = true;
@@ -105,7 +113,8 @@ with lib;
                                               '';
                                             };
     in {
-      inherit user_lib admin globalAdmin localShell remoteTunnel remoteTunnelMonitor;
+      inherit user_lib admin globalAdmin whitelistedAdmin
+              localShell remoteTunnel remoteTunnelMonitor;
     };
 
     # Compatibility layer around
