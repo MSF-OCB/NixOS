@@ -70,7 +70,6 @@ let
         type    = with types; listOf str;
         default = [ ];
       };
-
     };
     config = {
       group = mkDefault name;
