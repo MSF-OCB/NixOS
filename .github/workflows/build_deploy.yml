@@ -2,17 +2,19 @@ name: NixOS build and deploy config
 
 on:
   workflow_dispatch:
+  # We cannot include the paths-ignore part here because this check is set as
+  # required for PRs. Otherwise the PR cannot be merged when this workflow does
+  # not run.
   pull_request:
+    branches:
+      - master
   push:
     branches:
       - master
     paths-ignore:
       - 'install.sh'
-      - 'scripts/**'
-      - 'rescue_iso/**'
       - 'README.md'
       - '.gitignore'
-      - '.github/workflows/build_iso.yml'
 
 jobs:
 
@@ -24,6 +26,8 @@ jobs:
     steps:
       - name: Checkout the NixOS repo
         uses: 'actions/checkout@v2'
+        with:
+          persist-credentials: false
 
       - name: Checkout the Nixos-OCB-Config repo
         uses: 'actions/checkout@v2'
@@ -31,6 +35,7 @@ jobs:
           repository: 'msf-ocb/nixos-ocb-config'
           path: 'org-config'
           ssh-key: '${{ secrets.NIXOS_OCB_CONFIG_DEPLOY_KEY }}'
+          persist-credentials: false
 
       - name: Install the Nix package manager
         uses: 'cachix/install-nix-action@master'
@@ -44,14 +49,50 @@ jobs:
           skipPush: true
 
       - name: Build the NixOS configurations
-        run: './.github/scripts/build.py --group_amount 5 --group_id ${{ matrix.group_id }}'
+        run: >-
+          ./.github/scripts/build.py
+          --group_amount 5
+          --group_id ${{ matrix.group_id }}
+
+
+  build_iso:
+    runs-on: 'ubuntu-latest'
+    if: >-
+      ${{ github.event_name == 'pull_request' &&
+          github.ref != 'refs/heads/master' }}
+    steps:
+      - name: Checkout the NixOS repo
+        uses: 'actions/checkout@v2'
+        with:
+          persist-credentials: false
+
+      - name: Checkout the NixOS-OCB-Config repo
+        uses: 'actions/checkout@v2'
+        with:
+          repository: 'msf-ocb/nixos-ocb-config'
+          path: 'org-config'
+          ssh-key: '${{ secrets.NIXOS_OCB_CONFIG_DEPLOY_KEY }}'
+          persist-credentials: false
+
+      - name: Install the Nix package manager
+        uses: 'cachix/install-nix-action@master'
+        with:
+          nix_path: 'nixpkgs=https://nix-channel-redirect.ocb.msf.org/nixexprs.tar.xz'
+
+      - name: Build the ISO image
+        run: >-
+          touch ./local/id_tunnel_iso &&
+          ./scripts/build_iso.sh
 
 
   deploy:
     runs-on: 'ubuntu-latest'
-    needs: build
+    needs:
+      - build
+      - build_iso
+    # We only want to deploy when commits have been pushed to master
     if: >-
-      github.event_name != 'pull_request' &&
+      github.event_name == 'push' &&
       github.ref == 'refs/heads/master'
     steps:
       - name: Auto-deploy the NixOS config to the requested servers
