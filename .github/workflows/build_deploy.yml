@@ -92,8 +92,9 @@ jobs:
       - build_iso
     # We only want to deploy when commits have been pushed to master
     if: >-
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/master'
+      ${{ ! failure() &&
+          github.event_name == 'push' &&
+          github.ref == 'refs/heads/master' }}
     steps:
       - name: Auto-deploy the NixOS config to the requested servers
         uses: 'msf-ocb/nixos-deploy@master'
