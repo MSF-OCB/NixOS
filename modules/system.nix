@@ -122,6 +122,7 @@ with lib;
       };
       variables = {
         EDITOR = "vim";
+        MSFOCB_SECRETS_DIRECTORY=cfg.secretsDirectory;
       };
     };
 

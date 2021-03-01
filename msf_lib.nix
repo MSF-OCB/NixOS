@@ -197,7 +197,8 @@ with lib;
                                 branch = git_branch; }}
 
         # Include the following additional variables in the environment
-        export MSFOCB_SECRETS_DIRECTORY="${secretsDirectory}" \
+        # MSFOCB_SECRETS_DIRECTORY is defined in modules/system.nix
+        export MSFOCB_SECRETS_DIRECTORY \
                MSFOCB_DEPLOY_DIR="${deploy_dir}"
 
         # Login to our private docker repo (hosted on github)
