@@ -198,7 +198,8 @@ with lib;
 
         # Include the following additional variables in the environment
         # MSFOCB_SECRETS_DIRECTORY is defined in modules/system.nix
-        export MSFOCB_SECRETS_DIRECTORY \
+        # but needs to be exported here into the context apparently
+        export MSFOCB_SECRETS_DIRECTORY="${secretsDirectory}" \
                MSFOCB_DEPLOY_DIR="${deploy_dir}"
 
         # Login to our private docker repo (hosted on github)
