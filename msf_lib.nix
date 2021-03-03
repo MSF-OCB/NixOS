@@ -138,7 +138,7 @@ with lib;
       # We will reset the local repo anyway and remove all local changes.
       "config pull.rebase true"
       "fetch origin ${branch}"
-      "checkout ${branch}"
+      "checkout ${branch} --"
       "reset --hard origin/${branch}"
       "clean -d --force"
       "pull"
