@@ -172,6 +172,7 @@ with lib;
                           , restart ? false
                           , force_build ? false
                           , docker_compose_files ? [ "docker-compose.yml" ] }: let
+      inherit (config.settings.system) secretsDirectory;
       deploy_dir = "/opt/${deploy_dir_name}";
       pre-compose_script_path = "${deploy_dir}/${pre-compose_script}";
     in {
@@ -187,19 +188,15 @@ with lib;
                           "-i ${private_key} " +
                           "-o IdentitiesOnly=yes " +
                           "-o StrictHostKeyChecking=yes";
+        MSFOCB_SECRETS_DIRECTORY = secretsDirectory;
+        MSFOCB_DEPLOY_DIR = deploy_dir;
       };
       script = let
-        inherit (config.settings.system) secretsDirectory;
         docker_credentials_file = "${secretsDirectory}/docker_private_repo_creds";
       in ''
         ${clone_and_reset_git { inherit github_repo;
                                 clone_dir = deploy_dir;
                                 branch = git_branch; }}
-
-        # Include the following additional variables in the environment
-        # MSFOCB_SECRETS_DIRECTORY is defined in modules/system.nix
-        export MSFOCB_SECRETS_DIRECTORY \
-               MSFOCB_DEPLOY_DIR="${deploy_dir}"
 
         # Login to our private docker repo (hosted on github)
         if [ -f ${docker_credentials_file} ]; then
