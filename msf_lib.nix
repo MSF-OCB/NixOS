@@ -203,9 +203,10 @@ with lib;
           # Load private repo variables
           source ${docker_credentials_file}
 
+          echo ''${DOCKER_PRIVATE_REPO_PASS} | \
           ${pkgs.docker}/bin/docker login \
             --username "''${DOCKER_PRIVATE_REPO_USER}" \
-            --password "''${DOCKER_PRIVATE_REPO_PASS}" \
+            --password-stdin \
             "''${DOCKER_PRIVATE_REPO_URL}"
 
           docker_login_successful=true
