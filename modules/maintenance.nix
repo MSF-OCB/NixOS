@@ -150,8 +150,8 @@ in {
 
       nixos_rebuild_config = {
         description   = "Rebuild the NixOS config without doing an upgrade";
-        wants = [ "nixos_sync_config.service" ];
-        after = [ "nixos_sync_config.service" ];
+        wants = optional cfg.sync_config.enable "nixos_sync_config.service";
+        after = optional cfg.sync_config.enable "nixos_sync_config.service";
         serviceConfig = {
           Type = "oneshot";
         };
