@@ -49,6 +49,19 @@ in {
       default = {};
     };
 
+    nixos_upgrade.startAt = mkOption {
+      type = with types; listOf str;
+      # By default, we run the upgrade service once at night and twice during
+      # the day, to catch the situation where the server is turned off during
+      # the night or during the weekend (which can be anywhere from Thursday to Sunday).
+      # When the service is being run during the day, we will be outside the
+      # reboot window and the config will not be switched.
+      default = [ "Fri 12:00" "Sun 12:00" "Mon 02:00" ];
+      description = ''
+        When to run the nixos-upgrade service.
+      '';
+    };
+
     docker_prune_timer.enable = mkEnableOption "service to periodically run docker system prune";
   };
 
@@ -78,12 +91,7 @@ in {
         serviceConfig = {
           TimeoutStartSec = "2 days";
         };
-        # We run the upgrade service once at night and twice during the day,
-        # to catch the situation where the server is turned off during the night
-        # or during the weekend (which can be anywhere from Thursday to Sunday).
-        # When the service is being run during the day, we will be outside the
-        # reboot window and the config will not be switched.
-        startAt = mkForce [ "Fri 12:00" "Sun 12:00" "Mon 02:00" ];
+        startAt = mkForce cfg.nixos_upgrade.startAt;
       };
 
       nixos_sync_config = mkIf cfg.sync_config.enable {
