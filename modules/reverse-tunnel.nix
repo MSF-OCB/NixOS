@@ -4,7 +4,8 @@ with lib;
 with (import ../msf_lib.nix);
 
 let
-  cfg = config.settings.reverse_tunnel;
+  cfg     = config.settings.reverse_tunnel;
+  sys_cfg = config.settings.system;
 
   tunnelOpts = { name, ... }: {
     options = {
@@ -52,54 +53,6 @@ in {
   options = {
     settings.reverse_tunnel = {
       enable = mkEnableOption "the reverse tunnel services";
-
-      private_key_source = mkOption {
-        type    = types.path;
-        default = ../local/id_tunnel;
-        description = ''
-          The location of the private key file used to establish the reverse tunnels.
-        '';
-      };
-
-      private_key_source_default = mkOption {
-        type     = types.str;
-        default  = "/etc/nixos/local/id_tunnel";
-        readOnly = true;
-        description = ''
-          Hard-coded value of the default location of the private key file,
-          used in case the location specified at build time is not available
-          at activation time, e.g. when the build was done from within the
-          installer with / mounted on /mnt.
-          This value is only used in the activation script.
-        '';
-      };
-
-      private_key_directory = mkOption {
-        type     = types.str;
-        default  = "/run/tunnel";
-        readOnly = true;
-      };
-
-      private_key = mkOption {
-        type     = types.str;
-        default  = "${cfg.private_key_directory}/id_tunnel";
-        readOnly = true;
-        description = ''
-          Location to load the private key file for the reverse tunnels from.
-        '';
-      };
-
-      copy_private_key_to_store = mkOption {
-        type    = types.bool;
-        default = false;
-        description = ''
-          Whether the private key for the tunnels should be copied to
-          the nix store and loaded from there. This should only be used
-          when the location where the key is stored, will not be available
-          during activation time, e.g. when building an ISO image.
-          CAUTION: this means that the private key will be world-readable!
-        '';
-      };
 
       tunnels = mkOption {
         type    = with types; attrsOf (submodule tunnelOpts);
@@ -215,7 +168,7 @@ in {
                 -o "ControlMaster=no" \
                 -R ${toString tunnel_port}:localhost:22 \
                 ${prometheus_forward_line} \
-                -i ${cfg.private_key} \
+                -i ${sys_cfg.private_key} \
                 -p ''${port} \
                 -l tunnel \
                 ''${host}

@@ -179,7 +179,7 @@ with lib;
       serviceConfig.Type = "oneshot";
       path = with pkgs; [ nix ];
       environment = let
-        inherit (config.settings.reverse_tunnel) private_key;
+        inherit (config.settings.system) private_key;
       in {
         # We need to set the NIX_PATH env var so that we can resolve <nixpkgs>
         # references when using nix-shell.
