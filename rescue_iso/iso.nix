@@ -19,16 +19,14 @@ with lib;
     network.host_name = "rescue-iso";
     system = {
       isISO = true;
+      private_key_source = ../local/id_tunnel_iso;
+      copy_private_key_to_store = true;
       diskSwap.enable = false;
     };
     boot.mode = "none";
     maintenance.enable = false;
     services.prometheus.enable = false;
-    reverse_tunnel = {
-      enable = true;
-      private_key_source = ../local/id_tunnel_iso;
-      copy_private_key_to_store = true;
-    };
+    reverse_tunnel.enable = true;
   };
 
   services.mingetty.helpLine = mkForce "";

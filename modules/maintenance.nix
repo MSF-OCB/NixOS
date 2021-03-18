@@ -4,9 +4,8 @@ with lib;
 with (import ../msf_lib.nix);
 
 let
-  cfg = config.settings.maintenance;
+  cfg     = config.settings.maintenance;
   sys_cfg = config.settings.system;
-  tunnel_cfg = config.settings.reverse_tunnel;
 
   # Submodule to define repos.
   repoOpts = { name, config, ... }: {
@@ -103,7 +102,7 @@ in {
         };
         environment = {
           GIT_SSH_COMMAND = "${pkgs.openssh}/bin/ssh " +
-                            "-i ${tunnel_cfg.private_key} " +
+                            "-i ${sys_cfg.private_key} " +
                             "-o IdentitiesOnly=yes " +
                             "-o StrictHostKeyChecking=yes";
         };

@@ -18,6 +18,54 @@ with lib;
       default = false;
     };
 
+    private_key_source = mkOption {
+      type    = types.path;
+      default = ../local/id_tunnel;
+      description = ''
+        The location of the private key file used to establish the reverse tunnels.
+      '';
+    };
+
+    private_key_source_default = mkOption {
+      type     = types.str;
+      default  = "/etc/nixos/local/id_tunnel";
+      readOnly = true;
+      description = ''
+        Hard-coded value of the default location of the private key file,
+        used in case the location specified at build time is not available
+        at activation time, e.g. when the build was done from within the
+        installer with / mounted on /mnt.
+        This value is only used in the activation script.
+      '';
+    };
+
+    private_key_directory = mkOption {
+      type     = types.str;
+      default  = "/run/tunnel";
+      readOnly = true;
+    };
+
+    private_key = mkOption {
+      type     = types.str;
+      default  = "${cfg.private_key_directory}/id_tunnel";
+      readOnly = true;
+      description = ''
+        Location to load the private key file for the reverse tunnels from.
+      '';
+    };
+
+    copy_private_key_to_store = mkOption {
+      type    = types.bool;
+      default = false;
+      description = ''
+        Whether the private key for the tunnels should be copied to
+        the nix store and loaded from there. This should only be used
+        when the location where the key is stored, will not be available
+        during activation time, e.g. when building an ISO image.
+        CAUTION: this means that the private key will be world-readable!
+      '';
+    };
+
     org_config_dir_name = mkOption {
       type = types.str;
       default = "org-config";
@@ -76,10 +124,10 @@ with lib;
         message   = "This host's host name is not present in the tunnel config (${toString cfg.tunnels_json_path}).";
       }
       {
-        assertion = builtins.pathExists tnl_cfg.private_key_source;
+        assertion = builtins.pathExists cfg.private_key_source;
         # Referencing the path directly, causes the file to be copied to the nix store.
         # By converting the path to a string with toString, we can avoid the file being copied.
-        message   = "The private key file at ${toString tnl_cfg.private_key_source} does not exist.";
+        message   = "The private key file at ${toString cfg.private_key_source} does not exist.";
       }
     ];
 
@@ -131,7 +179,7 @@ with lib;
         isNormalUser = false;
         isSystemUser = true;
         # The key to connect to the relays will be copied to /run/tunnel
-        home         = tnl_cfg.private_key_directory;
+        home         = cfg.private_key_directory;
         createHome   = true;
         shell        = pkgs.nologin;
       };
@@ -140,9 +188,9 @@ with lib;
     system.activationScripts = let
       # Referencing the path directly, causes the file to be copied to the nix store.
       # By converting the path to a string with toString, we can avoid the file being copied.
-      private_key_path = if tnl_cfg.copy_private_key_to_store
-                         then tnl_cfg.private_key_source
-                         else toString tnl_cfg.private_key_source;
+      private_key_path = if cfg.copy_private_key_to_store
+                         then cfg.private_key_source
+                         else toString cfg.private_key_source;
     in {
       nix_channel_msf = {
         text = ''
@@ -158,7 +206,7 @@ with lib;
         # Use toString, we do not want to change permissions
         # of files in the nix store, only of the source files, if present.
         text = let
-          base_files = [ private_key_path tnl_cfg.private_key_source_default];
+          base_files = [ private_key_path cfg.private_key_source_default];
           files = concatStringsSep " " (unique (concatMap (f: [ f "${f}.pub" ]) base_files));
         in ''
           for file in ${files}; do
@@ -178,13 +226,13 @@ with lib;
               -g nogroup \
               -m 0400 \
               "${source}" \
-              "${tnl_cfg.private_key}"
+              "${cfg.private_key}"
           '';
         in ''
           if [ -f "${private_key_path}" ]; then
             ${install private_key_path}
-          elif [ -f "${tnl_cfg.private_key_source_default}" ]; then
-            ${install tnl_cfg.private_key_source_default}
+          elif [ -f "${cfg.private_key_source_default}" ]; then
+            ${install cfg.private_key_source_default}
           else
             exit 1;
           fi
@@ -203,7 +251,7 @@ with lib;
             --server_name "${config.networking.hostName}" \
             --secrets_path "${cfg.secrets_src_directory}" \
             --output_path "${cfg.secretsDirectory}" \
-            --private_key_file "${tnl_cfg.private_key}"
+            --private_key_file "${cfg.private_key}"
 
           ${pkgs.coreutils}/bin/chown --recursive root:wheel "${cfg.secretsDirectory}"
           ${pkgs.coreutils}/bin/chmod --recursive u=rwX,g=rX,o= "${cfg.secretsDirectory}"
