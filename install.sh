@@ -158,7 +158,7 @@ fi
   set +e
 
   function test_auth() {
-    nix-shell --packages git --run "git -c core.sshCommand='ssh -F /dev/null -o IdentitiesOnly=yes -i /tmp/id_tunnel' \
+    nix-shell --packages git --run "git -c core.sshCommand='ssh -F none -o IdentitiesOnly=yes -i /tmp/id_tunnel' \
                                         ls-remote ${config_repo} \
                                         2>&1 > /dev/null" 2>&1 > /dev/null
   }
@@ -172,6 +172,9 @@ fi
     echo    "Please add the following public key to the json/tunnels.json"
     echo -e "file in the NixOS-OCB-config repo:\n"
     cat /tmp/id_tunnel.pub
+    echo -e "\nThe installation will automatically continue once the key"
+    echo    "has been added to GitHub and the deployment actions have"
+    echo    "completed."
     echo -e "\nIf you want me to generate a new key pair instead, then"
     echo    "remove /tmp/id_tunnel and /tmp/id_tunnel.pub and restart"
     echo    "the installer. You will then see this message again, and"
