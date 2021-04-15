@@ -250,9 +250,9 @@ else
   LVM_PART="${DEVICE}2"
 fi
 
-wait_for_devices "/dev/disk/by-partlabel/nixos_lvm"
+wait_for_devices "${LVM_PART}"
 pvcreate "${LVM_PART}"
-wait_for_devices "/dev/disk/by-partlabel/nixos_lvm"
+wait_for_devices "${LVM_PART}"
 vgcreate LVMVolGroup "${LVM_PART}"
 lvcreate --yes --size "${ROOT_SIZE}"GB --name nixos_root LVMVolGroup
 wait_for_devices "/dev/LVMVolGroup/nixos_root"
