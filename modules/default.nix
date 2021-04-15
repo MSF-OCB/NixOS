@@ -18,6 +18,7 @@
     ./reverse-tunnel.nix
     ./sshd.nix
     ./system.nix
+    ./syno_vm.nix
     ./traefik.nix
     ./users.nix
     ./virtualbox.nix
