@@ -347,7 +347,7 @@ echo -e "\nNixOS installation finished, please reboot using \"sudo systemctl reb
 
 if [ "${CREATE_DATA_PART}" = true ]; then
   echo -e "\n!! Do not forget to set a recovery passphrase for the encrypted partition !!"
-  echo    "The passphrase should be added to 1Password in the shared folder called NixOS servers."
+  echo    "The passphrase should be added to 1Password in the shared vault called NixOS servers."
   echo    "The passphrase should be 60 characters long,"
   echo    "you can generate one using https://passwordsgenerator.net/"
   echo -e "Setting the passphrase can be done with the following command:\n"
