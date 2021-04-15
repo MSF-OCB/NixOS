@@ -143,6 +143,9 @@ if [ "${USE_UEFI}" = true ] && [ ! -d "/sys/firmware/efi" ]; then
   exit 1
 fi
 
+# We update the nix channel to make sure that we install up-to-date packages
+nix-channel --update
+
 if [ ! -f "/tmp/id_tunnel" ] || [ ! -f "/tmp/id_tunnel.pub" ]; then
   echo "Generating a new SSH key pair for this host..."
   ssh-keygen -a 100 \
@@ -342,11 +345,13 @@ fi
 
 echo -e "\nNixOS installation finished, please reboot using \"sudo systemctl reboot\""
 
-echo -e "\n!! Do not forget to set a recovery passphrase for the encrypted partition !!"
-echo    "The passphrase should be added to Keeper in the shared folder called NixOS servers."
-echo    "The passphrase should be 60 characters long,"
-echo    "you can generate one using https://passwordsgenerator.net/"
-echo -e "Setting the passphrase can be done with the following command:\n"
-echo -e "  sudo cryptsetup luksAddKey --key-file /mnt/keyfile /dev/LVMVolGroup/nixos_data\n"
-echo    "see https://github.com/MSF-OCB/NixOS/wiki/Install-NixOS for more info."
+if [ "${CREATE_DATA_PART}" = true ]; then
+  echo -e "\n!! Do not forget to set a recovery passphrase for the encrypted partition !!"
+  echo    "The passphrase should be added to 1Password in the shared vault called NixOS servers."
+  echo    "The passphrase should be 60 characters long,"
+  echo    "you can generate one using https://passwordsgenerator.net/"
+  echo -e "Setting the passphrase can be done with the following command:\n"
+  echo -e "  sudo cryptsetup luksAddKey --key-file /mnt/keyfile /dev/LVMVolGroup/nixos_data\n"
+  echo    "see https://github.com/MSF-OCB/NixOS/wiki/Install-NixOS for more info."
+fi
 
