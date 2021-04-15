@@ -144,6 +144,7 @@ if [ "${USE_UEFI}" = true ] && [ ! -d "/sys/firmware/efi" ]; then
 fi
 
 # We update the nix channel to make sure that we install up-to-date packages
+echo "Updating the nix channel..."
 nix-channel --update
 
 if [ ! -f "/tmp/id_tunnel" ] || [ ! -f "/tmp/id_tunnel.pub" ]; then
