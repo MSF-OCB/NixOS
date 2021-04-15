@@ -143,6 +143,9 @@ if [ "${USE_UEFI}" = true ] && [ ! -d "/sys/firmware/efi" ]; then
   exit 1
 fi
 
+# We update the nix channel to make sure that we install up-to-date packages
+nix-channel --update
+
 if [ ! -f "/tmp/id_tunnel" ] || [ ! -f "/tmp/id_tunnel.pub" ]; then
   echo "Generating a new SSH key pair for this host..."
   ssh-keygen -a 100 \
