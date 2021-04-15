@@ -401,16 +401,17 @@ in
       };
     };
 
-    # We define an additional service to create the Traefik Docker network.
     systemd.services = let
       docker    = "${pkgs.docker}/bin/docker";
       systemctl = "${pkgs.systemd}/bin/systemctl";
       traefik_docker_service_name = "docker-${cfg.service_name}";
       traefik_docker_service = "${traefik_docker_service_name}.service";
     in {
+      # We slightly adapt the generated service for Traefik
       "${traefik_docker_service_name}" = let
         dns_credentials_file = system_cfg.secretsDirectory + cfg.acme.dns_provider;
       in {
+        requires = [ "docker.service" ];
         serviceConfig = {
           # Restore the defaults to have proper logging in the systemd journal.
           # See GitHub NixOS/nixpkgs issue #102768 and PR #102769
@@ -433,7 +434,7 @@ in
 
       "${traefik_docker_service_name}-pull" = {
         inherit (cfg) enable;
-        description   = "Automatically pull the latest version of the Traefik image";
+        description = "Automatically pull the latest version of the Traefik image";
         serviceConfig = {
           Type = "oneshot";
         };
