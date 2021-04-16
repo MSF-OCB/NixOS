@@ -244,6 +244,12 @@ with lib;
           python = pkgs.python3.withPackages (pkgs: with pkgs; [ pynacl pyyaml ]);
         in ''
           echo "decrypting the server secrets..."
+          if [ -e "${cfg.secretsDirectory}" ]; then
+            ${pkgs.coreutils}/bin/rm --one-file-system \
+                                     --recursive \
+                                     --force \
+                                     "${cfg.secretsDirectory}"
+          fi
           ${pkgs.coreutils}/bin/mkdir --parent "${cfg.secretsDirectory}"
 
           ${python.interpreter} \
