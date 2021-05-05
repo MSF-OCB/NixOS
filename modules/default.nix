@@ -11,6 +11,7 @@
     ./maintenance.nix
     ./network.nix
     ./nfs.nix
+    ./nomad.nix
     ./packages.nix
     ./panic_button.nix
     ./prometheus.nix
