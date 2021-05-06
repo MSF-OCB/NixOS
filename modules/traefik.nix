@@ -170,8 +170,6 @@ in
       docker.enable = true;
 
       services.traefik = {
-        acme.crossSignedChain.enable = true;
-
         dynamic_config.default_config = {
           enable = true;
           value = {
