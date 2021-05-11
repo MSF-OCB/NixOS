@@ -259,8 +259,13 @@ with lib;
             --output_path "${cfg.secretsDirectory}" \
             --private_key_file "${cfg.private_key}"
 
-          ${pkgs.coreutils}/bin/chown --recursive root:wheel "${cfg.secretsDirectory}"
-          ${pkgs.coreutils}/bin/chmod --recursive u=rwX,g=rX,o= "${cfg.secretsDirectory}"
+          # The directory is owned by root
+          ${pkgs.coreutils}/bin/chown --recursive root:root "${cfg.secretsDirectory}"
+          ${pkgs.coreutils}/bin/chmod --recursive u=rwX,g=,o= "${cfg.secretsDirectory}"
+          # Use an ACL to give access to members of the wheel and docker groups
+          ${pkgs.acl}/bin/setfacl --recursive \
+                                  --modify group:wheel:rX,group:docker:rX \
+                                  "${cfg.secretsDirectory}"
           echo "decrypted the server secrets"
         '';
         deps = [ "copy_tunnel_key" ];
