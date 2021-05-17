@@ -12,7 +12,7 @@ with lib;
   };
 
   config = mkIf cfg.enable {
-
+    # https://github.com/NixOS/nixpkgs/issues/76980
     boot.initrd.availableKernelModules = [ "virtio_scsi" ];
 
     # https://github.com/NixOS/nixpkgs/issues/91300
