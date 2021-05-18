@@ -172,7 +172,7 @@ with lib;
                           , restart ? false
                           , force_build ? false
                           , docker_compose_files ? [ "docker-compose.yml" ] }: let
-      inherit (config.settings.system) secretsDirectory;
+      secrets_dir = config.settings.system.secrets.dest_directory;
       deploy_dir = "/opt/${deploy_dir_name}";
       pre-compose_script_path = "${deploy_dir}/${pre-compose_script}";
     in {
@@ -188,11 +188,11 @@ with lib;
                           "-i ${private_key} " +
                           "-o IdentitiesOnly=yes " +
                           "-o StrictHostKeyChecking=yes";
-        MSFOCB_SECRETS_DIRECTORY = secretsDirectory;
+        MSFOCB_SECRETS_DIRECTORY = secrets_dir;
         MSFOCB_DEPLOY_DIR = deploy_dir;
       };
       script = let
-        docker_credentials_file = "${secretsDirectory}/docker_private_repo_creds";
+        docker_credentials_file = "${secrets_dir}/docker_private_repo_creds";
       in ''
         ${clone_and_reset_git { inherit github_repo;
                                 clone_dir = deploy_dir;

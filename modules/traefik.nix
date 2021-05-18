@@ -407,7 +407,7 @@ in
     in {
       # We slightly adapt the generated service for Traefik
       "${traefik_docker_service_name}" = let
-        dns_credentials_file = system_cfg.secretsDirectory + cfg.acme.dns_provider;
+        dns_credentials_file = system_cfg.secrets.dest_directory + cfg.acme.dns_provider;
       in {
         requires = [ "docker.service" ];
         serviceConfig = {
