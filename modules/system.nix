@@ -88,18 +88,20 @@ with lib;
       type = types.path;
     };
 
-    secrets_src_directory = mkOption {
-      type = types.path;
-      description = ''
-        The directory containing the generated and encrypted secrets.
-      '';
-    };
+    secrets = {
+      src_directory = mkOption {
+        type = types.path;
+        description = ''
+          The directory containing the generated and encrypted secrets.
+        '';
+      };
 
-    secretsDirectory = mkOption {
-      type = types.str;
-      description = ''
-        The directory containing the decrypted secrets available to this server.
-      '';
+      dest_directory = mkOption {
+        type = types.str;
+        description = ''
+          The directory containing the decrypted secrets available to this server.
+        '';
+      };
     };
 
     diskSwap = {
@@ -115,6 +117,11 @@ with lib;
       };
     };
   };
+
+  imports = [
+    (mkRenamedOptionModule [ "settings" "system" "secretsDirectory" ] [ "settings" "system" "secrets" "dest_directory" ])
+    (mkRenamedOptionModule [ "settings" "system" "secrets_src_directory" ] [ "settings" "system" "secrets" "src_directory" ])
+  ];
 
   config = {
 
@@ -170,7 +177,7 @@ with lib;
       };
       variables = {
         EDITOR = "vim";
-        MSFOCB_SECRETS_DIRECTORY=cfg.secretsDirectory;
+        MSFOCB_SECRETS_DIRECTORY=cfg.secrets.dest_directory;
       };
     };
 
@@ -244,28 +251,28 @@ with lib;
           python = pkgs.python3.withPackages (pkgs: with pkgs; [ pynacl pyyaml ]);
         in ''
           echo "decrypting the server secrets..."
-          if [ -e "${cfg.secretsDirectory}" ]; then
+          if [ -e "${cfg.secrets.dest_directory}" ]; then
             ${pkgs.coreutils}/bin/rm --one-file-system \
                                      --recursive \
                                      --force \
-                                     "${cfg.secretsDirectory}"
+                                     "${cfg.secrets.dest_directory}"
           fi
-          ${pkgs.coreutils}/bin/mkdir --parent "${cfg.secretsDirectory}"
+          ${pkgs.coreutils}/bin/mkdir --parent "${cfg.secrets.dest_directory}"
 
           ${python.interpreter} \
             ${../scripts/decrypt_server_secrets.py} \
             --server_name "${config.networking.hostName}" \
-            --secrets_path "${cfg.secrets_src_directory}" \
-            --output_path "${cfg.secretsDirectory}" \
+            --secrets_path "${cfg.secrets.src_directory}" \
+            --output_path "${cfg.secrets.dest_directory}" \
             --private_key_file "${cfg.private_key}"
 
           # The directory is owned by root
-          ${pkgs.coreutils}/bin/chown --recursive root:root "${cfg.secretsDirectory}"
-          ${pkgs.coreutils}/bin/chmod --recursive u=rwX,g=,o= "${cfg.secretsDirectory}"
+          ${pkgs.coreutils}/bin/chown --recursive root:root "${cfg.secrets.dest_directory}"
+          ${pkgs.coreutils}/bin/chmod --recursive u=rwX,g=,o= "${cfg.secrets.dest_directory}"
           # Use an ACL to give access to members of the wheel and docker groups
           ${pkgs.acl}/bin/setfacl --recursive \
                                   --modify group:wheel:rX,group:docker:rX \
-                                  "${cfg.secretsDirectory}"
+                                  "${cfg.secrets.dest_directory}"
           echo "decrypted the server secrets"
         '';
         deps = [ "copy_tunnel_key" ];
