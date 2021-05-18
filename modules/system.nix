@@ -102,6 +102,14 @@ with lib;
           The directory containing the decrypted secrets available to this server.
         '';
       };
+
+      allow_groups = mkOption {
+        type = with types; listOf str;
+        description = ''
+          Groups which have access to the secrets through ACLs.
+        '';
+        default = [];
+      };
     };
 
     diskSwap = {
@@ -192,6 +200,9 @@ with lib;
       };
     };
 
+    # Admins have access to the secrets
+    settings.system.secrets.allow_groups = [ "wheel" ];
+
     system.activationScripts = let
       # Referencing the path directly, causes the file to be copied to the nix store.
       # By converting the path to a string with toString, we can avoid the file being copied.
@@ -249,6 +260,9 @@ with lib;
       decrypt_secrets = {
         text = let
           python = pkgs.python3.withPackages (pkgs: with pkgs; [ pynacl pyyaml ]);
+          permissions = concatMapStringsSep ","
+                                            (group: "group:${group}:rX")
+                                            cfg.secrets.allow_groups;
         in ''
           echo "decrypting the server secrets..."
           if [ -e "${cfg.secrets.dest_directory}" ]; then
@@ -271,7 +285,7 @@ with lib;
           ${pkgs.coreutils}/bin/chmod --recursive u=rwX,g=,o= "${cfg.secrets.dest_directory}"
           # Use an ACL to give access to members of the wheel and docker groups
           ${pkgs.acl}/bin/setfacl --recursive \
-                                  --modify group:wheel:rX,group:docker:rX \
+                                  --modify ${permissions} \
                                   "${cfg.secrets.dest_directory}"
           echo "decrypted the server secrets"
         '';
