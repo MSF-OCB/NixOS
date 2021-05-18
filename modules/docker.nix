@@ -39,6 +39,9 @@ with lib;
       "net.core.somaxconn" = 65535;
     };
 
+    # Users in the docker group need access to secrets
+    settings.system.secrets.allow_groups = [ "docker" ];
+
     virtualisation.docker = {
       enable       = true;
       enableOnBoot = true;
