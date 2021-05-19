@@ -126,11 +126,6 @@ with lib;
     };
   };
 
-  imports = [
-    (mkRenamedOptionModule [ "settings" "system" "secretsDirectory" ] [ "settings" "system" "secrets" "dest_directory" ])
-    (mkRenamedOptionModule [ "settings" "system" "secrets_src_directory" ] [ "settings" "system" "secrets" "src_directory" ])
-  ];
-
   config = {
 
     assertions = [
