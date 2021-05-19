@@ -263,8 +263,20 @@ with lib;
           permissions = concatMapStringsSep ","
                                             (group: "group:${group}:rX")
                                             cfg.secrets.allow_groups;
+          mkRemoveOldDir = dir: ''
+            # Delete the old secrets dir which is not used anymore
+            # We maintain it as a link for now for backwards compatibility,
+            # so we test first whether it is still a directory
+            if [ -d "${dir}" ]; then
+              ${pkgs.coreutils}/bin/rm --one-file-system \
+                                       --recursive \
+                                       --force \
+                                       "${dir}"
+            fi
+          '';
         in ''
           echo "decrypting the server secrets..."
+          ${concatMapStringsSep "\n" mkRemoveOldDir cfg.secrets.old_dest_directories}
           if [ -e "${cfg.secrets.dest_directory}" ]; then
             ${pkgs.coreutils}/bin/rm --one-file-system \
                                      --recursive \
