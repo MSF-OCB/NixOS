@@ -103,6 +103,11 @@ with lib;
         '';
       };
 
+      old_dest_directories = mkOption {
+        type = with types; listOf str;
+        default = [];
+      };
+
       allow_groups = mkOption {
         type = with types; listOf str;
         description = ''
