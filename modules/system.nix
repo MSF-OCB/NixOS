@@ -267,7 +267,7 @@ with lib;
             # Delete the old secrets dir which is not used anymore
             # We maintain it as a link for now for backwards compatibility,
             # so we test first whether it is still a directory
-            if [ -d "${dir}" ]; then
+            if [ ! -L "${dir}" ]; then
               ${pkgs.coreutils}/bin/rm --one-file-system \
                                        --recursive \
                                        --force \
