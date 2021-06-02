@@ -22,6 +22,9 @@ jobs:
     runs-on: 'ubuntu-latest'
     strategy:
       matrix:
+        # When changing these settings, you need to change as well
+        # the required checks in the branch protection policy on GitHub !!
+        group_count: [ 5 ]
         group_id: [ 0, 1, 2, 3, 4 ]
     steps:
       - name: Checkout the NixOS repo
@@ -51,7 +54,7 @@ jobs:
       - name: Build the NixOS configurations
         run: >-
           ./.github/scripts/build.py
-          --group_amount 5
+          --group_amount ${{ matrix.group_count }}
           --group_id ${{ matrix.group_id }}
 
 
