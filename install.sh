@@ -163,8 +163,7 @@ fi
 
   function test_auth() {
     nix-shell --packages git --run "git -c core.sshCommand='ssh -F none -o IdentitiesOnly=yes -i /tmp/id_tunnel' \
-                                        ls-remote ${config_repo} \
-                                        2>&1 > /dev/null" 2>&1 > /dev/null
+                                        ls-remote ${config_repo}" > /dev/null 2>&1
   }
 
   echo "Trying to authenticate to GitHub..."
@@ -297,15 +296,61 @@ ln --symbolic org-config/hosts/"${TARGET_HOSTNAME}".nix /mnt/etc/nixos/settings.
 cp /tmp/id_tunnel /tmp/id_tunnel.pub /mnt/etc/nixos/local/
 
 if [ "${CREATE_DATA_PART}" = true ]; then
-  # Do this only after generating the hardware config
+  if [ -e "/tmp/nixos-ocb-config" ]; then
+    rm --recursive --force "/tmp/nixos-ocb-config"
+  fi
+  nix-shell --packages git --run "git config --global pull.rebase true"
+  nix-shell --packages git --run "git -c core.sshCommand='ssh -i /tmp/id_tunnel' \
+                                      clone ${config_repo} \
+                                      /tmp/nixos-ocb-config"
+
+  /mnt/etc/nixos/scripts/secrets/add_encryption_key.py \
+    --hostname "${TARGET_HOSTNAME}"\
+    --secrets_file "/tmp/nixos-ocb-config/secrets/nixos_encryption-secrets.yml"
+
+  random_id=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 10)
+  branch_name="installer_commit_enc_key_${TARGET_HOSTNAME}_${random_id}"
+  nix-shell --packages git --run "git -C /tmp/nixos-ocb-config \
+                                      checkout -b ${branch_name}"
+  nix-shell --packages git --run "git -C /tmp/nixos-ocb-config \
+                                      add secrets/nixos_encryption-secrets.yml"
+  nix-shell --packages git --run "git -C /tmp/nixos-ocb-config \
+                                      -c user.name='OCB NixOS Robot' \
+                                      -c user.email='nixos-ocb@users.noreply.github.com' \
+                                      commit \
+                                      --message 'Commit encryption key for ${TARGET_HOSTNAME}.'"
+  nix-shell --packages git --run "git -C /tmp/nixos-ocb-config \
+                                      -c core.sshCommand='ssh -i /tmp/id_tunnel' \
+                                      push -u origin ${branch_name}"
+
+  echo -e "\n\nThe encryption key for this server was committed to GitHub"
+  echo -e "Please go to the following link to create a pull request:"
+  echo -e "\nhttps://github.com/MSF-OCB/NixOS-OCB-config/pull/new/${branch_name}\n"
+  echo -e "The installer will continue once the pull request has been merged into master."
+
+  secret_present=false
+  while [ "${secret_present}" = false ]; do
+    nix-shell --packages git --run "git -C /mnt/etc/nixos/org-config \
+                                        -c core.sshCommand='ssh -i /tmp/id_tunnel' \
+                                        pull > /dev/null 2>&1"
+    mkdir --parents /run/.secrets/
+    /mnt/etc/nixos/scripts/secrets/decrypt_server_secrets.py \
+      --server_name "${TARGET_HOSTNAME}" \
+      --secrets_path "/mnt/etc/nixos/org-config/secrets/generated" \
+      --output_path "/run/.secrets" \
+      --private_key_file "/tmp/id_tunnel" > /dev/null
+    if [ -f "/run/.secrets/keyfile" ]; then
+      secret_present=true
+    else
+      sleep 10
+    fi
+  done
+
+  # Do this only after having generated the hardware config
   lvcreate --yes --extents 100%FREE --name nixos_data LVMVolGroup
   wait_for_devices "/dev/LVMVolGroup/nixos_data"
 
-  dd bs=512 count=4 if=/dev/urandom of=/mnt/keyfile
-  chown root:root /mnt/keyfile
-  chmod 0400 /mnt/keyfile
-
-  mkdir -p /run/cryptsetup
+  mkdir --parents /run/cryptsetup
   cryptsetup --verbose \
              --batch-mode \
              --cipher aes-xts-plain64 \
@@ -314,10 +359,10 @@ if [ "${CREATE_DATA_PART}" = true ]; then
              --use-urandom \
              luksFormat \
              --type luks2 \
-             --key-file /mnt/keyfile \
+             --key-file /run/.secrets/keyfile \
              /dev/LVMVolGroup/nixos_data
   cryptsetup open \
-             --key-file /mnt/keyfile \
+             --key-file /run/.secrets/keyfile \
              /dev/LVMVolGroup/nixos_data nixos_data_decrypted
   mkfs.ext4 -e remount-ro \
             -m 1 \
@@ -345,14 +390,4 @@ if [ "${CREATE_DATA_PART}" = true ]; then
 fi
 
 echo -e "\nNixOS installation finished, please reboot using \"sudo systemctl reboot\""
-
-if [ "${CREATE_DATA_PART}" = true ]; then
-  echo -e "\n!! Do not forget to set a recovery passphrase for the encrypted partition !!"
-  echo    "The passphrase should be added to 1Password in the shared vault called NixOS servers."
-  echo    "The passphrase should be 60 characters long,"
-  echo    "you can generate one using https://passwordsgenerator.net/"
-  echo -e "Setting the passphrase can be done with the following command:\n"
-  echo -e "  sudo cryptsetup luksAddKey --key-file /mnt/keyfile /dev/LVMVolGroup/nixos_data\n"
-  echo    "see https://github.com/MSF-OCB/NixOS/wiki/Install-NixOS for more info."
-fi
 
