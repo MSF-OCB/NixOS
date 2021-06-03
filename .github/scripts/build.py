@@ -4,11 +4,13 @@ import argparse
 import glob
 import json
 import os
+import re
 import shutil
 import subprocess
 import tempfile
 
 from subprocess import PIPE
+
 
 def args_parser():
   parser = argparse.ArgumentParser(description='Build all NixOS configs.')
@@ -17,6 +19,7 @@ def args_parser():
   parser.add_argument('--host_dir',     type = str, dest = 'host_dir',     required = False,
                       default = os.path.join('.', 'org-config', 'hosts'))
   return parser
+
 
 def validate_json(build_dir):
   def has_duplicates(kv_pairs):
@@ -43,6 +46,7 @@ def validate_json(build_dir):
         with open(filename, 'r') as fp:
           json.load(fp, object_pairs_hook = no_duplicates_hook(filename))
 
+
 def init_tree(build_dir):
   if os.path.isdir(build_dir):
     shutil.rmtree(build_dir)
@@ -57,6 +61,7 @@ def init_tree(build_dir):
   with open(os.path.join(build_dir, 'local', 'id_tunnel'), 'w') as _:
     pass
 
+
 def prepare_tree(build_dir, config_name):
   settings_path = os.path.join(build_dir, 'settings.nix')
   host_config_path = os.path.join(build_dir, 'org-config', 'hosts', config_name)
@@ -64,25 +69,50 @@ def prepare_tree(build_dir, config_name):
     os.unlink(settings_path)
   os.symlink(host_config_path, settings_path)
 
-def build_config(build_dir, hostname):
-  print(f'Building config: {hostname}')
+
+ELM_ERROR_REGEX = re.compile(
+  r"/build/frontend/elm-stuff/.*/d\.dat: openBinaryFile: resource busy \(file is locked\)",
+  re.MULTILINE)
+
+# The ELM compiler sometimes crashes due to a file being locked.
+# We do not yet understand why this happens, but restarting the build
+# seems to fix it...
+def retry_if_elm_failed(proc, retry_routine):
+  stderr = proc.stderr.decode() if proc.stderr else ""
+  retry_needed = proc.returncode != 0 and \
+                 ELM_ERROR_REGEX.search(stderr)
+  return proc if not retry_needed else retry_routine()
+
+
+def build_config(build_dir, hostname, retry = False):
+  if retry:
+    print(f'Retry building config: {hostname}')
+  else:
+    print(f'Building config: {hostname}')
   config_name = os.path.basename(hostname)
   prepare_tree(build_dir, config_name)
   config_path = os.path.join(build_dir, 'configuration.nix')
-  return subprocess.run([ 'nix-build',
+  proc = subprocess.run([ 'nix-build',
                           '<nixpkgs/nixos>',
                           '-I', f'nixos-config={config_path}',
                           '-A', 'system' ],
                         stdout = PIPE, stderr = PIPE)
+  print(proc.stderr.decode())
+  print(proc.stdout.decode())
+
+  retry_routine = lambda: build_config(build_dir, hostname, True)
+  # If we are already retrying, we do not consider retrying again,
+  # otherwise we run the routine to decide if we need to retry.
+  return proc if retry else retry_if_elm_failed(proc, retry_routine)
+
 
 def do_build_configs(build_dir, configs):
   init_tree(build_dir)
   validate_json(build_dir)
   for config in configs:
     proc = build_config(build_dir, config)
-    print(proc.stderr.decode())
-    print(proc.stdout.decode())
     proc.check_returncode()
+
 
 def build_configs(build_dir, group_amount, group_id):
   configs = sorted(glob.glob(os.path.join('.', 'org-config', 'hosts', '*.nix')))
@@ -107,6 +137,7 @@ def build_configs(build_dir, group_amount, group_id):
 
   do_build_configs(build_dir, configs[begin:end])
 
+
 def validate_args(args):
   if args.group_amount < 1:
     raise ValueError(f"The group amount ({args.group_amount}) should be at least 1.")
@@ -117,10 +148,12 @@ def validate_args(args):
     raise ValueError(f"The build group ID ({args.group_id}) cannot be less than zero.")
   return args
 
+
 def main():
   args = validate_args(args_parser().parse_args())
   build_dir = os.path.join(tempfile.gettempdir(), 'nix_config_build')
   build_configs(build_dir, args.group_amount, args.group_id)
+
 
 if __name__ == '__main__':
   main()
