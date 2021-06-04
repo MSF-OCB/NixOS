@@ -194,6 +194,65 @@ fi
   echo "Successfully authenticated to GitHub."
 )
 
+# Set some global Git settings
+nix-shell --packages git --run "git config --global pull.rebase true"
+nix-shell --packages git --run "git config --global user.name 'OCB NixOS Robot'"
+nix-shell --packages git --run "git config --global user.email 'nixos-ocb@users.noreply.github.com'"
+nix-shell --packages git --run "git config --global core.sshCommand 'ssh -i /tmp/id_tunnel'"
+
+# Commit a new encryption key to GitHub
+if [ "${CREATE_DATA_PART}" = true ]; then
+  if [ -e "/tmp/nixos" ]; then
+    rm --recursive --force "/tmp/nixos"
+  fi
+
+  nix-shell --packages git --run "git clone ${main_repo} \
+                                      /tmp/nixos"
+  nix-shell --packages git --run "git clone ${config_repo} \
+                                      /tmp/nixos/org-config"
+
+  /tmp/nixos/scripts/secrets/add_encryption_key.py \
+    --hostname "${TARGET_HOSTNAME}"\
+    --secrets_file "/tmp/nixos/org-config/secrets/nixos_encryption-secrets.yml"
+
+  random_id=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 10)
+  branch_name="installer_commit_enc_key_${TARGET_HOSTNAME}_${random_id}"
+  nix-shell --packages git --run "git -C /tmp/nixos/org-config \
+                                      checkout -b ${branch_name}"
+  nix-shell --packages git --run "git -C /tmp/nixos/org-config \
+                                      add secrets/nixos_encryption-secrets.yml"
+  nix-shell --packages git --run "git -C /tmp/nixos/org-config \
+                                      commit \
+                                      --message 'Commit encryption key for ${TARGET_HOSTNAME}.'"
+  nix-shell --packages git --run "git -C /tmp/nixos/org-config \
+                                      push -u origin ${branch_name}"
+
+  echo -e "\n\nThe encryption key for this server was committed to GitHub"
+  echo -e "Please go to the following link to create a pull request:"
+  echo -e "\nhttps://github.com/MSF-OCB/NixOS-OCB-config/pull/new/${branch_name}\n"
+  echo -e "The installer will continue once the pull request has been merged into master."
+
+  nix-shell --packages git --run "git -C /tmp/nixos/org-config \
+                                      checkout master"
+
+  secret_present=false
+  while [ "${secret_present}" = false ]; do
+    nix-shell --packages git --run "git -C /tmp/nixos/org-config \
+                                        pull > /dev/null 2>&1"
+    mkdir --parents /run/.secrets/
+    /tmp/nixos/scripts/secrets/decrypt_server_secrets.py \
+      --server_name "${TARGET_HOSTNAME}" \
+      --secrets_path "/tmp/nixos/org-config/secrets/generated" \
+      --output_path "/run/.secrets" \
+      --private_key_file "/tmp/id_tunnel" > /dev/null
+    if [ -f "/run/.secrets/keyfile" ]; then
+      secret_present=true
+    else
+      sleep 10
+    fi
+  done
+fi
+
 detect_swap="$(swapon | grep "${swapfile}" > /dev/null 2>&1; echo $?)"
 if [ "${detect_swap}" -eq "0" ]; then
   swapoff "${swapfile}"
@@ -285,67 +344,15 @@ mkswap "${swapfile}"
 swapon "${swapfile}"
 
 rm --recursive --force /mnt/etc/
-nix-shell --packages git --run "git -c core.sshCommand='ssh -i /tmp/id_tunnel' \
-                                    clone ${main_repo} \
+nix-shell --packages git --run "git clone ${main_repo} \
                                     /mnt/etc/nixos/"
-nix-shell --packages git --run "git -c core.sshCommand='ssh -i /tmp/id_tunnel' \
-                                    clone ${config_repo} \
+nix-shell --packages git --run "git clone ${config_repo} \
                                     /mnt/etc/nixos/org-config"
 nixos-generate-config --root /mnt --no-filesystems
 ln --symbolic org-config/hosts/"${TARGET_HOSTNAME}".nix /mnt/etc/nixos/settings.nix
 cp /tmp/id_tunnel /tmp/id_tunnel.pub /mnt/etc/nixos/local/
 
 if [ "${CREATE_DATA_PART}" = true ]; then
-  if [ -e "/tmp/nixos-ocb-config" ]; then
-    rm --recursive --force "/tmp/nixos-ocb-config"
-  fi
-  nix-shell --packages git --run "git config --global pull.rebase true"
-  nix-shell --packages git --run "git -c core.sshCommand='ssh -i /tmp/id_tunnel' \
-                                      clone ${config_repo} \
-                                      /tmp/nixos-ocb-config"
-
-  /mnt/etc/nixos/scripts/secrets/add_encryption_key.py \
-    --hostname "${TARGET_HOSTNAME}"\
-    --secrets_file "/tmp/nixos-ocb-config/secrets/nixos_encryption-secrets.yml"
-
-  random_id=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 10)
-  branch_name="installer_commit_enc_key_${TARGET_HOSTNAME}_${random_id}"
-  nix-shell --packages git --run "git -C /tmp/nixos-ocb-config \
-                                      checkout -b ${branch_name}"
-  nix-shell --packages git --run "git -C /tmp/nixos-ocb-config \
-                                      add secrets/nixos_encryption-secrets.yml"
-  nix-shell --packages git --run "git -C /tmp/nixos-ocb-config \
-                                      -c user.name='OCB NixOS Robot' \
-                                      -c user.email='nixos-ocb@users.noreply.github.com' \
-                                      commit \
-                                      --message 'Commit encryption key for ${TARGET_HOSTNAME}.'"
-  nix-shell --packages git --run "git -C /tmp/nixos-ocb-config \
-                                      -c core.sshCommand='ssh -i /tmp/id_tunnel' \
-                                      push -u origin ${branch_name}"
-
-  echo -e "\n\nThe encryption key for this server was committed to GitHub"
-  echo -e "Please go to the following link to create a pull request:"
-  echo -e "\nhttps://github.com/MSF-OCB/NixOS-OCB-config/pull/new/${branch_name}\n"
-  echo -e "The installer will continue once the pull request has been merged into master."
-
-  secret_present=false
-  while [ "${secret_present}" = false ]; do
-    nix-shell --packages git --run "git -C /mnt/etc/nixos/org-config \
-                                        -c core.sshCommand='ssh -i /tmp/id_tunnel' \
-                                        pull > /dev/null 2>&1"
-    mkdir --parents /run/.secrets/
-    /mnt/etc/nixos/scripts/secrets/decrypt_server_secrets.py \
-      --server_name "${TARGET_HOSTNAME}" \
-      --secrets_path "/mnt/etc/nixos/org-config/secrets/generated" \
-      --output_path "/run/.secrets" \
-      --private_key_file "/tmp/id_tunnel" > /dev/null
-    if [ -f "/run/.secrets/keyfile" ]; then
-      secret_present=true
-    else
-      sleep 10
-    fi
-  done
-
   # Do this only after having generated the hardware config
   lvcreate --yes --extents 100%FREE --name nixos_data LVMVolGroup
   wait_for_devices "/dev/LVMVolGroup/nixos_data"
