@@ -204,7 +204,7 @@ nix-shell --packages git --run "git config --global core.sshCommand 'ssh -i /tmp
 if [ "${CREATE_DATA_PART}" = true ]; then
   nixos_dir="/tmp/nixos/"
   config_dir="${nixos_dir}/org-config/"
-  secrets_dir="/run/.secrets/"
+  secrets_dir="${MSFOCB_SECRETS_DIRECTORY}"
 
   # Clean up potential left-over directories
   if [ -e "${nixos_dir}" ]; then
@@ -379,10 +379,10 @@ if [ "${CREATE_DATA_PART}" = true ]; then
              --use-urandom \
              luksFormat \
              --type luks2 \
-             --key-file /run/.secrets/keyfile \
+             --key-file "${MSFOCB_SECRETS_DIRECTORY}/keyfile" \
              /dev/LVMVolGroup/nixos_data
   cryptsetup open \
-             --key-file /run/.secrets/keyfile \
+             --key-file "${MSFOCB_SECRETS_DIRECTORY}/keyfile" \
              /dev/LVMVolGroup/nixos_data nixos_data_decrypted
   mkfs.ext4 -e remount-ro \
             -m 1 \

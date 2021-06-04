@@ -5,6 +5,7 @@ with (import ../msf_lib.nix);
 
 let
   cfg = config.settings.crypto;
+  sys_cfg = config.settings.system;
 
   cryptoOpts = { name, config, ... }: {
     options = {
@@ -22,7 +23,10 @@ let
 
       key_file = mkOption {
         type    = types.str;
-        default = "/keyfile";
+        default = "${sys_cfg.secrets.dest_directory}/keyfile";
+        # We currently do not have multiple key files on any server and
+        # we first need to migrate to properly secured key files.
+        readOnly = true;
       };
 
       mount_point = mkOption {
@@ -100,8 +104,28 @@ in {
         User = "root";
         Type = "oneshot";
         RemainAfterExit = true;
-        ExecStart = ''
-          ${pkgs.cryptsetup}/bin/cryptsetup open ${conf.device} ${decrypted_name conf} --key-file ${conf.key_file}
+        script = ''
+          if [ -e "${conf.key_file}" ]; then
+            keyfile = "${conf.key_file}"
+          elif [ -e "/keyfile" ]; then
+            keyfile = "/keyfile"
+          else
+            echo "Keyfile ('${conf.key_file}') not found!"
+            exit 1
+          fi
+
+          # Add the new key if both the new and the old exist
+          if [ -e "${conf.key_file}" ] && [ -e "/keyfile" ]; then
+            ${pkgs.cryptsetup}/bin/cryptsetup luksAddKey ${conf.device} --key-file /keyfile ${conf.key_file}
+          fi
+
+          ${pkgs.cryptsetup}/bin/cryptsetup open ${conf.device} ${decrypted_name conf} --key-file ''${keyfile}
+
+          # We remove the old key if the new one has been added
+          # This command can only succeed if the new key has been successfully added
+          if [ -e "${conf.key_file}" ] && [ -e "/keyfile" ]; then
+            ${pkgs.cryptsetup}/bin/cryptsetup luksRemoveKey ${conf.device} --key-file ${conf.key_file} /keyfile || true
+          fi
         '';
         ExecStop = ''
           ${pkgs.cryptsetup}/bin/cryptsetup close --deferred ${decrypted_name conf}
