@@ -286,7 +286,7 @@ with lib;
           ${pkgs.coreutils}/bin/mkdir --parent "${cfg.secrets.dest_directory}"
 
           ${python.interpreter} \
-            ${../scripts/decrypt_server_secrets.py} \
+            ${../scripts/secrets/decrypt_server_secrets.py} \
             --server_name "${config.networking.hostName}" \
             --secrets_path "${cfg.secrets.src_directory}" \
             --output_path "${cfg.secrets.dest_directory}" \
