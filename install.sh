@@ -219,7 +219,7 @@ if [ "${CREATE_DATA_PART}" = true ]; then
   nix-shell --packages git --run "git clone ${config_repo} \
                                       ${config_dir}"
 
-  function generate_secrets() {
+  function decrypt_secrets() {
     mkdir --parents "${secrets_dir}"
     "${nixos_dir}"/scripts/secrets/decrypt_server_secrets.py \
       --server_name "${TARGET_HOSTNAME}" \
@@ -228,7 +228,7 @@ if [ "${CREATE_DATA_PART}" = true ]; then
       --private_key_file "/tmp/id_tunnel" > /dev/null
   }
 
-  generate_secrets
+  decrypt_secrets
   keyfile="${secrets_dir}/keyfile"
   if [ ! -f "${keyfile}" ]; then
     "${nixos_dir}"/scripts/secrets/add_encryption_key.py \
@@ -258,7 +258,7 @@ if [ "${CREATE_DATA_PART}" = true ]; then
     while [ ! -f "${keyfile}" ]; do
       nix-shell --packages git --run "git -C ${config_dir} \
                                           pull > /dev/null 2>&1"
-      generate_secrets
+      decrypt_secrets
       if [ ! -f "${keyfile}" ]; then
         sleep 10
       fi
