@@ -221,11 +221,12 @@ if [ "${CREATE_DATA_PART}" = true ]; then
 
   function decrypt_secrets() {
     mkdir --parents "${secrets_dir}"
-    "${nixos_dir}"/scripts/secrets/decrypt_server_secrets.py \
-      --server_name "${TARGET_HOSTNAME}" \
-      --secrets_path "${config_dir}/secrets/generated" \
-      --output_path "${secrets_dir}" \
-      --private_key_file "/tmp/id_tunnel" > /dev/null
+    nix-shell "${nixos_dir}"/scripts/ocb_nixos_python_scripts/shell.nix \
+              --run "decrypt_server_secrets \
+                       --server_name ${TARGET_HOSTNAME} \
+                       --secrets_path ${config_dir}/secrets/generated \
+                       --output_path ${secrets_dir} \
+                       --private_key_file /tmp/id_tunnel > /dev/null"
   }
 
   decrypt_secrets
