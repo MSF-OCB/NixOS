@@ -232,9 +232,10 @@ if [ "${CREATE_DATA_PART}" = true ]; then
   decrypt_secrets
   keyfile="${secrets_dir}/keyfile"
   if [ ! -f "${keyfile}" ]; then
-    "${nixos_dir}"/scripts/secrets/add_encryption_key.py \
-      --hostname "${TARGET_HOSTNAME}"\
-      --secrets_file "${config_dir}/secrets/nixos_encryption-secrets.yml"
+    nix-shell "${nixos_dir}"/scripts/ocb_nixos_python_scripts/shell.nix \
+              --run "add_encryption_key \
+                       --hostname ${TARGET_HOSTNAME} \
+                       --secrets_file ${config_dir}/secrets/nixos_encryption-secrets.yml"
 
     random_id=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 10)
     branch_name="installer_commit_enc_key_${TARGET_HOSTNAME}_${random_id}"
