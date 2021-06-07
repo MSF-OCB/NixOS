@@ -34,9 +34,11 @@ def main() -> None:
   print_vault_banner()
   ansible_vault_passwd = ansible_vault_lib.get_ansible_passwd(args.ansible_vault_passwd)
 
-  data = ansible_vault_lib.read_vault_file(ansible_vault_passwd,
-                                           args.secrets_file) \
-         or { SECRETS_KEY: {} }
+  try:
+    data = ansible_vault_lib.read_vault_file(ansible_vault_passwd,
+                                             args.secrets_file)
+  except FileNotFoundError:
+    data = { SECRETS_KEY: {} }
 
   data[SECRETS_KEY][f'{args.hostname}-encryption-key'] = {
     PATH_KEY: "keyfile",
