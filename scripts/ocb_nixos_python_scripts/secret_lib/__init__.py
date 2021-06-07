@@ -26,6 +26,11 @@ OPENSSH_PRIVATE_KEY_SIGNATURE: bytes = b'\x00\x00\x00\x40'
 PUBLIC_KEY_LENGTH:  int = nacl.bindings.crypto_box_PUBLICKEYBYTES
 PRIVATE_KEY_LENGTH: int = nacl.bindings.crypto_box_PUBLICKEYBYTES
 
+SECRETS_KEY: str = "secrets"
+SERVERS_KEY: str = "servers"
+PATH_KEY:    str = "path"
+CONTENT_KEY: str = "content"
+
 
 def chunk(b64bytes: bytes) -> str:
   wrapped = wrap(b64bytes.decode(UTF8), width=CHUNK_WIDTH)

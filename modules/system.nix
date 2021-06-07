@@ -146,6 +146,13 @@ with lib;
       }
     ];
 
+    nixpkgs.overlays = let
+      python_scripts_overlay = self: super: {
+        ocb_python_scripts =
+          self.callPackage ../scripts/ocb_nixos_python_scripts {};
+      };
+    in [ python_scripts_overlay ];
+
     zramSwap = {
       enable = true;
       algorithm = "zstd";
@@ -259,7 +266,6 @@ with lib;
       };
       decrypt_secrets = {
         text = let
-          python = pkgs.python3.withPackages (pkgs: with pkgs; [ pynacl pyyaml ]);
           permissions = concatMapStringsSep ","
                                             (group: "group:${group}:rX")
                                             cfg.secrets.allow_groups;
@@ -285,8 +291,7 @@ with lib;
           fi
           ${pkgs.coreutils}/bin/mkdir --parent "${cfg.secrets.dest_directory}"
 
-          ${python.interpreter} \
-            ${../scripts/secrets/decrypt_server_secrets.py} \
+          ${pkgs.ocb_python_scripts}/bin/decrypt_server_secrets \
             --server_name "${config.networking.hostName}" \
             --secrets_path "${cfg.secrets.src_directory}" \
             --output_path "${cfg.secrets.dest_directory}" \
