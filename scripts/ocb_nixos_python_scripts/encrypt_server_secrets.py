@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i python3 --packages python3Packages.pynacl python3Packages.pyyaml python3Packages.ansible
+#! nix-shell -i python3 ./shell.nix
 
 # ---- Import needed modules ----
 import argparse
