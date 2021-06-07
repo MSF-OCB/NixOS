@@ -20,7 +20,6 @@ from textwrap    import wrap
 from typing      import Any, Dict, Iterable, List, Mapping
 from nacl.public import PublicKey # type: ignore
 
-
 import ansible_vault_lib
 import secret_lib
 
@@ -69,7 +68,7 @@ def args_parser() -> argparse.ArgumentParser:
 
 def get_secrets(secrets) -> Iterable[ServerSecretData]:
   def validate_secret(secret_name: str, secret: Any) -> Mapping:
-    if not (isinstance(secret, collections.abc.Mapping) and
+    if not (isinstance(secret, Mapping) and
             secret.get(PATH_KEY) and
             secret.get(CONTENT_KEY) and
             secret.get(SERVERS_KEY)):
