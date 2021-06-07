@@ -155,6 +155,9 @@ if [ ! -f "/tmp/id_tunnel" ] || [ ! -f "/tmp/id_tunnel.pub" ]; then
              -C "" \
              -f /tmp/id_tunnel
   echo "SSH keypair generated."
+else
+  # Make sure that we have the right permissions
+  chmod 0400 /tmp/id_tunnel
 fi
 
 # Check whether we can authenticate to GitHub using this server's key
