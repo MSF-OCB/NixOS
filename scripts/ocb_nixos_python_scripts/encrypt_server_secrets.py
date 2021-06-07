@@ -27,13 +27,11 @@ import secret_lib
 from secret_lib import OPENSSH_PUBLIC_KEY_STRING_LENGTH, \
                        OPENSSH_PUBLIC_KEY_SIGNATURE, \
                        PUBLIC_KEY_LENGTH, \
+                       SECRETS_KEY, \
+                       SERVERS_KEY, \
+                       PATH_KEY, \
+                       CONTENT_KEY, \
                        UTF8
-
-
-SECRETS_KEY: str = "secrets"
-SERVERS_KEY: str = "servers"
-PATH_KEY:    str = "path"
-CONTENT_KEY: str = "content"
 
 
 @dataclass(frozen=True)
