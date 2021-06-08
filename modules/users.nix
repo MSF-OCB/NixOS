@@ -31,11 +31,6 @@ let
         default = false;
       };
 
-      isSystemUser = mkOption {
-        type    = types.bool;
-        default = false;
-      };
-
       canTunnel = mkOption {
         type    = types.bool;
         default = false;
@@ -163,7 +158,7 @@ in {
         mkUser = _: user: {
           name         = user.name;
           isNormalUser = user.hasShell;
-          isSystemUser = user.isSystemUser;
+          isSystemUser = ! user.hasShell;
           extraGroups  = user.extraGroups ++
                          (optional (user.sshAllowed || user.canTunnel) cfg.ssh-group) ++
                          (optional user.canTunnel cfg.fwd-tunnel-group) ++

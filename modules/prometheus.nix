@@ -16,7 +16,6 @@ in {
       sshAllowed   = true;
       hasShell     = false;
       canTunnel    = true;
-      isSystemUser = true;
     };
 
     services.prometheus.exporters.node = {
