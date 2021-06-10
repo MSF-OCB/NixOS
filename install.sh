@@ -224,7 +224,7 @@ if [ "${CREATE_DATA_PART}" = true ]; then
 
   function decrypt_secrets() {
     mkdir --parents "${secrets_dir}"
-    nix-shell "${nixos_dir}"/scripts/ocb_nixos_python_scripts/shell.nix \
+    nix-shell "${nixos_dir}"/scripts/python_nixostools/shell.nix \
               --run "decrypt_server_secrets \
                        --server_name ${TARGET_HOSTNAME} \
                        --secrets_path ${config_dir}/secrets/generated \
@@ -235,7 +235,7 @@ if [ "${CREATE_DATA_PART}" = true ]; then
   decrypt_secrets
   keyfile="${secrets_dir}/keyfile"
   if [ ! -f "${keyfile}" ]; then
-    nix-shell "${nixos_dir}"/scripts/ocb_nixos_python_scripts/shell.nix \
+    nix-shell "${nixos_dir}"/scripts/python_nixostools/shell.nix \
               --run "add_encryption_key \
                        --hostname ${TARGET_HOSTNAME} \
                        --secrets_file ${config_dir}/secrets/nixos_encryption-secrets.yml"
