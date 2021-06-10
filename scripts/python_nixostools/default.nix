@@ -4,7 +4,7 @@
 }:
 
 let
-  pname   = "ocb_nixos_python_scripts";
+  pname   = "ocb_python_nixostools";
   version = "0.1";
   src     = builtins.path { path = ./.; name = pname; };
 
@@ -22,9 +22,7 @@ let
              --warn-return-any \
              --warn-unreachable \
              --check-untyped-defs \
-             $src/secret_lib \
-             $src/ansible_vault_lib \
-             *.py
+             ${src}/nixostools
       '';
 
       meta = {
