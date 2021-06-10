@@ -149,7 +149,7 @@ with lib;
     nixpkgs.overlays = let
       python_scripts_overlay = self: super: {
         ocb_python_scripts =
-          self.callPackage ../scripts/ocb_nixos_python_scripts {};
+          self.callPackage ../scripts/python_nixostools {};
       };
     in [ python_scripts_overlay ];
 

@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i python3 ./shell.nix
+#! nix-shell -i python3 ../shell.nix
 
 # ---- Import needed modules ----
 import argparse
@@ -20,17 +20,16 @@ from textwrap    import wrap
 from typing      import Any, Dict, Iterable, List, Mapping
 from nacl.public import PublicKey # type: ignore
 
-import ansible_vault_lib
-import secret_lib
+from nixostools import ansible_vault_lib, secret_lib
 
-from secret_lib import OPENSSH_PUBLIC_KEY_STRING_LENGTH, \
-                       OPENSSH_PUBLIC_KEY_SIGNATURE, \
-                       PUBLIC_KEY_LENGTH, \
-                       SECRETS_KEY, \
-                       SERVERS_KEY, \
-                       PATH_KEY, \
-                       CONTENT_KEY, \
-                       UTF8
+from nixostools.secret_lib import OPENSSH_PUBLIC_KEY_STRING_LENGTH, \
+                                  OPENSSH_PUBLIC_KEY_SIGNATURE, \
+                                  PUBLIC_KEY_LENGTH, \
+                                  SECRETS_KEY, \
+                                  SERVERS_KEY, \
+                                  PATH_KEY, \
+                                  CONTENT_KEY, \
+                                  UTF8
 
 
 @dataclass(frozen=True)

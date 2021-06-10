@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i python3 ./shell.nix
+#! nix-shell -i python3 ../shell.nix
 
 import argparse
 import os
@@ -10,9 +10,9 @@ from base64 import b64decode
 
 from typing import Any, Mapping
 
-import secret_lib
-from secret_lib import OPENSSH_PRIVATE_KEY_SIGNATURE, \
-                       PRIVATE_KEY_LENGTH
+from nixostools import secret_lib
+from nixostools.secret_lib import OPENSSH_PRIVATE_KEY_SIGNATURE, \
+                                  PRIVATE_KEY_LENGTH
 
 
 def args_parser() -> argparse.ArgumentParser:

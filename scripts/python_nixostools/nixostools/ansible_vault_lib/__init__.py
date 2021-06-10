@@ -34,7 +34,7 @@ def read_vault_file(passwd: str,
     with open(vault_file, 'r') as f:
       return yaml.safe_load(vault.decrypt(f.read(), filename=vault_file)) # type: ignore
   else:
-      raise Exception(f'Ansible Vault file ({vault_file}): no such file!')
+      raise FileNotFoundError(f'Ansible Vault file ({vault_file}): no such file!')
 
 
 def write_vault_file(passwd: str,
