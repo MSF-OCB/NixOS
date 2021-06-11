@@ -5,6 +5,7 @@ with (import ../msf_lib.nix);
 
 let
   cfg = config.settings.crypto;
+  sys_cfg = config.settings.system;
 
   cryptoOpts = { name, config, ... }: {
     options = {
@@ -22,7 +23,10 @@ let
 
       key_file = mkOption {
         type    = types.str;
-        default = "/keyfile";
+        default = "${sys_cfg.secrets.dest_directory}/keyfile";
+        # We currently do not have multiple key files on any server and
+        # we first need to migrate to properly secured key files.
+        readOnly = true;
       };
 
       mount_point = mkOption {
@@ -100,13 +104,64 @@ in {
         User = "root";
         Type = "oneshot";
         RemainAfterExit = true;
-        ExecStart = ''
-          ${pkgs.cryptsetup}/bin/cryptsetup open ${conf.device} ${decrypted_name conf} --key-file ${conf.key_file}
-        '';
         ExecStop = ''
           ${pkgs.cryptsetup}/bin/cryptsetup close --deferred ${decrypted_name conf}
         '';
       };
+      script = ''
+        function test_passphrase() {
+          ${pkgs.cryptsetup}/bin/cryptsetup luksOpen \
+                                            --test-passphrase \
+                                            ${conf.device} \
+                                            --key-file "''${1}" \
+                                            > /dev/null 2>&1
+          echo "''${?}"
+        }
+
+        # Avoid a harmless warning
+        mkdir --parents /run/cryptsetup
+
+        # Add the new key if both the new and the old exist
+        if [ -e "${conf.key_file}" ] && [ -e "/keyfile" ]; then
+          new_key_test="$(test_passphrase ${conf.key_file})"
+          if [ "''${new_key_test}" -ne 0 ]; then
+            echo "Adding key ${conf.key_file} to ${conf.device}..."
+            ${pkgs.cryptsetup}/bin/cryptsetup luksAddKey \
+                                              ${conf.device} \
+                                              --key-file /keyfile \
+                                              ${conf.key_file}
+          fi
+        fi
+
+        # Determine the key file to use to open the partition
+        if [ -e "${conf.key_file}" ]; then
+          keyfile="${conf.key_file}"
+        elif [ -e "/keyfile" ]; then
+          keyfile="/keyfile"
+        else
+          echo "Keyfile ('${conf.key_file}') not found!"
+          exit 1
+        fi
+
+        echo "Unlocking ${conf.device} using key ''${keyfile}..."
+
+        ${pkgs.cryptsetup}/bin/cryptsetup open \
+                                          ${conf.device} \
+                                          ${decrypted_name conf} \
+                                          --key-file ''${keyfile}
+
+        # We remove the old key from the partition if the new one has been added
+        if [ -e "${conf.key_file}" ] && [ -e "/keyfile" ]; then
+          new_key_test="$(test_passphrase ${conf.key_file})"
+          old_key_test="$(test_passphrase /keyfile)"
+          if [ "''${new_key_test}" -eq 0 ] && [ "''${old_key_test}" -eq 0 ]; then
+            echo "Removing /keyfile from ${conf.device}..."
+            ${pkgs.cryptsetup}/bin/cryptsetup luksRemoveKey \
+                                              ${conf.device} \
+                                              --key-file /keyfile
+          fi
+        fi
+      '';
     };
     mkMount = conf: {
       enable = conf.enable;
