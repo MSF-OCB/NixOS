@@ -54,9 +54,10 @@ jobs:
 
       - name: Build the NixOS configurations
         run: >-
-          ./.github/scripts/build.py
+          nix-shell ./scripts/python_nixostools/shell.nix --run
+          "build_nixos_configs
           --group_amount ${{ matrix.group_count }}
-          --group_id ${{ matrix.group_id }}
+          --group_id ${{ matrix.group_id }}"
 
 
   build_iso:

@@ -8,12 +8,12 @@ let
   version = "0.1";
   src     = builtins.path { path = ./.; name = pname; };
 
-  package = { buildPythonApplication, pyyaml, ansible, pynacl, mypy }:
+  package = { buildPythonApplication, ansible, mypy, pynacl, pyyaml, requests }:
     buildPythonApplication {
       inherit pname version src doCheck;
 
       checkInputs = [ mypy ];
-      propagatedBuildInputs = [ pyyaml ansible pynacl ];
+      propagatedBuildInputs = [ ansible pynacl pyyaml requests ];
 
       checkPhase = ''
         mypy --warn-redundant-casts \
