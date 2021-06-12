@@ -22,16 +22,11 @@ def args_parser() -> argparse.ArgumentParser:
   return parser
 
 
-def print_vault_banner() -> None:
-  print("\n\nYou will need the key for the Ansible Vault storing the encryption keys.")
-  print("This key can be found here:")
-  print("\nhttps://start.1password.com/open/i?a=3ZSXL3IG55ER5E467CLRTXXE4U&h=msfocb.1password.eu&i=3zol6ujo4xg7vcxp5sxxt5mjpa&v=xsnpr3xpsu3x433llrascuqj4e\n")
-
-
 def main() -> None:
   args = args_parser().parse_args()
 
-  print_vault_banner()
+  print(f"Generating encryption key for {args.hostname}...")
+
   ansible_vault_passwd = ansible_vault_lib.get_ansible_passwd(args.ansible_vault_passwd)
 
   try:
@@ -49,6 +44,8 @@ def main() -> None:
   ansible_vault_lib.write_vault_file(ansible_vault_passwd,
                                      args.secrets_file,
                                      data)
+
+  print(f"Encryption key for {args.hostname} successfully generated.")
 
 
 if __name__ == "__main__":

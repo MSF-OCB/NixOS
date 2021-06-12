@@ -1,4 +1,5 @@
-#! /usr/bin/env python3
+#! /usr/bin/env nix-shell
+#! nix-shell -i python3 ../shell.nix
 
 import argparse
 import glob
@@ -10,9 +11,10 @@ import subprocess
 import tempfile
 
 from subprocess import PIPE
+from typing import Iterable, Mapping
 
 
-def args_parser():
+def args_parser() -> argparse.ArgumentParser:
   parser = argparse.ArgumentParser(description='Build all NixOS configs.')
   parser.add_argument('--group_amount', type = int, dest = 'group_amount', required = True)
   parser.add_argument('--group_id',     type = int, dest = 'group_id',     required = True)
@@ -21,8 +23,8 @@ def args_parser():
   return parser
 
 
-def validate_json(build_dir):
-  def has_duplicates(kv_pairs):
+def validate_json(build_dir: str) -> None:
+  def has_duplicates(kv_pairs: Iterable):
     seen = set()
     for kv in kv_pairs:
       key = kv[0]
@@ -32,8 +34,8 @@ def validate_json(build_dir):
         seen |= { key }
     return None
 
-  def no_duplicates_hook(filename):
-    def check_duplicates(kv_pairs):
+  def no_duplicates_hook(filename: str):
+    def check_duplicates(kv_pairs) -> None:
       duplicate_key = has_duplicates(kv_pairs)
       if duplicate_key:
         raise ValueError(f"Duplicate JSON key ({duplicate_key}) in {filename}.")
@@ -47,7 +49,7 @@ def validate_json(build_dir):
           json.load(fp, object_pairs_hook = no_duplicates_hook(filename))
 
 
-def init_tree(build_dir):
+def init_tree(build_dir: str) -> None:
   if os.path.isdir(build_dir):
     shutil.rmtree(build_dir)
   shutil.copytree(os.getcwd(), build_dir,
@@ -62,7 +64,7 @@ def init_tree(build_dir):
     pass
 
 
-def prepare_tree(build_dir, config_name):
+def prepare_tree(build_dir: str, config_name: str) -> None:
   settings_path = os.path.join(build_dir, 'settings.nix')
   host_config_path = os.path.join(build_dir, 'org-config', 'hosts', config_name)
   if os.path.exists(settings_path):
@@ -84,7 +86,7 @@ def retry_if_elm_failed(proc, retry_routine):
   return proc if not retry_needed else retry_routine()
 
 
-def build_config(build_dir, hostname, retry = False):
+def build_config(build_dir: str, hostname: str, retry: bool = False):
   if retry:
     print(f'Retry building config: {hostname}')
   else:
@@ -106,7 +108,7 @@ def build_config(build_dir, hostname, retry = False):
   return proc if retry else retry_if_elm_failed(proc, retry_routine)
 
 
-def do_build_configs(build_dir, configs):
+def do_build_configs(build_dir: str, configs: Iterable) -> None:
   init_tree(build_dir)
   validate_json(build_dir)
   for config in configs:
@@ -114,7 +116,7 @@ def do_build_configs(build_dir, configs):
     proc.check_returncode()
 
 
-def build_configs(build_dir, group_amount, group_id):
+def build_configs(build_dir: str, group_amount: int, group_id: int) -> None:
   configs = sorted(glob.glob(os.path.join('.', 'org-config', 'hosts', '*.nix')))
   length = len(configs)
 
