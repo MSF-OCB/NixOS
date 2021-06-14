@@ -409,7 +409,11 @@ in
       "${traefik_docker_service_name}" = let
         dns_credentials_file = system_cfg.secrets.dest_directory + cfg.acme.dns_provider;
       in {
+        # Requires needs to be accompanied by an After condition in order to be effective
+        # See https://www.freedesktop.org/software/systemd/man/systemd.unit.html#Requires=
         requires = [ "docker.service" ];
+        after    = [ "docker.service" ];
+        wantedBy = [ "docker.service" ];
         serviceConfig = {
           # Restore the defaults to have proper logging in the systemd journal.
           # See GitHub NixOS/nixpkgs issue #102768 and PR #102769
