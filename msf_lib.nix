@@ -126,7 +126,7 @@ with lib;
       };
     };
 
-    # Generate a string consisting of a given number of spaces
+    # Prepend a string with a given number of spaces
     # indentStr :: Int -> String -> String
     indentStr = n: str: let
       spacesN = compose [ concatStrings (genList (const " ")) ];
