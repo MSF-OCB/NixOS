@@ -147,7 +147,8 @@ in {
       # Port 0 is ignored since it is a placeholder port.
       update_duplicates_set = tunnel: set: let
         port = toString (cfg.tunnels.${tunnel}.remote_forward_port);
-      in set // { ${port} = port != "0" && hasAttr port set; };
+        is_duplicate = set: port: port != "0" && hasAttr port set;
+      in set // { ${port} = is_duplicate set port; };
 
       # Use the update_duplicates_set function to calculate
       # a set marking duplicate ports, filter out the duplicates,
