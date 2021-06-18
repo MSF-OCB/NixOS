@@ -126,14 +126,21 @@ with lib;
       };
     };
 
+    # Generate a string consisting of a given number of spaces
+    # indentStr :: Int -> String -> String
+    indentStr = n: str: let
+      spacesN = compose [ concatStrings (genList (const " ")) ];
+    in (spacesN n) + str;
+
     reset_git = { branch
                 , git_options
                 , indent ? 0 }: let
       git = "${pkgs.git}/bin/git";
-      indentStr = compose [ concatStrings (genList (const " ")) ];
       mkOptionsStr = concatStringsSep " ";
       mkGitCommand = git_options: cmd: "${git} ${mkOptionsStr git_options} ${cmd}";
-    in concatMapStringsSep "\n${indentStr indent}" (mkGitCommand git_options) [
+      mkGitCommandIndented = indent: git_options:
+        compose [ (indentStr indent) (mkGitCommand git_options) ];
+    in concatMapStringsSep "\n" (mkGitCommandIndented indent git_options) [
       # The following line is only used to avoid the warning emitted by git.
       # We will reset the local repo anyway and remove all local changes.
       "config pull.rebase true"
@@ -240,7 +247,7 @@ with lib;
     inherit compose applyTwice filterEnabled ifPathExists
             host_name_type empty_str_type pub_key_type
             user_roles formats
-            reset_git clone_and_reset_git mkDeploymentService;
+            indentStr reset_git clone_and_reset_git mkDeploymentService;
   };
 }
 

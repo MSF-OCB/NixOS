@@ -64,7 +64,10 @@ with (import ../msf_lib.nix);
         passwordAuthentication = false;
         challengeResponseAuthentication = false;
         allowSFTP = true;
-        ports = mkIf reverse_tunnel.relay.enable reverse_tunnel.relay.ports;
+        ports = let
+          host_name   = config.networking.hostName;
+          relay_ports = reverse_tunnel.relay_servers.${host_name}.ports;
+        in mkIf reverse_tunnel.relay.enable relay_ports;
         kexAlgorithms = [ "curve25519-sha256@libssh.org"
                           "diffie-hellman-group18-sha512"
                           "diffie-hellman-group16-sha512" ];

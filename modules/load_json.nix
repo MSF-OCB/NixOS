@@ -61,9 +61,21 @@ with (import ../msf_lib.nix);
                          enabledUsersByRoles);
 
       reverse_tunnel.tunnels = let
+        # We add the SSH tunnel by default
+        addSshTunnel  = tunnel: let
+          ssh_tunnel = {
+            reverse_tunnels = {
+              ssh = {
+                prefix = 0;
+                forwarded_port = 22;
+              };
+            };
+          };
+        in recursiveUpdate tunnel ssh_tunnel;
+        addSshTunnels = mapAttrs (_: addSshTunnel);
         tunnel_json_path = sys_cfg.tunnels_json_path;
         json_data        = importJSON tunnel_json_path;
-      in json_data.tunnels.per-host;
+      in addSshTunnels json_data.tunnels.per-host;
     };
   };
 }
