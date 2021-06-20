@@ -127,8 +127,7 @@ in {
       filter_duplicate_prefixes = prefixes: length prefixes != length (unique prefixes);
       toPrefixes = tunnel: get_prefixes (tunnel.reverse_tunnels);
       pretty_print_prefixes = host: prefixes: let
-        int_sort = sort (a: b: a < b);
-        sorted_prefixes = concatMapStringsSep ", " toString (int_sort prefixes);
+        sorted_prefixes = concatMapStringsSep ", " toString (naturalSort prefixes);
       in "${host}: ${sorted_prefixes}";
 
       mkDuplicatePrefixes = msf_lib.compose [
