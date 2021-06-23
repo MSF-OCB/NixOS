@@ -117,9 +117,6 @@ in {
     add_port_prefix = prefix: base_port: 10000 * prefix + base_port;
     extract_prefix = reverse_tunnel: reverse_tunnel.prefix;
     get_prefixes = mapAttrsToList (_: extract_prefix);
-
-    # Load the config of the host currently being built from the settings
-    current_host_tunnel = cfg.tunnels.${config.networking.hostName};
   in mkIf (cfg.enable || cfg.relay.enable) {
 
     assertions = let
@@ -160,6 +157,11 @@ in {
       ];
       duplicate_ports = mkDuplicatePorts cfg.tunnels;
     in [
+      {
+        assertion = cfg.enable -> hasAttr config.networking.hostName cfg.tunnels;
+        message   = "Tunneling is enabled for this server but its hostname is " +
+                    "not included in ${toString sys_cfg.tunnels_json_path}";
+      }
       {
         assertion = length duplicate_prefixes == 0;
         message   = "Duplicate prefixes defined! Details: " +
@@ -275,13 +277,23 @@ in {
           done
         '';
       };
-      tunnel_services = optionalAttrs (cfg.enable &&
-                                       includeTunnel current_host_tunnel) (
-        mapAttrs' (_: relay: nameValuePair "autossh-reverse-tunnel-${relay.name}"
-                                           (make_tunnel_service current_host_tunnel
-                                                                relay))
-                  cfg.relay_servers
+
+      make_tunnel_services = tunnel: relay_servers:
+        optionalAttrs (includeTunnel current_host_tunnel) (
+          mapAttrs' (_: relay: nameValuePair "autossh-reverse-tunnel-${relay.name}"
+                                             (make_tunnel_service tunnel relay))
+                    relay_servers
       );
+
+      # Load the config of the host currently being built from the settings
+      # Assertions are only checked after the config has been evaluated,
+      # se we cannot be sure that the host is present at this point.
+      current_host_tunnel = cfg.tunnels.${config.networking.hostName} or null;
+
+      tunnel_services = optionalAttrs (cfg.enable &&
+                                       current_host_tunnel != null)
+                                      (make_tunnel_services current_host_tunnel
+                                                            cfg.relay_servers);
 
       monitoring_services = optionalAttrs cfg.relay.enable {
         port_monitor = {
