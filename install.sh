@@ -207,7 +207,7 @@ nix-shell --packages git --run "git config --global core.sshCommand 'ssh -i /tmp
 if [ "${CREATE_DATA_PART}" = true ]; then
   nixos_dir="/tmp/nixos/"
   config_dir="${nixos_dir}/org-config/"
-  secrets_dir="${MSFOCB_SECRETS_DIRECTORY}"
+  secrets_dir="${MSFOCB_SECRETS_DIRECTORY:-"/run/.secrets/"}"
 
   # Clean up potential left-over directories
   if [ -e "${nixos_dir}" ]; then
