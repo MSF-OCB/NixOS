@@ -287,7 +287,7 @@ in {
 
       # Load the config of the host currently being built from the settings
       # Assertions are only checked after the config has been evaluated,
-      # se we cannot be sure that the host is present at this point.
+      # so we cannot be sure that the host is present at this point.
       current_host_tunnel = cfg.tunnels.${config.networking.hostName} or null;
 
       tunnel_services = optionalAttrs (cfg.enable &&
