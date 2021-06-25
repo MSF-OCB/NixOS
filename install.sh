@@ -166,7 +166,7 @@ fi
 
   function test_auth() {
     nix-shell --packages git --run "git -c core.sshCommand='ssh -F none -o IdentitiesOnly=yes -i /tmp/id_tunnel' \
-                                        ls-remote ${config_repo}" > /dev/null 2>&1
+                                        ls-remote ${config_repo} > /dev/null 2>&1"
   }
 
   echo "Trying to authenticate to GitHub..."
