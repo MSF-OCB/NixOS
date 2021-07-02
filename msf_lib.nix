@@ -19,10 +19,37 @@ with lib;
 
     filterEnabled = filterAttrs (_: conf: conf.enable);
 
-    # A type for host names, host names consist of:
-    #   * a first character which is an upper or lower case ascii character
-    #   * followed by zero or more of: dash (-), upper case ascii, lower case ascii, digit
-    #   * followed by an upper or lower case ascii character or a digit
+    /* Find duplicate elements in a list in O(n) time
+
+       Example:
+         find_duplicates [ 1 2 2 3 4 4 4 5 ]
+         => [ 2 4 ]
+    */
+    find_duplicates = let
+      /* Function to use with foldr
+         Given an element and a set mapping elements (as Strings) to booleans,
+         it will add the element to the set with a value of:
+           - false if the element was not previously there, and
+           - true  if the element had been added already
+         The result after folding, is a set mapping duplicate elements to true.
+      */
+      update_duplicates_set = el: set: let
+        is_duplicate = el: hasAttr (toString el);
+      in set // { ${toString el} = is_duplicate el set; };
+    in compose [
+      attrNames                        # return the name only
+      (filterAttrs (flip const))       # filter on trueness of the value
+      (foldr update_duplicates_set {}) # fold to create the duplicates set
+    ];
+
+    # recursiveUpdate merges the two resulting attribute sets recursively
+    recursiveMerge = foldr recursiveUpdate {};
+
+    /* A type for host names, host names consist of:
+        * a first character which is an upper or lower case ascii character
+        * followed by zero or more of: dash (-), upper case ascii, lower case ascii, digit
+        * followed by an upper or lower case ascii character or a digit
+    */
     host_name_type =
       types.strMatching "^[[:upper:][:lower:]][-[:upper:][:lower:][:digit:]]*[[:upper:][:lower:][:digit:]]$";
     empty_str_type = types.strMatching "^$" // {
@@ -41,6 +68,11 @@ with lib;
     in types.strMatching pub_key_pattern // { inherit description; };
 
     ifPathExists = path: optional (builtins.pathExists path) path;
+
+    traceImportJSON = compose [
+      importJSON
+      (traceValFn (f: "Loading file ${f}..."))
+    ];
 
     user_roles = let
 
@@ -244,7 +276,8 @@ with lib;
       '';
     };
   in {
-    inherit compose applyTwice filterEnabled ifPathExists
+    inherit compose applyTwice filterEnabled find_duplicates recursiveMerge
+            ifPathExists traceImportJSON
             host_name_type empty_str_type pub_key_type
             user_roles formats
             indentStr reset_git clone_and_reset_git mkDeploymentService;

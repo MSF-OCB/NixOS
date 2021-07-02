@@ -121,39 +121,34 @@ in {
 
     assertions = let
       # Functions to detect duplicate prefixes in our tunnel config
-      filter_duplicate_prefixes = prefixes: length prefixes != length (unique prefixes);
-      toPrefixes = tunnel: get_prefixes (tunnel.reverse_tunnels);
+      toDuplicatePrefixes = msf_lib.compose [
+        msf_lib.find_duplicates
+        get_prefixes
+        (getAttr "reverse_tunnels")
+      ];
       pretty_print_prefixes = host: prefixes: let
         sorted_prefixes = concatMapStringsSep ", " toString (naturalSort prefixes);
       in "${host}: ${sorted_prefixes}";
 
       mkDuplicatePrefixes = msf_lib.compose [
-        (mapAttrsToList pretty_print_prefixes)       # pretty-print the results
-        (filterAttrs (_: filter_duplicate_prefixes)) # get hosts with duplicate prefixes
-        (mapAttrs (_: toPrefixes))                   # map tunnels configs to the prefixes
+        # Pretty-print the results
+        (mapAttrsToList pretty_print_prefixes)
+        # Filter out the entries with duplicate prefixes
+        (filterAttrs (_: prefixes: length prefixes != 0))
+        # map tunnels configs to their duplicate prefixes
+        (mapAttrs (_: toDuplicatePrefixes))
       ];
       duplicate_prefixes = mkDuplicatePrefixes cfg.tunnels;
-
-      # Function to use with foldr,
-      # given a tunnel conf and a set mapping ports to booleans,
-      # it will add the port to the set with a value of:
-      #   - false if the port was not previously there, and
-      #   - true  if the port had been added already
-      # The result after folding, is a set mapping duplicate ports to true.
-      # Port 0 is ignored since it is a placeholder port.
-      update_duplicates_set = tunnel: set: let
-        port = toString (cfg.tunnels.${tunnel}.remote_forward_port);
-        is_duplicate = set: port: port != "0" && hasAttr port set;
-      in set // { ${port} = is_duplicate set port; };
 
       # Use the update_duplicates_set function to calculate
       # a set marking duplicate ports, filter out the duplicates,
       # and return the result as a list of port numbers.
       mkDuplicatePorts = msf_lib.compose [
-        attrNames                        # return the name only (=port number)
-        (filterAttrs (flip const))       # filter on trueness of the value
-        (foldr update_duplicates_set {}) # fold to create the duplicates set
-        attrNames                        # convert to a list of tunnel names
+        msf_lib.find_duplicates
+        (filter (port: port != 0)) # Ignore entries with port set to zero
+        (map (getAttr "remote_forward_port"))
+                                   # select the port attribute
+        attrValues                 # convert to a list of the tunnel definitions
       ];
       duplicate_ports = mkDuplicatePorts cfg.tunnels;
     in [

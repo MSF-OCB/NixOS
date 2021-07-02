@@ -31,9 +31,6 @@ with (import ../msf_lib.nix);
           msf_lib.compose [ (flip genAttrs (const value))
                             (attrByPath path onAbsent) ];
 
-        # recursiveUpdate merges the two resulting attribute sets recursively
-        recursiveMerge = foldr recursiveUpdate {};
-
         remoteTunnelUsers = listToAttrs_const [ "users" "remote_tunnel" ]
                                               remoteTunnel
                                               [] json_data;
@@ -56,9 +53,9 @@ with (import ../msf_lib.nix);
                               json_data;
           activateRoles = hostName: map (activateRole hostName);
         in activateRoles hostName (enabledRoles hostName json_data);
-      in recursiveMerge ([ remoteTunnelUsers
-                           enabledUsers ] ++
-                         enabledUsersByRoles);
+      in msf_lib.recursiveMerge ([ remoteTunnelUsers
+                                   enabledUsers ] ++
+                                   enabledUsersByRoles);
 
       reverse_tunnel.tunnels = let
         # We add the SSH tunnel by default
