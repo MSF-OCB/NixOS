@@ -143,7 +143,7 @@ with lib;
     assertions = [
       {
         assertion = hasAttr config.networking.hostName tnl_cfg.tunnels;
-        message   = "This host's host name is not present in the tunnel config (${toString cfg.tunnels_json_path}).";
+        message   = "This host's host name is not present in the tunnel config (${toString cfg.tunnels_json_dir_path}).";
       }
       {
         assertion = builtins.pathExists cfg.private_key_source;

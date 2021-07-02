@@ -20,7 +20,7 @@ from textwrap    import wrap
 from typing      import Any, Dict, Iterable, List, Mapping
 from nacl.public import PublicKey # type: ignore
 
-from nixostools import ansible_vault_lib, secret_lib
+from nixostools import ansible_vault_lib, secret_lib, ocb_nixos_lib
 
 from nixostools.secret_lib import OPENSSH_PUBLIC_KEY_STRING_LENGTH, \
                                   OPENSSH_PUBLIC_KEY_SIGNATURE, \
@@ -60,8 +60,12 @@ def args_parser() -> argparse.ArgumentParser:
                       help="the ansible-vault password, if empty the script will ask for the password")
   parser.add_argument("--secrets_directory", dest="secrets_directory", required=True, type=str,
                       help="The directory containing the *-secrets.yml files, encrypted with Ansible Vault")
-  parser.add_argument("--public_keys_file", dest="public_keys_file", required=True, type=str,
-                      help="The JSON file containing the server public keys")
+  # TODO: remove
+  parser.add_argument("--public_keys_file", dest="public_keys_file", required=False, type=str,
+                      help="[Deprecated, unused] The JSON file containing the server public keys")
+  # TODO: remove the default and make it required
+  parser.add_argument('--tunnel_config_path', dest = 'tunnel_config_path',
+                      required = False, default = os.path.join(os.getcwd(), 'json', 'tunnels.json'))
   return parser
 
 
@@ -223,9 +227,7 @@ def main() -> None:
   secrets_dict = read_secrets_files(secrets_files,
                                     ansible_vault_lib.get_ansible_passwd(args.ansible_vault_passwd))
 
-  # We'll also want to get the server public keys found in json/tunnels.json,
-  with open(args.public_keys_file, 'r') as f:
-    tunnels_json = json.load(f)
+  tunnels_json = ocb_nixos_lib.read_tunnel_config(args.tunnel_config_path)
 
   secrets = get_secrets(secrets_dict)
   padded_secrets = pad_secrets(secrets)

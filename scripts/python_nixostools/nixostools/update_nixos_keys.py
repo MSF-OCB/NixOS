@@ -9,11 +9,17 @@ import requests
 from itertools import chain
 from typing    import Iterable, Mapping
 
+from nixostools import ocb_nixos_lib
+
 
 def args_parser() -> argparse.ArgumentParser:
   parser = argparse.ArgumentParser(description='Manage the SSH keys for the NixOS GitHub account.')
+  # TODO: remove the default and make it required
+  parser.add_argument('--tunnel_config_path', dest = 'tunnel_config_path',
+                      required = False, default = os.path.join(os.getcwd(), 'json', 'tunnels.json'))
   parser.add_argument('--api_token', dest = 'api_token', required = True, type = str)
   parser.add_argument('--dry_run',   dest = 'dry_run',   required = False, action = 'store_true')
+  # TODO: remove the default and make it required
   parser.add_argument('--nixos_config_dir', dest = 'nixos_config_dir', required = False, default = os.getcwd())
   return parser
 
@@ -84,7 +90,8 @@ def add_key_to_github(session: requests.Session,
                                 data=json.dumps(data)))
 
 
-def get_keys_from_config(config_dir: str) -> Mapping:
+def get_keys_from_config(config_dir: str,
+                         tunnel_config_path: str) -> Mapping:
   nixos_hosts = os.listdir(os.path.join(config_dir, 'hosts'))
 
   def isElligible(host, tunnel_conf):
@@ -94,8 +101,7 @@ def get_keys_from_config(config_dir: str) -> Mapping:
       print(f"Ignoring host {host}, its configuration is not elligible")
       return False
 
-  with open(os.path.join(config_dir, 'json', 'tunnels.json'), 'r') as f:
-    tunnel_data = json.load(f)
+  tunnel_data = ocb_nixos_lib.read_tunnel_config(tunnel_config_path)
 
   tunnel_confs = tunnel_data['tunnels']['per-host']
   response = { host: {'key': tunnel_conf['public_key']}
@@ -111,7 +117,8 @@ def main() -> None:
   session = requests.Session()
 
   gh_key_records  = get_keys_from_github(session, args.api_token)
-  cfg_key_records = get_keys_from_config(args.nixos_config_dir)
+  cfg_key_records = get_keys_from_config(args.nixos_config_dir,
+                                         args.tunnel_config_path)
   gh_titles  = set(gh_key_records.keys())
   cfg_titles = set(cfg_key_records.keys())
 
