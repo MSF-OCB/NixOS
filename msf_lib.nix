@@ -71,7 +71,7 @@ with lib;
 
     traceImportJSON = compose [
       importJSON
-      (traceValFn (f: "Loading file ${f}..."))
+      (traceValFn (f: "Loading file ${toString f}..."))
     ];
 
     user_roles = let

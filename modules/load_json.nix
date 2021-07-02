@@ -7,11 +7,55 @@ with (import ../msf_lib.nix);
   config = let
     sys_cfg  = config.settings.system;
     hostName = config.settings.network.host_name;
+
+    get_json_paths = dir: msf_lib.compose [
+      (mapAttrsToList (name: _: dir + ("/" + name)))
+      (filterAttrs (name: type: type == "regular" && hasSuffix ".json" name))
+      builtins.readDir
+    ] dir;
+
+    # TODO simplify after removing the old option
+    tunnel_json_paths = let
+      old_path = sys_cfg.tunnels_json_path;
+      dir_path = sys_cfg.tunnels_json_dir_path;
+    in (optionals (dir_path != null) (get_json_paths dir_path)) ++
+       (optional  (old_path != null) old_path);
+
+    # Note: the warning only gets printed once per file.
+    # Since the value of the default expression does not depend on the input
+    # argument to the function, Nix memoizes the result of the trace call and
+    # the side-effect only occurs once.
+    get_tunnels_set = let
+      tunnels_json_path = [ "tunnels" "per-host" ];
+      warn_string = "ERROR: JSON structure does not contain the attribute " +
+                    concatStringsSep "." tunnels_json_path;
+    in attrByPath tunnels_json_path (abort warn_string);
   in {
+
+    assertions = let
+      json_to_names = msf_lib.compose [
+        attrNames
+        get_tunnels_set
+        msf_lib.traceImportJSON
+      ];
+      mkDuplicates = msf_lib.compose [
+        msf_lib.find_duplicates
+        (concatMap json_to_names) # map the JSON files to the server names
+      ];
+      duplicates = mkDuplicates tunnel_json_paths;
+    in [
+      {
+        assertion = length duplicates == 0;
+        message   = "Duplicate entries found in the tunnel definitions. " +
+                    "Duplicates: " +
+                    concatStringsSep ", " duplicates;
+      }
+    ];
+
     settings = {
       users.users = let
         users_json_path = sys_cfg.users_json_path;
-        json_data       = importJSON users_json_path;
+        json_data       = msf_lib.traceImportJSON users_json_path;
         remoteTunnel    = msf_lib.user_roles.remoteTunnel;
 
         # Load the list at path in an attribute set and convert it to
@@ -70,9 +114,18 @@ with (import ../msf_lib.nix);
           };
         in recursiveUpdate tunnel ssh_tunnel;
         addSshTunnels = mapAttrs (_: addSshTunnel);
-        tunnel_json_path = sys_cfg.tunnels_json_path;
-        json_data        = importJSON tunnel_json_path;
-      in addSshTunnels json_data.tunnels.per-host;
+        load_tunnel_files = msf_lib.compose [
+          addSshTunnels
+          # We check in an assertion above that the two attrsets have an
+          # empty intersection, so we do not need to worry about the order
+          # in which we merge them here.
+          msf_lib.recursiveMerge
+          (map (msf_lib.compose [
+                  get_tunnels_set
+                  msf_lib.traceImportJSON
+                ]))
+        ];
+      in load_tunnel_files tunnel_json_paths;
     };
   };
 }
