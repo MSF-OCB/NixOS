@@ -227,7 +227,7 @@ def main() -> None:
   secrets_dict = read_secrets_files(secrets_files,
                                     ansible_vault_lib.get_ansible_passwd(args.ansible_vault_passwd))
 
-  tunnels_json = ocb_nixos_lib.read_tunnel_config(args.tunnel_config_path)
+  tunnels_json = ocb_nixos_lib.read_json_configs(args.tunnel_config_path)
 
   secrets = get_secrets(secrets_dict)
   padded_secrets = pad_secrets(secrets)

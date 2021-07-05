@@ -101,7 +101,7 @@ def get_keys_from_config(config_dir: str,
       print(f"Ignoring host {host}, its configuration is not elligible")
       return False
 
-  tunnel_data = ocb_nixos_lib.read_tunnel_config(tunnel_config_path)
+  tunnel_data = ocb_nixos_lib.read_json_configs(tunnel_config_path)
 
   tunnel_confs = tunnel_data['tunnels']['per-host']
   response = { host: {'key': tunnel_conf['public_key']}
