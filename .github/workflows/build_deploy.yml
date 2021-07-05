@@ -18,8 +18,73 @@ on:
 
 jobs:
 
+  update_nixos_robot_keys:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Checkout the NixOS repo
+        uses: 'actions/checkout@v2'
+        with:
+          persist-credentials: false
+
+      - name: Checkout the NixOS-OCB-Config repo
+        uses: 'actions/checkout@v2'
+        with:
+          repository: 'msf-ocb/nixos-ocb-config'
+          path: 'org-config'
+          ssh-key: '${{ secrets.NIXOS_OCB_CONFIG_DEPLOY_KEY }}'
+          persist-credentials: false
+
+      - name: Install the Nix package manager
+        uses: cachix/install-nix-action@master
+        with:
+          nix_path: nixpkgs=https://nix-channel-redirect.ocb.msf.org/nixexprs.tar.xz
+
+      - name: Update the NixOS Robot SSH keys (dry run)
+        run: >-
+          nix-shell ./scripts/python_nixostools/shell.nix --run
+          "update_nixos_keys
+          --api_token ${{ secrets.NIXOS_OCB_KEY_MGMT_API_TOKEN }}
+          --nixos_config_dir   './org-config'
+          --tunnel_config_path './org-config/json/tunnels.json'
+          --dry_run"
+
+
+  encrypt_secrets:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Checkout the NixOS repo
+        uses: 'actions/checkout@v2'
+        with:
+          persist-credentials: false
+
+      - name: Checkout the NixOS-OCB-Config repo
+        uses: 'actions/checkout@v2'
+        with:
+          repository: 'msf-ocb/nixos-ocb-config'
+          path: 'org-config'
+          ssh-key: '${{ secrets.NIXOS_OCB_CONFIG_DEPLOY_KEY }}'
+          persist-credentials: false
+
+      - name: Install the Nix package manager
+        uses: cachix/install-nix-action@master
+        with:
+          nix_path: nixpkgs=https://nix-channel-redirect.ocb.msf.org/nixexprs.tar.xz
+
+      - name: Generate the new generated secrets files
+        run: >-
+          nix-shell ./scripts/python_nixostools/shell.nix --run
+          "encrypt_server_secrets
+          --ansible_vault_passwd '${{ secrets.NIXOS_SECRET_MANAGEMENT_VAULT_KEY }}'
+          --output_path        './org-config/secrets/generated/'
+          --secrets_directory  './org-config/secrets/'
+          --tunnel_config_path './org-config/json/tunnels.json'"
+
+
   build:
     runs-on: 'ubuntu-latest'
+    needs:
+      - encrypt_secrets
+      - update_nixos_robot_keys
     strategy:
       matrix:
         # When changing these settings, you need to change as well
