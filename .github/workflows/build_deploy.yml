@@ -45,7 +45,7 @@ jobs:
           "update_nixos_keys
           --api_token ${{ secrets.NIXOS_OCB_KEY_MGMT_API_TOKEN }}
           --nixos_config_dir   './org-config'
-          --tunnel_config_path './org-config/json/tunnels.json'
+          --tunnel_config_path './org-config/json/tunnels.d'
           --dry_run"
 
 
@@ -77,7 +77,7 @@ jobs:
           --ansible_vault_passwd '${{ secrets.NIXOS_SECRET_MANAGEMENT_VAULT_KEY }}'
           --output_path        './org-config/secrets/generated/'
           --secrets_directory  './org-config/secrets/'
-          --tunnel_config_path './org-config/json/tunnels.json'"
+          --tunnel_config_path './org-config/json/tunnels.d'"
 
 
   build:
