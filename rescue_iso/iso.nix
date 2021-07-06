@@ -29,10 +29,23 @@ with lib;
     reverse_tunnel.enable = true;
   };
 
-  services.mingetty.helpLine = mkForce "";
+  boot.supportedFilesystems = mkOverride 10 [
+    "vfat"
+    "tmpfs"
+    "auto"
+    "squashfs"
+    "tmpfs"
+    "overlay"
+  ];
 
-  documentation.enable            = mkOverride 10 false;
-  documentation.nixos.enable      = mkOverride 10 false;
+  services.getty.helpLine = mkForce "";
+
+  documentation.enable       = mkOverride 10 false;
+  documentation.nixos.enable = mkOverride 10 false;
+
+  networking.wireless.enable = mkOverride 10 false;
+
+  system.extraDependencies = mkOverride 10 [];
 
   isoImage = {
     isoName = mkForce "${config.isoImage.isoBaseName}-msfocb-rescue-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}.iso";
