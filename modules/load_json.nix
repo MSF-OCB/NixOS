@@ -14,12 +14,7 @@ with (import ../msf_lib.nix);
       builtins.readDir
     ] dir;
 
-    # TODO simplify after removing the old option
-    tunnel_json_paths = let
-      old_path = sys_cfg.tunnels_json_path;
-      dir_path = sys_cfg.tunnels_json_dir_path;
-    in (optionals (dir_path != null) (get_json_paths dir_path)) ++
-       (optional  (old_path != null) old_path);
+    tunnel_json_paths = get_json_paths sys_cfg.tunnels_json_dir_path;
 
     # Note: the warning only gets printed once per file.
     # Since the value of the default expression does not depend on the input

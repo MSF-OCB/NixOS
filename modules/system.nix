@@ -80,15 +80,8 @@ with lib;
       type = types.path;
     };
 
-    tunnels_json_path = mkOption {
-      type = with types; nullOr path;
-      default = null;
-    };
-
     tunnels_json_dir_path = mkOption {
-      # TODO make non-null after the transition
       type = with types; nullOr path;
-      default = null;
     };
 
     pub_keys_path = mkOption {
