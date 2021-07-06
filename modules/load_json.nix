@@ -8,36 +8,42 @@ with (import ../msf_lib.nix);
     sys_cfg  = config.settings.system;
     hostName = config.settings.network.host_name;
 
-    get_json_paths = dir: msf_lib.compose [
-      (mapAttrsToList (name: _: dir + ("/" + name)))
-      (filterAttrs (name: type: type == "regular" && hasSuffix ".json" name))
-      builtins.readDir
-    ] dir;
+    get_tunnel_contents = let
 
-    tunnel_json_paths = get_json_paths sys_cfg.tunnels_json_dir_path;
+      /*
+        Note: if a json value is extracted multiple times, the warning only gets
+        printed once per file.
+        Since the value of the default expression does not depend on the input
+        argument to the function, Nix memoizes the result of the trace call and
+        the side-effect only occurs once.
+      */
+      get_tunnels_set = let
+        tunnels_json_path = [ "tunnels" "per-host" ];
+        warn_string = "ERROR: JSON structure does not contain the attribute " +
+                      concatStringsSep "." tunnels_json_path;
+      in attrByPath tunnels_json_path (abort warn_string);
 
-    # Note: the warning only gets printed once per file.
-    # Since the value of the default expression does not depend on the input
-    # argument to the function, Nix memoizes the result of the trace call and
-    # the side-effect only occurs once.
-    get_tunnels_set = let
-      tunnels_json_path = [ "tunnels" "per-host" ];
-      warn_string = "ERROR: JSON structure does not contain the attribute " +
-                    concatStringsSep "." tunnels_json_path;
-    in attrByPath tunnels_json_path (abort warn_string);
+      get_json_contents = dir: msf_lib.compose [
+        (map msf_lib.traceImportJSON)
+        (mapAttrsToList (name: _: dir + ("/" + name)))
+        (filterAttrs (name: type: type == "regular" && hasSuffix ".json" name))
+        builtins.readDir
+      ] dir;
+
+    in msf_lib.compose [
+      (map get_tunnels_set)
+      get_json_contents
+    ];
+
+    tunnel_json = get_tunnel_contents sys_cfg.tunnels_json_dir_path;
   in {
 
     assertions = let
-      json_to_names = msf_lib.compose [
-        attrNames
-        get_tunnels_set
-        msf_lib.traceImportJSON
-      ];
       mkDuplicates = msf_lib.compose [
         msf_lib.find_duplicates
-        (concatMap json_to_names) # map the JSON files to the server names
+        (concatMap attrNames) # map the JSON files to the server names
       ];
-      duplicates = mkDuplicates tunnel_json_paths;
+      duplicates = mkDuplicates tunnel_json;
     in [
       {
         assertion = length duplicates == 0;
@@ -53,19 +59,20 @@ with (import ../msf_lib.nix);
         json_data       = msf_lib.traceImportJSON users_json_path;
         remoteTunnel    = msf_lib.user_roles.remoteTunnel;
 
-        # Load the list at path in an attribute set and convert it to
-        # an attribute set with every list element as a key and the value
-        # set to a given constant value.
-        # If the given path cannot be found in the loaded JSON structure,
-        # then the value of onAbsent will be used as input instead.
-        #
-        # Example:
-        #   listToAttrs_const [ "per-host" "benuc002" "enable" ]
-        #                     val
-        #                     []
-        #                     { per-host.benuc002.enable = [ "foo", "bar" ]; }
-        # will yield:
-        #   { foo = val; bar = val; }
+        /*
+          Load the list at path in an attribute set and convert it to
+          an attribute set with every list element as a key and the value
+          set to a given constant value.
+          If the given path cannot be found in the loaded JSON structure,
+          then the value of onAbsent will be used as input instead.
+
+          Example:
+            listToAttrs_const [ "per-host" "benuc002" "enable" ]
+                              val
+                              []
+                              { per-host.benuc002.enable = [ "foo", "bar" ]; }
+            => { foo = val; bar = val; }
+        */
         listToAttrs_const = path: value: onAbsent:
           msf_lib.compose [ (flip genAttrs (const value))
                             (attrByPath path onAbsent) ];
@@ -115,12 +122,8 @@ with (import ../msf_lib.nix);
           # empty intersection, so we do not need to worry about the order
           # in which we merge them here.
           msf_lib.recursiveMerge
-          (map (msf_lib.compose [
-                  get_tunnels_set
-                  msf_lib.traceImportJSON
-                ]))
         ];
-      in load_tunnel_files tunnel_json_paths;
+      in load_tunnel_files tunnel_json;
     };
   };
 }
