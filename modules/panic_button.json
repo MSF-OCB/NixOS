@@ -1,7 +1,10 @@
 {
   "url": "https://github.com/msf-ocb/panic_button/",
-  "rev": "5b3a50e9afd82c13847ab67e6e7eb034112a185b",
-  "date": "2020-10-31T18:58:45+01:00",
-  "sha256": "0pp1xick9v8c8hxfva1mvha262s9yxzj26jzs2bmwvazlhmdjwjc",
-  "fetchSubmodules": false
+  "rev": "b4cea8891630e9921e92c09c02aac3d317a1400e",
+  "date": "2021-07-06T19:11:55+00:00",
+  "path": "/nix/store/y6bcj7wvhmv98dzpfasbpr37x433fa56-panic_button",
+  "sha256": "1c78qj95g32yv3dgqv80wkpmgbb000kmymcak4b1angjby1syzpg",
+  "fetchSubmodules": false,
+  "deepClone": false,
+  "leaveDotGit": false
 }
