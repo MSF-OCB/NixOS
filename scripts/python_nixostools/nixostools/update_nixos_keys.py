@@ -14,13 +14,10 @@ from nixostools import ocb_nixos_lib
 
 def args_parser() -> argparse.ArgumentParser:
   parser = argparse.ArgumentParser(description='Manage the SSH keys for the NixOS GitHub account.')
-  # TODO: remove the default and make it required
-  parser.add_argument('--tunnel_config_path', dest = 'tunnel_config_path',
-                      required = False, default = os.path.join(os.getcwd(), 'json', 'tunnels.json'))
   parser.add_argument('--api_token', dest = 'api_token', required = True, type = str)
-  parser.add_argument('--dry_run',   dest = 'dry_run',   required = False, action = 'store_true')
-  # TODO: remove the default and make it required
-  parser.add_argument('--nixos_config_dir', dest = 'nixos_config_dir', required = False, default = os.getcwd())
+  parser.add_argument('--nixos_config_dir',   dest = 'nixos_config_dir', required = True)
+  parser.add_argument('--tunnel_config_path', dest = 'tunnel_config_path', required = True)
+  parser.add_argument('--dry_run', dest = 'dry_run',   required = False, action = 'store_true')
   return parser
 
 

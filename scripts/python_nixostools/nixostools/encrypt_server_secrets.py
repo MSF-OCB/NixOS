@@ -60,12 +60,7 @@ def args_parser() -> argparse.ArgumentParser:
                       help="the ansible-vault password, if empty the script will ask for the password")
   parser.add_argument("--secrets_directory", dest="secrets_directory", required=True, type=str,
                       help="The directory containing the *-secrets.yml files, encrypted with Ansible Vault")
-  # TODO: remove
-  parser.add_argument("--public_keys_file", dest="public_keys_file", required=False, type=str,
-                      help="[Deprecated, unused] The JSON file containing the server public keys")
-  # TODO: remove the default and make it required
-  parser.add_argument('--tunnel_config_path', dest = 'tunnel_config_path',
-                      required = False, default = os.path.join(os.getcwd(), 'json', 'tunnels.json'))
+  parser.add_argument('--tunnel_config_path', dest = 'tunnel_config_path', required = True)
   return parser
 
 
@@ -235,7 +230,7 @@ def main() -> None:
   encrypted_data = [ encrypt_data(secrets,
                                   secret_lib.extract_public_key(tunnels_json,
                                                                 secrets.server_name,
-                                                                args.public_keys_file))
+                                                                args.tunnel_config_path))
                      for secrets in padded_secrets ]
 
   for encrypted_secrets in encrypted_data:
