@@ -384,10 +384,10 @@ if [ "${CREATE_DATA_PART}" = true ]; then
              --use-urandom \
              luksFormat \
              --type luks2 \
-             --key-file "${MSFOCB_SECRETS_DIRECTORY}/keyfile" \
+             --key-file "${secrets_dir}/keyfile" \
              /dev/LVMVolGroup/nixos_data
   cryptsetup open \
-             --key-file "${MSFOCB_SECRETS_DIRECTORY}/keyfile" \
+             --key-file "${secrets_dir}/keyfile" \
              /dev/LVMVolGroup/nixos_data nixos_data_decrypted
   mkfs.ext4 -e remount-ro \
             -m 1 \
