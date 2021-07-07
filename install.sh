@@ -403,6 +403,9 @@ if [ "${CREATE_DATA_PART}" = true ]; then
   mount --bind /mnt/opt/.home /mnt/home
 fi
 
+# TODO: remove the next line when the following issue in nixpkgs has been resolved:
+# https://github.com/NixOS/nixpkgs/issues/126141
+nix-build '<nixpkgs/nixos>' -A config.system.build.toplevel -I nixos-config=/mnt/etc/nixos/configuration.nix
 nixos-install --no-root-passwd --max-jobs 4
 
 swapoff "${swapfile}"
