@@ -155,7 +155,7 @@ in {
       {
         assertion = cfg.enable -> hasAttr config.networking.hostName cfg.tunnels;
         message   = "Tunneling is enabled for this server but its hostname is " +
-                    "not included in ${toString sys_cfg.tunnels_json_path}";
+                    "not included in ${toString sys_cfg.tunnels_json_dir_path}";
       }
       {
         assertion = length duplicate_prefixes == 0;
