@@ -127,9 +127,6 @@ jobs:
 
   build_iso:
     runs-on: 'ubuntu-latest'
-    if: >-
-      ${{ github.event_name == 'pull_request' &&
-          github.ref != 'refs/heads/master' }}
     steps:
       - name: Checkout the NixOS repo
         uses: 'actions/checkout@v2'
@@ -152,7 +149,10 @@ jobs:
       - name: Build the ISO image
         run: >-
           touch ./local/id_tunnel_iso &&
-          ./scripts/build_iso.sh
+          nix-instantiate
+          '<nixpkgs/nixos>'
+          -A config.system.build.isoImage
+          -I nixos-config='rescue_iso/iso.nix'
 
 
   deploy:
