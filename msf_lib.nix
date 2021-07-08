@@ -216,7 +216,14 @@ with lib;
       pre-compose_script_path = "${deploy_dir}/${pre-compose_script}";
     in {
       serviceConfig.Type = "oneshot";
-      path = with pkgs; [ nix ];
+
+      # We need to explicitly set the docker runtime dependency
+      # since docker-compose does not depend on docker.
+      #
+      # nix is included so that nix-shell can be used in the external scripts
+      # called dynamically by this function
+      path = with pkgs; [ nix docker ];
+
       environment = let
         inherit (config.settings.system) private_key;
       in {
