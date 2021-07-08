@@ -264,7 +264,7 @@ with lib;
         ${pkgs.docker-compose}/bin/docker-compose \
           --project-directory "${deploy_dir}" \
           ${concatMapStringsSep " " (s: ''--file "${deploy_dir}/${s}"'') docker_compose_files} \
-          --no-ansi \
+          --ansi never \
           ${if restart
             then "restart"
             else ''up --detach --remove-orphans ${optionalString force_build "--build"}''
