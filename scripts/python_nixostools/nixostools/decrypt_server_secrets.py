@@ -12,7 +12,8 @@ from typing import Any, Mapping
 
 from nixostools import secret_lib
 from nixostools.secret_lib import OPENSSH_PRIVATE_KEY_SIGNATURE, \
-                                  PRIVATE_KEY_LENGTH
+                                  PRIVATE_KEY_LENGTH, \
+                                  GENERATED_SECRETS_FILENAME
 
 
 def args_parser() -> argparse.ArgumentParser:
@@ -60,27 +61,30 @@ def main():
   validate_paths(args.private_key_file, args.secrets_path, args.output_path)
 
   secrets_file = os.path.join(args.secrets_path,
-                              f"{args.server_name}-secrets.yml")
+                              GENERATED_SECRETS_FILENAME)
 
   if os.path.isfile(secrets_file):
     with open(args.private_key_file, 'r') as f :
       server_privk = f.read()
     with open(secrets_file, 'r') as f:
-      secrets_data = yaml.safe_load(f)
+      all_secrets = yaml.safe_load(f)
 
-    if not secrets_data['server_name'] == args.server_name:
-      raise Exception(f'The given server name "{args.server_name}" ' +
-                       'does not correspond to the one found ' +
-                       '"{secrets_data["server_name"]}".')
+    if all_secrets[args.server_name]:
+      secrets_data = all_secrets[args.server_name]
 
-    # decrypt the symmetric key using the server private key
-    key = secret_lib.decrypt_asymmetric(secret_lib.extract_curve_private_key(server_privk),
+      if not secrets_data['server_name'] == args.server_name:
+        raise Exception(f'The given server name "{args.server_name}" ' +
+                         'does not correspond to the one found ' +
+                         '"{secrets_data["server_name"]}".')
+
+      # decrypt the symmetric key using the server private key
+      key = secret_lib.decrypt_asymmetric(secret_lib.extract_curve_private_key(server_privk),
                                         secrets_data['encrypted_key'])
-    # then use it to decrypt the secrets
-    decrypted_secrets = yaml.safe_load(
-      secret_lib.decrypt_symmetric(key,
-                                   secrets_data['encrypted_secrets']))
-    write_files(args.output_path, decrypted_secrets)
+      # then use it to decrypt the secrets
+      decrypted_secrets = yaml.safe_load(
+        secret_lib.decrypt_symmetric(key,
+                                     secrets_data['encrypted_secrets']))
+      write_files(args.output_path, decrypted_secrets)
 
 
 if __name__ == "__main__":

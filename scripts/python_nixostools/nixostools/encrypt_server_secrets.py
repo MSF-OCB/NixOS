@@ -1,7 +1,6 @@
 #! /usr/bin/env nix-shell
 #! nix-shell -i python3 ../shell.nix
 
-# ---- Import needed modules ----
 import argparse
 import collections
 import dataclasses
@@ -17,7 +16,7 @@ from dataclasses import dataclass
 from functools   import reduce
 from getpass     import getpass
 from textwrap    import wrap
-from typing      import Any, Dict, Iterable, List, Mapping
+from typing      import Any, Iterable, List, Mapping
 from nacl.public import PublicKey # type: ignore
 
 from nixostools import ansible_vault_lib, secret_lib, ocb_nixos_lib
@@ -29,7 +28,8 @@ from nixostools.secret_lib import OPENSSH_PUBLIC_KEY_STRING_LENGTH, \
                                   SERVERS_KEY, \
                                   PATH_KEY, \
                                   CONTENT_KEY, \
-                                  UTF8
+                                  UTF8, \
+                                  GENERATED_SECRETS_FILENAME
 
 
 @dataclass(frozen=True)
@@ -132,19 +132,21 @@ def pad_secrets(data: Iterable[ServerSecretData]) -> Iterable[PaddedServerSecret
            for secret_data in data ]
 
 
-def write_secrets(encrypted_secrets: EncryptedSecrets,
+def write_secrets(encrypted_secrets_list: List[EncryptedSecrets],
                   output_path: str) -> bool:
-  server_name = encrypted_secrets.server_name
-  content = dataclasses.asdict(encrypted_secrets)
+  print(f'Writing generated secrets...')
+  content = { encrypted_secrets.server_name: dataclasses.asdict(encrypted_secrets)
+              for encrypted_secrets in encrypted_secrets_list }
+
   try:
     # write the encrypted secrets yml in [servername]-secrets.yml
-    with open(os.path.join(output_path, f'{server_name}-secrets.yml'), 'w') as f:
+    with open(os.path.join(output_path, GENERATED_SECRETS_FILENAME), 'w') as f:
       yaml.safe_dump(content, f, default_style='|')
   except:
-    print(f'ERROR : failed to write file for {server_name}')
+    print(f'ERROR : failed to write generated secrets file')
     print(traceback.format_exc())
     return False
-  print(f'Wrote secrets for {server_name}')
+  print(f'Wrote generated secrets')
   return True
 
 
@@ -159,37 +161,9 @@ def read_secrets_files(secrets_files: Iterable[str], ansible_passwd: str) -> Map
       check_duplicate_secrets(secrets_files, ansible_passwd)
       raise AssertionError("Duplicate secrets found, see above.")
 
-    return deep_merge(secrets_data, new_secrets)
+    return ocb_nixos_lib.deep_merge(secrets_data, new_secrets)
 
   return reduce(reducer, secrets_files, {})
-
-
-def deep_merge(d1: Mapping, d2: Mapping) -> Mapping:
-  out: Dict = {}
-
-  for key in set(d1.keys()).union(set(d2.keys())):
-    if key in d1 and key in d2 and not (isinstance(d1[key], type(d2[key])) or isinstance(d2[key], type(d1[key]))):
-      raise AssertionError(f"The types of the values for key '{key}' are not the same!")
-
-    # If the key is only present in one of the mappings, we use that value
-    if not (key in d1 and key in d2):
-      out[key] = d1.get(key, None) or d2.get(key, None)
-    # Otherwise, if the key maps to a mapping, we merge those mappings
-    elif isinstance(d1.get(key, None) or d2.get(key, None), Mapping):
-      out[key] = deep_merge(d1.get(key, {}), d2.get(key, {}))
-    # Otherwise, if the key maps to a list, we concat the lists
-    # (careful, str is a subset of Iterable!)
-    elif isinstance(d1.get(key, None) or d2.get(key, None), List):
-      out[key] = d1.get(key, []) + d2.get(key, [])
-    # If the key is present in both, but is twice None, then we can merge to None
-    elif d1.get(key, None) is None and d2.get(key, None) is None:
-      out[key] = None
-    # In other cases, we do not know what to do...
-    else:
-      raise ValueError(f"Unmergeable type found during merge, key: '{key}', " +
-                       f"type: '{type(d1.get(key, None) or d2.get(key, None))}'")
-
-  return out
 
 
 def check_duplicate_secrets(secrets_files: Iterable[str], ansible_passwd: str) -> None:
@@ -227,14 +201,12 @@ def main() -> None:
   secrets = get_secrets(secrets_dict)
   padded_secrets = pad_secrets(secrets)
 
-  encrypted_data = [ encrypt_data(secrets,
-                                  secret_lib.extract_public_key(tunnels_json,
-                                                                secrets.server_name,
-                                                                args.tunnel_config_path))
-                     for secrets in padded_secrets ]
-
-  for encrypted_secrets in encrypted_data:
-    write_secrets(encrypted_secrets, args.output_path)
+  write_secrets([ encrypt_data(secrets,
+                               secret_lib.extract_public_key(tunnels_json,
+                                                             secrets.server_name,
+                                                             args.tunnel_config_path))
+                  for secrets in padded_secrets ],
+                args.output_path)
 
 
 if __name__ == "__main__":

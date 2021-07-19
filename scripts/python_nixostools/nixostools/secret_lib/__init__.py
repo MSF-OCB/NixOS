@@ -31,6 +31,8 @@ SERVERS_KEY: str = "servers"
 PATH_KEY:    str = "path"
 CONTENT_KEY: str = "content"
 
+GENERATED_SECRETS_FILENAME: str = "generated-secrets.yml"
+
 
 def chunk(b64bytes: bytes) -> str:
   wrapped = wrap(b64bytes.decode(UTF8), width=CHUNK_WIDTH)
